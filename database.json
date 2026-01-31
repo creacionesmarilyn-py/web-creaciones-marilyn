@@ -138,6 +138,16 @@
       ],
       "collection": "Perlas numero 6",
       "status": "normal"
+    },
+    {
+      "id": 1769911007801,
+      "name": "Perla numero 6 salmon",
+      "price": 5000,
+      "images": [
+        "img/1769911006176-Numero_6_salmon.JPG"
+      ],
+      "collection": "Perlas numero 6",
+      "status": "agotado"
     }
   ]
 }
