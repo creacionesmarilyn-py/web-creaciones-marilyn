@@ -108,6 +108,16 @@
       ],
       "collection": "Perlas numero 4",
       "status": "agotado"
+    },
+    {
+      "id": 1769910911083,
+      "name": "Perla numero 6 perlado",
+      "price": 5000,
+      "images": [
+        "img/1769910909399-Numero_6_perlado.JPG"
+      ],
+      "collection": "Perlas numero 6",
+      "status": "agotado"
     }
   ]
 }
