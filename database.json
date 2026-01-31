@@ -68,6 +68,16 @@
       ],
       "collection": "Perlas numero 4",
       "status": "normal"
+    },
+    {
+      "id": 1769910717877,
+      "name": "Perla numero 4  blanco",
+      "price": 5000,
+      "images": [
+        "img/1769910716096-Numero_4_blanco.JPG"
+      ],
+      "collection": "Perlas numero 4",
+      "status": "agotado"
     }
   ]
 }
