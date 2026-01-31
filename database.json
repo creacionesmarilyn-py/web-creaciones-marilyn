@@ -78,6 +78,16 @@
       ],
       "collection": "Perlas numero 4",
       "status": "agotado"
+    },
+    {
+      "id": 1769910748543,
+      "name": "Perla numero 4  celeste",
+      "price": 5000,
+      "images": [
+        "img/1769910747064-Numero_4_celeste.JPG"
+      ],
+      "collection": "Perlas numero 4",
+      "status": "agotado"
     }
   ]
 }
