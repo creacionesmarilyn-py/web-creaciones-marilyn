@@ -128,6 +128,16 @@
       ],
       "collection": "Perlas numero 6",
       "status": "agotado"
+    },
+    {
+      "id": 1769910969971,
+      "name": "Perla numero 6 rosado",
+      "price": 5000,
+      "images": [
+        "img/1769910968464-Numero_6_rosado.JPG"
+      ],
+      "collection": "Perlas numero 6",
+      "status": "normal"
     }
   ]
 }
