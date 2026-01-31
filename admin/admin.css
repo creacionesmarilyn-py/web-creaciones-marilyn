@@ -1,0 +1,17 @@
+body {
+    background-color: #f3f4f6;
+}
+
+input:focus {
+    outline: none;
+    border-color: #db2777; /* Rosa de la marca */
+    ring: 2px #fbcfe8;
+}
+
+/* Estilo para las filas de productos en el admin */
+.product-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 0;
+}
