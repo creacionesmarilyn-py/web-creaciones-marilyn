@@ -118,6 +118,16 @@
       ],
       "collection": "Perlas numero 6",
       "status": "agotado"
+    },
+    {
+      "id": 1769910945095,
+      "name": "Perla numero 6 purpura",
+      "price": 5000,
+      "images": [
+        "img/1769910943441-Numero_6_purpura.JPG"
+      ],
+      "collection": "Perlas numero 6",
+      "status": "agotado"
     }
   ]
 }
