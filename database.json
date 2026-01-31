@@ -98,6 +98,16 @@
       ],
       "collection": "Perlas numero 4",
       "status": "agotado"
+    },
+    {
+      "id": 1769910811723,
+      "name": "Perla numero 4  lila",
+      "price": 5000,
+      "images": [
+        "img/1769910810272-Numero_4_lila.JPG"
+      ],
+      "collection": "Perlas numero 4",
+      "status": "agotado"
     }
   ]
 }
