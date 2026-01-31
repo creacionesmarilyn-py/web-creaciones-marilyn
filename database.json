@@ -5,7 +5,7 @@
     "heroSubtitle": "Diseños exclusivos hechos a mano para resaltar tu estilo",
     "heroButtonText": "Ver Colección",
     "heroImage": "img/imagen_front.jpg",
-    "whatsappNumber": "595991391542" 
+    "whatsappNumber": "595991391542"
   },
   "products": [
     {
@@ -35,6 +35,13 @@
       "price": 20000,
       "image": "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&w=600&q=80",
       "collection": "Edición Limitada"
+    },
+    {
+      "id": 1769888957233,
+      "name": "Media perla negra",
+      "price": 5,
+      "image": "img/1769888955167-f0fc9ba8-a88b-4cdd-bf88-cd5567e0f290.jpeg",
+      "collection": "Nuevos productos"
     }
   ]
 }
