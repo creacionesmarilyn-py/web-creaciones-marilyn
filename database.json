@@ -158,6 +158,16 @@
       ],
       "collection": "Perlas numero 8",
       "status": "normal"
+    },
+    {
+      "id": 1769911157198,
+      "name": "Perla numero 8 azul",
+      "price": 5000,
+      "images": [
+        "img/1769911155536-Numero_8_azul.JPG"
+      ],
+      "collection": "Perlas numero 8",
+      "status": "normal"
     }
   ]
 }
