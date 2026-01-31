@@ -168,6 +168,16 @@
       ],
       "collection": "Perlas numero 8",
       "status": "normal"
+    },
+    {
+      "id": 1769911210041,
+      "name": "Perla numero 8 blanco",
+      "price": 5000,
+      "images": [
+        "img/1769911208447-Numero_8_blanco(1).JPG"
+      ],
+      "collection": "Perlas numero 8",
+      "status": "normal"
     }
   ]
 }
