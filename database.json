@@ -178,6 +178,16 @@
       ],
       "collection": "Perlas numero 8",
       "status": "normal"
+    },
+    {
+      "id": 1769911245013,
+      "name": "Perla numero 8 celeste",
+      "price": 5000,
+      "images": [
+        "img/1769911243287-Numero_8_celeste.JPG"
+      ],
+      "collection": "Perlas numero 8",
+      "status": "normal"
     }
   ]
 }
