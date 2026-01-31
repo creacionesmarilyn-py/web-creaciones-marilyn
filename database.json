@@ -42,6 +42,13 @@
       "price": 5,
       "image": "img/1769888955167-f0fc9ba8-a88b-4cdd-bf88-cd5567e0f290.jpeg",
       "collection": "Nuevos productos"
+    },
+    {
+      "id": 1769889048592,
+      "name": "Media perlas azul",
+      "price": 5000,
+      "image": "img/1769889046068-IMG_1336.jpeg",
+      "collection": "Combo"
     }
   ]
 }
