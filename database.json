@@ -198,6 +198,17 @@
       ],
       "collection": "Perlas numero 8",
       "status": "normal"
+    },
+    {
+      "id": 1769911373178,
+      "name": "combo de 100.000 ",
+      "price": 100000,
+      "images": [
+        "img/1769911369815-Imagen_de_WhatsApp_2025-05-19_a_las_11.27.33_382b1587.jpg",
+        "img/1769911371330-WhatsApp_Image_2025-05-19_at_06.43.06.jpeg"
+      ],
+      "collection": "Combos de 100000",
+      "status": "oferta"
     }
   ]
 }
