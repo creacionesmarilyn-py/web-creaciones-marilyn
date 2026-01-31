@@ -1,4 +1,4 @@
-// app.js - Gestión de Carrito Inteligente
+// app.js - Gestión de Carrito Inteligente Creaciones Marilyn
 let cart = JSON.parse(localStorage.getItem('marilyn_cart')) || [];
 
 async function loadStore() {
@@ -38,8 +38,6 @@ function renderProducts(products) {
     });
 }
 
-// --- LÓGICA DEL CARRITO ---
-
 function addToCart(id, name, price) {
     const existingItem = cart.find(item => item.id === id);
     if (existingItem) {
@@ -48,7 +46,7 @@ function addToCart(id, name, price) {
         cart.push({ id, name, price, qty: 1 });
     }
     saveCart();
-    toggleCart(true); // Abre el carrito automáticamente al agregar
+    toggleCart(true);
 }
 
 function removeFromCart(id) {
@@ -113,7 +111,6 @@ function updateCartUI() {
 
     document.getElementById('cart-total-display').textContent = `Gs. ${total.toLocaleString('es-PY')}`;
 
-    // Botón flotante de acceso rápido
     let badge = document.getElementById('cart-badge');
     if (cart.length > 0) {
         if (!badge) {
@@ -132,7 +129,8 @@ function updateCartUI() {
 }
 
 function sendWhatsApp() {
-    const phone = "595981000000"; // <--- CAMBIA ESTO POR TU NÚMERO REAL
+    // NÚMERO ACTUALIZADO CORRECTO
+    const phone = "595991391542"; 
     let message = "¡Hola Marilyn! 🌸 Mi pedido es:\n\n";
     let total = 0;
 
