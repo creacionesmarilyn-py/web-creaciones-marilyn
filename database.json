@@ -88,6 +88,16 @@
       ],
       "collection": "Perlas numero 4",
       "status": "agotado"
+    },
+    {
+      "id": 1769910781914,
+      "name": "Perla numero 4  dorado",
+      "price": 5000,
+      "images": [
+        "img/1769910780256-Numero_4_dorado.JPG"
+      ],
+      "collection": "Perlas numero 4",
+      "status": "agotado"
     }
   ]
 }
