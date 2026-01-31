@@ -1,4 +1,4 @@
-// Configuración Maestra
+// admin.js - Gestión Profesional Creaciones Marilyn
 const CONFIG = {
     owner: 'creacionesmarilyn-py',
     repo: 'web-creaciones-marilyn',
@@ -20,12 +20,11 @@ function logout() {
     location.reload();
 }
 
-// Verificar sesión al cargar
 if (localStorage.getItem('gh_token')) {
     document.getElementById('login-overlay').classList.add('hidden');
 }
 
-// 2. Cargar Inventario Actual
+// 2. Cargar Inventario con Opción de Borrado
 async function loadProductsForAdmin() {
     try {
         const response = await fetch('../database.json?v=' + Date.now());
@@ -34,6 +33,7 @@ async function loadProductsForAdmin() {
         list.innerHTML = '';
         document.getElementById('product-count').textContent = `${data.products.length} productos`;
 
+        // Mostramos los más nuevos primero
         data.products.reverse().forEach(p => {
             const div = document.createElement('div');
             div.className = 'py-4 flex items-center justify-between group';
@@ -45,19 +45,21 @@ async function loadProductsForAdmin() {
                         <p class="text-[10px] text-gray-400 font-bold uppercase">${p.collection} • Gs. ${p.price.toLocaleString('es-PY')}</p>
                     </div>
                 </div>
+                <button onclick="deleteProduct(${p.id})" class="text-red-500 hover:text-red-700 text-[10px] font-bold uppercase border border-red-200 px-2 py-1 rounded hover:bg-red-50 transition">
+                    Eliminar
+                </button>
             `;
             list.appendChild(div);
         });
     } catch (e) { console.error(e); }
 }
 
-// 3. Procesar Nuevo Producto (Imagen + Datos)
+// 3. Procesar Nuevo Producto
 document.getElementById('product-form').addEventListener('submit', async (e) => {
     e.preventDefault();
     const btn = document.getElementById('submit-btn');
     const token = localStorage.getItem('gh_token');
     
-    // UI Loading
     btn.disabled = true;
     btn.innerHTML = '<span>Subiendo...</span>';
 
@@ -65,11 +67,9 @@ document.getElementById('product-form').addEventListener('submit', async (e) => 
         const file = document.getElementById('p-image-file').files[0];
         const fileName = `img/${Date.now()}-${file.name.replace(/\s/g, '_')}`;
         
-        // A. Convertir y Subir Imagen
         const base64 = await toBase64(file);
         await githubApi(fileName, 'Carga de imagen', base64.split(',')[1]);
 
-        // B. Actualizar JSON
         const dbRes = await fetch(`https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}/contents/${CONFIG.dbPath}`, {
             headers: { 'Authorization': `token ${token}` }
         });
@@ -87,18 +87,42 @@ document.getElementById('product-form').addEventListener('submit', async (e) => 
         content.products.push(newProduct);
         await githubApi(CONFIG.dbPath, 'Actualización de inventario', btoa(JSON.stringify(content, null, 2)), dbData.sha);
 
-        alert("¡Éxito! Tu vitrina se actualizará en unos segundos.");
+        alert("¡Producto añadido con éxito!");
         location.reload();
 
     } catch (err) {
-        console.error(err);
         alert("Error de conexión. Verifica tu Token.");
         btn.disabled = false;
         btn.innerHTML = '<span>Intentar de nuevo</span>';
     }
 });
 
-// Helpers Senior
+// 4. Lógica de Eliminación (Fase 1 Finalizada)
+async function deleteProduct(productId) {
+    if (!confirm("¿Segura que quieres quitar este producto de la vitrina?")) return;
+    
+    const token = localStorage.getItem('gh_token');
+    
+    try {
+        const dbRes = await fetch(`https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}/contents/${CONFIG.dbPath}`, {
+            headers: { 'Authorization': `token ${token}` }
+        });
+        const dbData = await dbRes.json();
+        const content = JSON.parse(atob(dbData.content));
+
+        // Filtramos para mantener todos menos el que queremos borrar
+        content.products = content.products.filter(p => p.id !== productId);
+
+        await githubApi(CONFIG.dbPath, 'Producto eliminado del inventario', btoa(JSON.stringify(content, null, 2)), dbData.sha);
+
+        alert("Producto eliminado.");
+        location.reload();
+    } catch (err) {
+        alert("No se pudo eliminar. Revisa la consola.");
+    }
+}
+
+// Helpers
 const toBase64 = file => new Promise((res, rej) => {
     const reader = new FileReader();
     reader.readAsDataURL(file);
