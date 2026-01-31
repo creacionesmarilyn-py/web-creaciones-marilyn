@@ -16,13 +16,6 @@
       "collection": "Premium"
     },
     {
-      "id": 4,
-      "name": "Complementos de Diseño",
-      "price": 20000,
-      "image": "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&w=600&q=80",
-      "collection": "Edición Limitada"
-    },
-    {
       "id": 1769889048592,
       "name": "Media perlas azul",
       "price": 5000,
