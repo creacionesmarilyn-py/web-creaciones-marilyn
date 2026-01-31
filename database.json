@@ -36,6 +36,18 @@
       "image": "img/1769894551162-IMG_1334.jpeg",
       "collection": "Combo",
       "status": "oferta"
+    },
+    {
+      "id": 1769895460036,
+      "name": "Media perla negra",
+      "price": 5000,
+      "images": [
+        "img/1769895453158-IMG_1333.jpeg",
+        "img/1769895455457-IMG_1335.jpeg",
+        "img/1769895457645-IMG_1336.jpeg"
+      ],
+      "collection": "Combo",
+      "status": "oferta"
     }
   ]
 }
