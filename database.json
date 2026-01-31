@@ -148,6 +148,16 @@
       ],
       "collection": "Perlas numero 6",
       "status": "agotado"
+    },
+    {
+      "id": 1769911082810,
+      "name": "Perla numero 8 amarilla",
+      "price": 5000,
+      "images": [
+        "img/1769911081135-Numero_8_amarillo.JPG"
+      ],
+      "collection": "Perlas numero 8",
+      "status": "normal"
     }
   ]
 }
