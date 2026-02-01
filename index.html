@@ -21,6 +21,10 @@
 </head>
 <body class="bg-gray-50 font-sans text-gray-900">
 
+    <div class="bg-pink-600 text-white text-[10px] uppercase tracking-[0.2em] py-2 text-center font-bold">
+        ✨ Envíos a todo el país desde Luque • Pedidos personalizados al WhatsApp ✨
+    </div>
+
     <header class="bg-white py-6 shadow-sm sticky top-0 z-50">
         <div class="container mx-auto px-4 flex flex-col items-center">
             <img src="img/logo_jpg.jpg" alt="Logo" class="w-20 h-20 rounded-full mb-2 shadow-md">
@@ -36,6 +40,32 @@
             <div class="h-1 w-20 bg-pink-500 mx-auto"></div>
         </div>
     </section>
+
+    <div class="bg-white border-b overflow-x-auto no-scrollbar">
+        <div class="container mx-auto px-4 py-8 flex justify-around items-center gap-8 min-w-[600px]">
+            <div class="flex items-center gap-3">
+                <i class="fas fa-hand-sparkles text-pink-500 text-xl"></i>
+                <div class="text-left">
+                    <p class="text-[10px] font-bold uppercase tracking-tighter">100% Artesanal</p>
+                    <p class="text-[9px] text-gray-400">Hecho a mano con detalle</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-3 border-x px-8">
+                <i class="fas fa-truck text-pink-500 text-xl"></i>
+                <div class="text-left">
+                    <p class="text-[10px] font-bold uppercase tracking-tighter">Envíos Rápidos</p>
+                    <p class="text-[9px] text-gray-400">A todo el Paraguay</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <i class="fas fa-comments text-pink-500 text-xl"></i>
+                <div class="text-left">
+                    <p class="text-[10px] font-bold uppercase tracking-tighter">Asesoría Directa</p>
+                    <p class="text-[9px] text-gray-400">Atención por WhatsApp</p>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <main class="container mx-auto px-4 py-12">
         <div class="flex flex-col md:flex-row justify-between items-center gap-6 mb-10">
@@ -69,11 +99,11 @@
     </div>
 
     <div id="gallery-modal" class="fixed inset-0 bg-black/95 z-[200] hidden flex-col items-center justify-center p-4 backdrop-blur-sm">
-        <button onclick="closeGallery()" class="absolute top-6 right-6 text-white text-3xl hover:text-pink-500 z-[210]"><i class="fas fa-times"></i></button>
+        <button onclick="closeGallery()" class="absolute top-6 right-6 text-white text-3xl hover:text-pink-500 z-[210] transition-colors"><i class="fas fa-times"></i></button>
         <div class="relative w-full max-w-5xl flex items-center justify-center h-full">
-            <button onclick="prevImg()" class="absolute left-0 text-white text-4xl p-6 hover:text-pink-500 z-[210]"><i class="fas fa-chevron-left"></i></button>
-            <img id="modal-img" src="" class="max-h-[85vh] max-w-full object-contain rounded-lg animate-fadeIn">
-            <button onclick="nextImg()" class="absolute right-0 text-white text-4xl p-6 hover:text-pink-500 z-[210]"><i class="fas fa-chevron-right"></i></button>
+            <button onclick="prevImg()" class="absolute left-0 text-white text-4xl p-6 hover:text-pink-500 z-[210] active:scale-90 transition-all"><i class="fas fa-chevron-left"></i></button>
+            <img id="modal-img" src="" class="max-h-[85vh] max-w-full object-contain rounded-lg animate-fadeIn shadow-2xl shadow-pink-500/10">
+            <button onclick="nextImg()" class="absolute right-0 text-white text-4xl p-6 hover:text-pink-500 z-[210] active:scale-90 transition-all"><i class="fas fa-chevron-right"></i></button>
         </div>
         <div id="gallery-counter" class="text-gray-400 mt-4 font-mono text-[10px] uppercase tracking-[0.3em] bg-white/5 px-4 py-1 rounded-full border border-white/10">1 / 1</div>
     </div>
