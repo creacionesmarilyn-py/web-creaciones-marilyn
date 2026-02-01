@@ -1,7 +1,11 @@
-// app.js - Fase 5: Inteligencia Comercial y Control de Stock
+// app.js - Fase 6: Motor de Galería y Slider Interactivo
 let cart = JSON.parse(localStorage.getItem('marilyn_cart')) || [];
 let allProducts = [];
 let activeCategory = 'todas';
+
+// Variables de Control para la Galería
+let currentGallery = [];
+let currentIndex = 0;
 
 async function loadStore() {
     try {
@@ -10,7 +14,7 @@ async function loadStore() {
         allProducts = data.products.reverse();
         
         renderCategories();
-        applyFilters(); // Renderiza inicialmente con filtros aplicados
+        applyFilters(); 
         updateCartUI();
     } catch (e) { console.error("Error en carga:", e); }
 }
@@ -44,7 +48,7 @@ function filterByCategory(cat) {
     applyFilters();
 }
 
-// --- RENDERIZADO CON BADGES Y CONTROL DE STOCK ---
+// --- RENDERIZADO CON SOPORTE PARA GALERÍAS ---
 
 function renderProducts(products) {
     const grid = document.getElementById('product-grid');
@@ -56,10 +60,14 @@ function renderProducts(products) {
     }
 
     products.forEach(p => {
-        // Lógica de Estados
         const isAgotado = p.status === 'agotado';
-        let badgeHTML = '';
         
+        // Determinar Imagen Principal y si tiene Galería
+        const mainImg = p.images ? p.images[0] : p.image;
+        const galleryArray = p.images ? p.images : [p.image];
+        const hasMultiple = galleryArray.length > 1;
+
+        let badgeHTML = '';
         if (p.status === 'nuevo') {
             badgeHTML = `<span class="absolute top-3 left-3 bg-blue-500 text-white text-[9px] font-black px-2 py-1 rounded shadow-lg z-10 uppercase tracking-tighter">Nuevo</span>`;
         } else if (p.status === 'oferta') {
@@ -70,10 +78,11 @@ function renderProducts(products) {
         div.className = `bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden group transition-all duration-500 ${isAgotado ? 'opacity-70' : 'hover:shadow-xl hover:-translate-y-1'}`;
         
         div.innerHTML = `
-            <div class="relative h-64 overflow-hidden">
+            <div class="relative h-64 overflow-hidden cursor-pointer" onclick='openGallery(${JSON.stringify(galleryArray)})'>
                 ${badgeHTML}
+                ${hasMultiple ? '<div class="absolute bottom-3 left-3 bg-black/60 backdrop-blur-sm text-white text-[8px] font-bold px-2 py-1 rounded-full z-10 shadow-lg"><i class="fas fa-images mr-1"></i> VER GALERÍA</div>' : ''}
                 ${isAgotado ? '<div class="absolute inset-0 bg-white/40 backdrop-blur-[2px] z-20 flex items-center justify-center font-black text-gray-800 text-[10px] uppercase tracking-[0.3em] border-2 border-white/50">Sin Stock</div>' : ''}
-                <img src="${p.image}" class="w-full h-full object-cover transition-transform duration-700 ${!isAgotado ? 'group-hover:scale-110' : 'grayscale-[50%]' }">
+                <img src="${mainImg}" class="w-full h-full object-cover transition-transform duration-700 ${!isAgotado ? 'group-hover:scale-110' : 'grayscale-[50%]' }">
                 <div class="absolute top-3 right-3 bg-white/90 backdrop-blur px-2 py-1 rounded-full text-[9px] font-bold uppercase text-gray-500 tracking-tighter">
                     ${p.collection}
                 </div>
@@ -94,7 +103,59 @@ function renderProducts(products) {
     });
 }
 
-// --- GESTIÓN DE CARRITO (Mantenemos la lógica de la Fase 4) ---
+// --- LÓGICA DEL VISUALIZADOR (LIGHTBOX) ---
+
+function openGallery(images) {
+    currentGallery = images;
+    currentIndex = 0;
+    updateGalleryModal();
+    const modal = document.getElementById('gallery-modal');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    document.body.style.overflow = 'hidden'; // Bloquea el scroll al ver fotos
+}
+
+function closeGallery() {
+    const modal = document.getElementById('gallery-modal');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+    document.body.style.overflow = ''; // Libera el scroll
+}
+
+function updateGalleryModal() {
+    const modalImg = document.getElementById('modal-img');
+    const counter = document.getElementById('gallery-counter');
+    
+    // Animación de entrada para la imagen
+    modalImg.style.opacity = '0';
+    setTimeout(() => {
+        modalImg.src = currentGallery[currentIndex];
+        modalImg.style.opacity = '1';
+    }, 150);
+
+    counter.textContent = `${currentIndex + 1} / ${currentGallery.length}`;
+}
+
+function nextImg() {
+    currentIndex = (currentIndex + 1) % currentGallery.length;
+    updateGalleryModal();
+}
+
+function prevImg() {
+    currentIndex = (currentIndex - 1 + currentGallery.length) % currentGallery.length;
+    updateGalleryModal();
+}
+
+// Escuchar teclas (Opcional para PC)
+document.addEventListener('keydown', (e) => {
+    if (document.getElementById('gallery-modal').classList.contains('flex')) {
+        if (e.key === 'ArrowRight') nextImg();
+        if (e.key === 'ArrowLeft') prevImg();
+        if (e.key === 'Escape') closeGallery();
+    }
+});
+
+// --- GESTIÓN DE CARRITO (Mantenemos la lógica actual) ---
 
 function addToCart(id, name, price) {
     const item = cart.find(i => i.id === id);
