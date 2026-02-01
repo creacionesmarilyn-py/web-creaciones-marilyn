@@ -1,4 +1,4 @@
-// app.js - Fase 6: Motor de Galería y Slider Interactivo
+// app.js - Fase 8: Performance & Smooth Loading Creaciones Marilyn
 let cart = JSON.parse(localStorage.getItem('marilyn_cart')) || [];
 let allProducts = [];
 let activeCategory = 'todas';
@@ -48,7 +48,7 @@ function filterByCategory(cat) {
     applyFilters();
 }
 
-// --- RENDERIZADO CON SOPORTE PARA GALERÍAS ---
+// --- RENDERIZADO OPTIMIZADO (FASE 8) ---
 
 function renderProducts(products) {
     const grid = document.getElementById('product-grid');
@@ -61,8 +61,6 @@ function renderProducts(products) {
 
     products.forEach(p => {
         const isAgotado = p.status === 'agotado';
-        
-        // Determinar Imagen Principal y si tiene Galería
         const mainImg = p.images ? p.images[0] : p.image;
         const galleryArray = p.images ? p.images : [p.image];
         const hasMultiple = galleryArray.length > 1;
@@ -78,11 +76,15 @@ function renderProducts(products) {
         div.className = `bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden group transition-all duration-500 ${isAgotado ? 'opacity-70' : 'hover:shadow-xl hover:-translate-y-1'}`;
         
         div.innerHTML = `
-            <div class="relative h-64 overflow-hidden cursor-pointer" onclick='openGallery(${JSON.stringify(galleryArray)})'>
+            <div class="relative h-64 overflow-hidden cursor-pointer img-container-placeholder" onclick='openGallery(${JSON.stringify(galleryArray)})'>
                 ${badgeHTML}
                 ${hasMultiple ? '<div class="absolute bottom-3 left-3 bg-black/60 backdrop-blur-sm text-white text-[8px] font-bold px-2 py-1 rounded-full z-10 shadow-lg"><i class="fas fa-images mr-1"></i> VER GALERÍA</div>' : ''}
                 ${isAgotado ? '<div class="absolute inset-0 bg-white/40 backdrop-blur-[2px] z-20 flex items-center justify-center font-black text-gray-800 text-[10px] uppercase tracking-[0.3em] border-2 border-white/50">Sin Stock</div>' : ''}
-                <img src="${mainImg}" class="w-full h-full object-cover transition-transform duration-700 ${!isAgotado ? 'group-hover:scale-110' : 'grayscale-[50%]' }">
+                
+                <img src="${mainImg}" 
+                     loading="lazy"
+                     class="w-full h-full object-cover transition-transform duration-700 img-lazy-load ${!isAgotado ? 'group-hover:scale-110' : 'grayscale-[50%]' }">
+                
                 <div class="absolute top-3 right-3 bg-white/90 backdrop-blur px-2 py-1 rounded-full text-[9px] font-bold uppercase text-gray-500 tracking-tighter">
                     ${p.collection}
                 </div>
@@ -103,7 +105,7 @@ function renderProducts(products) {
     });
 }
 
-// --- LÓGICA DEL VISUALIZADOR (LIGHTBOX) ---
+// --- LÓGICA DEL VISUALIZADOR ---
 
 function openGallery(images) {
     currentGallery = images;
@@ -112,21 +114,20 @@ function openGallery(images) {
     const modal = document.getElementById('gallery-modal');
     modal.classList.remove('hidden');
     modal.classList.add('flex');
-    document.body.style.overflow = 'hidden'; // Bloquea el scroll al ver fotos
+    document.body.style.overflow = 'hidden'; 
 }
 
 function closeGallery() {
     const modal = document.getElementById('gallery-modal');
     modal.classList.add('hidden');
     modal.classList.remove('flex');
-    document.body.style.overflow = ''; // Libera el scroll
+    document.body.style.overflow = ''; 
 }
 
 function updateGalleryModal() {
     const modalImg = document.getElementById('modal-img');
     const counter = document.getElementById('gallery-counter');
     
-    // Animación de entrada para la imagen
     modalImg.style.opacity = '0';
     setTimeout(() => {
         modalImg.src = currentGallery[currentIndex];
@@ -146,7 +147,6 @@ function prevImg() {
     updateGalleryModal();
 }
 
-// Escuchar teclas (Opcional para PC)
 document.addEventListener('keydown', (e) => {
     if (document.getElementById('gallery-modal').classList.contains('flex')) {
         if (e.key === 'ArrowRight') nextImg();
@@ -155,7 +155,7 @@ document.addEventListener('keydown', (e) => {
     }
 });
 
-// --- GESTIÓN DE CARRITO (Mantenemos la lógica actual) ---
+// --- GESTIÓN DE CARRITO ---
 
 function addToCart(id, name, price) {
     const item = cart.find(i => i.id === id);

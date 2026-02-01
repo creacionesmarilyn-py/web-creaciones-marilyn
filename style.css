@@ -1,5 +1,6 @@
 /* ==========================================================
    ESTÉTICA CREACIONES MARILYN - MINIMALISMO & LUMINOSIDAD
+   Fase 8: Performance & Smooth Loading
    ========================================================== */
 
 /* 1. Reset & Tipografía */
@@ -74,4 +75,40 @@ article a:hover {
 }
 ::-webkit-scrollbar-thumb:hover {
     background: #d1d1d1;
+}
+
+/* ==========================================================
+   NUEVO: ANIMACIONES DE RENDIMIENTO (FASE 8)
+   ========================================================== */
+
+/* Animación de aparición suave */
+@keyframes fadeIn {
+    from { 
+        opacity: 0; 
+        transform: translateY(10px); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0); 
+    }
+}
+
+/* Clase que aplicaremos a las imágenes cargadas */
+.img-lazy-load {
+    animation: fadeIn 0.8s ease-out forwards;
+}
+
+/* Fondo gris suave mientras la imagen descarga */
+.img-container-placeholder {
+    background-color: #f3f4f6;
+    position: relative;
+}
+
+/* Ajuste para que el contador de la galería no se oculte */
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+.no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
 }
