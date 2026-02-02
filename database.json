@@ -215,6 +215,16 @@
       ],
       "collection": "Perlas numero 8",
       "status": "normal"
+    },
+    {
+      "id": 1770056545854,
+      "name": "Perla numero 8 perlado",
+      "price": 5000,
+      "images": [
+        "img/1770056544390-Numero_8_perlado.JPG"
+      ],
+      "collection": "Perlas numero 8",
+      "status": "normal"
     }
   ]
 }
