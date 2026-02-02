@@ -195,6 +195,16 @@
       ],
       "collection": "Perlas numero 8",
       "status": "normal"
+    },
+    {
+      "id": 1770056486219,
+      "name": "Perla numero 8 marron",
+      "price": 5000,
+      "images": [
+        "img/1770056484321-Numero_8_marron.JPG"
+      ],
+      "collection": "Perlas numero 8",
+      "status": "normal"
     }
   ]
 }
