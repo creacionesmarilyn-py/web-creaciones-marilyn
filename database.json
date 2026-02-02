@@ -235,6 +235,16 @@
       ],
       "collection": "Perlas numero 8",
       "status": "normal"
+    },
+    {
+      "id": 1770056604273,
+      "name": "Perla numero 8 rosado",
+      "price": 5000,
+      "images": [
+        "img/1770056602617-Numero_8_rosado.JPG"
+      ],
+      "collection": "Perlas numero 8",
+      "status": "normal"
     }
   ]
 }
