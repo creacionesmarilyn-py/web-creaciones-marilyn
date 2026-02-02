@@ -225,6 +225,16 @@
       ],
       "collection": "Perlas numero 8",
       "status": "normal"
+    },
+    {
+      "id": 1770056577298,
+      "name": "Perla numero 8 rojo",
+      "price": 5000,
+      "images": [
+        "img/1770056575535-Numero_8_rojo.JPG"
+      ],
+      "collection": "Perlas numero 8",
+      "status": "normal"
     }
   ]
 }
