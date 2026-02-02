@@ -16,38 +16,175 @@
       "collection": "Premium"
     },
     {
-      "id": 4,
-      "name": "Complementos de Diseño",
-      "price": 20000,
-      "image": "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&w=600&q=80",
-      "collection": "Edición Limitada"
-    },
-    {
-      "id": 1769889048592,
-      "name": "Media perlas azul",
-      "price": 5000,
-      "image": "img/1769889046068-IMG_1336.jpeg",
-      "collection": "Combo"
-    },
-    {
-      "id": 1769894553679,
-      "name": "Media perla negra",
-      "price": 5000,
-      "image": "img/1769894551162-IMG_1334.jpeg",
-      "collection": "Combo",
-      "status": "oferta"
-    },
-    {
-      "id": 1769895460036,
-      "name": "Media perla negra",
+      "id": 1769910573653,
+      "name": "Perla numero 4 amarilla",
       "price": 5000,
       "images": [
-        "img/1769895453158-IMG_1333.jpeg",
-        "img/1769895455457-IMG_1335.jpeg",
-        "img/1769895457645-IMG_1336.jpeg"
+        "img/1769910571801-Numero_4_amarillo.JPG"
       ],
-      "collection": "Combo",
+      "collection": "Perlas numero 4",
+      "status": "normal"
+    },
+    {
+      "id": 1769910617964,
+      "name": "Perla numero 4  azul",
+      "price": 5000,
+      "images": [
+        "img/1769910616544-Numero_4_azul.JPG"
+      ],
+      "collection": "Perlas numero 4",
+      "status": "normal"
+    },
+    {
+      "id": 1769910717877,
+      "name": "Perla numero 4  blanco",
+      "price": 5000,
+      "images": [
+        "img/1769910716096-Numero_4_blanco.JPG"
+      ],
+      "collection": "Perlas numero 4",
+      "status": "agotado"
+    },
+    {
+      "id": 1769910748543,
+      "name": "Perla numero 4  celeste",
+      "price": 5000,
+      "images": [
+        "img/1769910747064-Numero_4_celeste.JPG"
+      ],
+      "collection": "Perlas numero 4",
+      "status": "agotado"
+    },
+    {
+      "id": 1769910781914,
+      "name": "Perla numero 4  dorado",
+      "price": 5000,
+      "images": [
+        "img/1769910780256-Numero_4_dorado.JPG"
+      ],
+      "collection": "Perlas numero 4",
+      "status": "agotado"
+    },
+    {
+      "id": 1769910811723,
+      "name": "Perla numero 4  lila",
+      "price": 5000,
+      "images": [
+        "img/1769910810272-Numero_4_lila.JPG"
+      ],
+      "collection": "Perlas numero 4",
+      "status": "agotado"
+    },
+    {
+      "id": 1769910911083,
+      "name": "Perla numero 6 perlado",
+      "price": 5000,
+      "images": [
+        "img/1769910909399-Numero_6_perlado.JPG"
+      ],
+      "collection": "Perlas numero 6",
+      "status": "agotado"
+    },
+    {
+      "id": 1769910945095,
+      "name": "Perla numero 6 purpura",
+      "price": 5000,
+      "images": [
+        "img/1769910943441-Numero_6_purpura.JPG"
+      ],
+      "collection": "Perlas numero 6",
+      "status": "agotado"
+    },
+    {
+      "id": 1769910969971,
+      "name": "Perla numero 6 rosado",
+      "price": 5000,
+      "images": [
+        "img/1769910968464-Numero_6_rosado.JPG"
+      ],
+      "collection": "Perlas numero 6",
+      "status": "normal"
+    },
+    {
+      "id": 1769911007801,
+      "name": "Perla numero 6 salmon",
+      "price": 5000,
+      "images": [
+        "img/1769911006176-Numero_6_salmon.JPG"
+      ],
+      "collection": "Perlas numero 6",
+      "status": "agotado"
+    },
+    {
+      "id": 1769911082810,
+      "name": "Perla numero 8 amarilla",
+      "price": 5000,
+      "images": [
+        "img/1769911081135-Numero_8_amarillo.JPG"
+      ],
+      "collection": "Perlas numero 8",
+      "status": "normal"
+    },
+    {
+      "id": 1769911157198,
+      "name": "Perla numero 8 azul",
+      "price": 5000,
+      "images": [
+        "img/1769911155536-Numero_8_azul.JPG"
+      ],
+      "collection": "Perlas numero 8",
+      "status": "normal"
+    },
+    {
+      "id": 1769911210041,
+      "name": "Perla numero 8 blanco",
+      "price": 5000,
+      "images": [
+        "img/1769911208447-Numero_8_blanco(1).JPG"
+      ],
+      "collection": "Perlas numero 8",
+      "status": "normal"
+    },
+    {
+      "id": 1769911245013,
+      "name": "Perla numero 8 celeste",
+      "price": 5000,
+      "images": [
+        "img/1769911243287-Numero_8_celeste.JPG"
+      ],
+      "collection": "Perlas numero 8",
+      "status": "normal"
+    },
+    {
+      "id": 1769911276783,
+      "name": "perla numero 8 dorado",
+      "price": 5000,
+      "images": [
+        "img/1769911275311-Numero_8_dorado.JPG"
+      ],
+      "collection": "Perlas numero 8",
+      "status": "normal"
+    },
+    {
+      "id": 1769911373178,
+      "name": "combo de 100.000 ",
+      "price": 100000,
+      "images": [
+        "img/1769911369815-Imagen_de_WhatsApp_2025-05-19_a_las_11.27.33_382b1587.jpg",
+        "img/1769911371330-WhatsApp_Image_2025-05-19_at_06.43.06.jpeg"
+      ],
+      "collection": "Combos de 100000",
       "status": "oferta"
+    },
+    {
+      "id": 1769901613323,
+      "name": "Strass",
+      "price": 10000,
+      "images": [
+        "img/1769901610641-C98113AE-D2DF-4740-B5B3-13F9788A68F1.jpeg"
+      ],
+      "collection": "4 filas, largor 50 cm",
+      "status": "normal"
     }
   ]
 }
