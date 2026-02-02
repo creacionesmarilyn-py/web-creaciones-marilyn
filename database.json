@@ -265,6 +265,16 @@
       ],
       "collection": "Perlas numero 6",
       "status": "normal"
+    },
+    {
+      "id": 1770059482160,
+      "name": "Perla numero 6 azul",
+      "price": 5000,
+      "images": [
+        "img/1770059480205-Numero_6_azul.JPG"
+      ],
+      "collection": "Perlas numero 6",
+      "status": "normal"
     }
   ]
 }
