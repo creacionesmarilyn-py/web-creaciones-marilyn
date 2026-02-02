@@ -185,6 +185,16 @@
       ],
       "collection": "4 filas, largor 50 cm",
       "status": "normal"
+    },
+    {
+      "id": 1770056451608,
+      "name": "Perlas numero 8 lila",
+      "price": 5000,
+      "images": [
+        "img/1770056449735-Numero_8_lila.JPG"
+      ],
+      "collection": "Perlas numero 8",
+      "status": "normal"
     }
   ]
 }
