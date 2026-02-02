@@ -245,6 +245,16 @@
       ],
       "collection": "Perlas numero 8",
       "status": "normal"
+    },
+    {
+      "id": 1770056640834,
+      "name": "Perla numero 8 verde hoja",
+      "price": 5000,
+      "images": [
+        "img/1770056639132-Numero_8_verde_hoja.JPG"
+      ],
+      "collection": "Perlas numero 8",
+      "status": "normal"
     }
   ]
 }
