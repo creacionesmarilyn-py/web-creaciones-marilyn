@@ -285,6 +285,16 @@
       ],
       "collection": "Perlas numero 6",
       "status": "normal"
+    },
+    {
+      "id": 1770059566038,
+      "name": "Perla numero 6 turquesa",
+      "price": 5000,
+      "images": [
+        "img/1770059564035-Numero_6_celeste.JPG"
+      ],
+      "collection": "Perlas numero 6",
+      "status": "normal"
     }
   ]
 }
