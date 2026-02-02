@@ -295,6 +295,16 @@
       ],
       "collection": "Perlas numero 6",
       "status": "normal"
+    },
+    {
+      "id": 1770059615110,
+      "name": "Perla numero 6 dorado",
+      "price": 5000,
+      "images": [
+        "img/1770059613261-Numero_6_dorado.JPG"
+      ],
+      "collection": "Perlas numero 6",
+      "status": "normal"
     }
   ]
 }
