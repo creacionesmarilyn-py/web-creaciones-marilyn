@@ -205,6 +205,16 @@
       ],
       "collection": "Perlas numero 8",
       "status": "normal"
+    },
+    {
+      "id": 1770056515217,
+      "name": "Perla numero 8 negro",
+      "price": 5000,
+      "images": [
+        "img/1770056513607-Numero_8_negro.JPG"
+      ],
+      "collection": "Perlas numero 8",
+      "status": "normal"
     }
   ]
 }
