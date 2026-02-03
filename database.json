@@ -515,6 +515,16 @@
       ],
       "collection": "Perlas numero 10",
       "status": "normal"
+    },
+    {
+      "id": 1770154562515,
+      "name": "Perla numero 10 rojo",
+      "price": 5000,
+      "images": [
+        "img/1770154561131-Numero_10_rojo.JPG"
+      ],
+      "collection": "Perlas numero 10",
+      "status": "normal"
     }
   ]
 }
