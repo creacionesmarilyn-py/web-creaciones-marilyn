@@ -505,6 +505,16 @@
       ],
       "collection": "Perlas numero 10",
       "status": "normal"
+    },
+    {
+      "id": 1770154536335,
+      "name": "Perla numero 10 perlado",
+      "price": 5000,
+      "images": [
+        "img/1770154534811-Numero_10_perladoJPG.jpg"
+      ],
+      "collection": "Perlas numero 10",
+      "status": "normal"
     }
   ]
 }
