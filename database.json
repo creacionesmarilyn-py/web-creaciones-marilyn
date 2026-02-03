@@ -785,6 +785,16 @@
       ],
       "collection": "Letras, numeros y otros",
       "status": "normal"
+    },
+    {
+      "id": 1770156187352,
+      "name": "Arrocitos blancos",
+      "price": 5000,
+      "images": [
+        "img/1770156185435-Arrocitos.jpeg"
+      ],
+      "collection": "Colores pasteles y otras figuras",
+      "status": "normal"
     }
   ]
 }
