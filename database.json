@@ -345,6 +345,16 @@
       ],
       "collection": "Perlas numero 6",
       "status": "normal"
+    },
+    {
+      "id": 1770150185415,
+      "name": "Perla numero 6 celeste",
+      "price": 5000,
+      "images": [
+        "img/1770150183738-Celeste.jpeg"
+      ],
+      "collection": "Perlas numero 6",
+      "status": "normal"
     }
   ]
 }
