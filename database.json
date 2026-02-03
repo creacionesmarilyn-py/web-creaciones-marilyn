@@ -435,6 +435,16 @@
       ],
       "collection": "Perlas numero 8",
       "status": "normal"
+    },
+    {
+      "id": 1770151354920,
+      "name": "Perla blanca con cruz dorada",
+      "price": 5000,
+      "images": [
+        "img/1770151353261-Perla_blanca_con_cruz_dorada_N_8.jpeg"
+      ],
+      "collection": "Perlas numero 8",
+      "status": "normal"
     }
   ]
 }
