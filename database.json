@@ -735,6 +735,16 @@
       ],
       "collection": "Letras, numeros y otros",
       "status": "normal"
+    },
+    {
+      "id": 1770155532192,
+      "name": "Letras cuadradas blancas y negras",
+      "price": 5000,
+      "images": [
+        "img/1770155530702-Letras_cuadradas.JPG"
+      ],
+      "collection": "Letras, numeros y otros",
+      "status": "agotado"
     }
   ]
 }
