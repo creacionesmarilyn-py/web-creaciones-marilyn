@@ -725,6 +725,16 @@
       ],
       "collection": "Letras, numeros y otros",
       "status": "normal"
+    },
+    {
+      "id": 1770155495540,
+      "name": "Letras blancas y negras surtidas",
+      "price": 5000,
+      "images": [
+        "img/1770155494179-Letras_blanco_y_negro.JPG"
+      ],
+      "collection": "Letras, numeros y otros",
+      "status": "normal"
     }
   ]
 }
