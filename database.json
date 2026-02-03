@@ -465,6 +465,16 @@
       ],
       "collection": "Perlas numero 8",
       "status": "normal"
+    },
+    {
+      "id": 1770151544127,
+      "name": "Perla numero 8 verde opaco",
+      "price": 5000,
+      "images": [
+        "img/1770151542428-Numero_8_verde_opaco.JPG"
+      ],
+      "collection": "Perlas numero 8",
+      "status": "normal"
     }
   ]
 }
