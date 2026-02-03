@@ -455,6 +455,16 @@
       ],
       "collection": "Perlas numero 8",
       "status": "normal"
+    },
+    {
+      "id": 1770151422573,
+      "name": "Perla numero 8 transparente",
+      "price": 5000,
+      "images": [
+        "img/1770151421053-Transparentes_numero_8jpeg.jpeg"
+      ],
+      "collection": "Perlas numero 8",
+      "status": "normal"
     }
   ]
 }
