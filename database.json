@@ -385,6 +385,16 @@
       ],
       "collection": "Perlas numero 6",
       "status": "normal"
+    },
+    {
+      "id": 1770150318133,
+      "name": "Perla numero 6 rosa viejo",
+      "price": 5000,
+      "images": [
+        "img/1770150316387-Perla_Rosa_Viejo_N_6.jpeg"
+      ],
+      "collection": "Perlas numero 6",
+      "status": "normal"
     }
   ]
 }
