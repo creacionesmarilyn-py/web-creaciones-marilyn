@@ -465,6 +465,16 @@
       ],
       "collection": "Perlas numero 8",
       "status": "normal"
+    },
+    {
+      "id": 1770154432746,
+      "name": "Perla numero 10 verde",
+      "price": 5000,
+      "images": [
+        "img/1770154431069-Numero_10__verde.JPG"
+      ],
+      "collection": "Perlas numero 10",
+      "status": "normal"
     }
   ]
 }
