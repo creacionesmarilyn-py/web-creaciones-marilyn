@@ -675,6 +675,16 @@
       ],
       "collection": "Craquelado numero 12",
       "status": "normal"
+    },
+    {
+      "id": 1770155115417,
+      "name": "Craquelado numero 12 blanco ",
+      "price": 5000,
+      "images": [
+        "img/1770155113803-Craquelado_Numero_12(7).JPG"
+      ],
+      "collection": "Craquelado numero 12",
+      "status": "normal"
     }
   ]
 }
