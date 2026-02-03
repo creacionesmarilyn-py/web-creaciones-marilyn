@@ -1,17 +1,17 @@
-// admin.js - Fase 11: Gestión de Inventario & Edición Rápida
+// admin.js - Fase 12: Sincronización Directa con GitHub (Anti-Retraso)
 const CONFIG = {
     owner: 'creacionesmarilyn-py',
     repo: 'web-creaciones-marilyn',
     dbPath: 'database.json',
 };
 
-let allProducts = []; // Memoria temporal para edición rápida
+let allProducts = [];
 
 // 1. Manejo de Seguridad
 function saveToken() {
     const token = document.getElementById('gh-token').value;
     if (token) {
-        localStorage.setItem('gh_token', token);
+        localStorage.setItem('gh_token', token.trim());
         document.getElementById('login-overlay').classList.add('hidden');
         loadProductsForAdmin();
     }
@@ -26,15 +26,35 @@ if (localStorage.getItem('gh_token')) {
     document.getElementById('login-overlay').classList.add('hidden');
 }
 
-// 2. Cargar Inventario
+// 2. Cargar Inventario (LEER DIRECTO DE GITHUB)
 async function loadProductsForAdmin() {
+    const token = localStorage.getItem('gh_token');
+    const statusText = document.getElementById('product-count');
+    
     try {
-        const response = await fetch('../database.json?v=' + Date.now());
+        statusText.textContent = "Sincronizando con GitHub...";
+        
+        // Consultamos a la API de GitHub directamente, ignorando la caché de la web
+        const response = await fetch(`https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}/contents/${CONFIG.dbPath}?v=${Date.now()}`, {
+            headers: { 
+                'Authorization': `token ${token}`,
+                'Cache-Control': 'no-cache'
+            }
+        });
+
+        if (!response.ok) throw new Error("Llave de acceso vencida o incorrecta.");
+
         const data = await response.json();
-        allProducts = data.products; // Guardamos en memoria global
+        // GitHub envía los datos en Base64, los decodificamos aquí:
+        const content = JSON.parse(atob(data.content));
+        
+        allProducts = content.products; 
         renderAdminProducts();
     } catch (e) { 
-        console.error("Error al cargar base de datos:", e); 
+        console.error("Error crítico:", e);
+        statusText.textContent = "Error de conexión";
+        alert("Tu sesión expiró o hay un problema de red. Por favor, reingresa tu Token.");
+        logout();
     }
 }
 
@@ -43,12 +63,10 @@ function renderAdminProducts() {
     list.innerHTML = '';
     document.getElementById('product-count').textContent = `${allProducts.length} productos`;
 
-    // Copiamos y damos vuelta para ver lo nuevo primero
     [...allProducts].reverse().forEach(p => {
         const displayImg = p.images ? p.images[0] : p.image;
         const galleryCount = p.images ? p.images.length : 1;
 
-        // Badge de estado dinámico
         let statusBadge = '';
         if (p.status === 'agotado') statusBadge = '<span class="text-[9px] bg-red-100 text-red-600 px-2 py-0.5 rounded-full font-bold uppercase">Agotado</span>';
         else if (p.status === 'nuevo') statusBadge = '<span class="text-[9px] bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full font-bold uppercase">Nuevo</span>';
@@ -91,12 +109,11 @@ document.getElementById('product-form').addEventListener('submit', async (e) => 
     const files = Array.from(document.getElementById('p-image-file').files);
     
     btn.disabled = true;
-    btn.innerHTML = `<i class="fas fa-spinner animate-spin"></i> <span>Subiendo galería...</span>`;
+    btn.innerHTML = `<i class="fas fa-spinner animate-spin"></i> <span>Subiendo...</span>`;
 
     try {
         const imagePaths = [];
         for (let i = 0; i < files.length; i++) {
-            btn.innerHTML = `<span>Procesando ${i + 1} de ${files.length}...</span>`;
             const file = files[i];
             const fileName = `img/${Date.now()}-${file.name.replace(/\s/g, '_')}`;
             const base64 = await toBase64(file);
@@ -104,7 +121,7 @@ document.getElementById('product-form').addEventListener('submit', async (e) => 
             imagePaths.push(fileName);
         }
 
-        const dbRes = await fetch(`https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}/contents/${CONFIG.dbPath}`, {
+        const dbRes = await fetch(`https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}/contents/${CONFIG.dbPath}?v=${Date.now()}`, {
             headers: { 'Authorization': `token ${token}` }
         });
         const dbData = await dbRes.json();
@@ -120,87 +137,71 @@ document.getElementById('product-form').addEventListener('submit', async (e) => 
         };
 
         content.products.push(newProduct);
-        await githubApi(CONFIG.dbPath, 'Nuevo producto con galería', btoa(JSON.stringify(content, null, 2)), dbData.sha);
+        await githubApi(CONFIG.dbPath, 'Nuevo producto', btoa(JSON.stringify(content, null, 2)), dbData.sha);
 
-        alert("¡Diseño publicado exitosamente!");
-        location.reload();
+        alert("¡Producto publicado!");
+        loadProductsForAdmin(); // Recarga inmediata
+        document.getElementById('product-form').reset();
     } catch (err) {
-        alert("Error de conexión. Reintentar.");
+        alert("Error de conexión. Revisa tu Token.");
+    } finally {
         btn.disabled = false;
-        btn.innerHTML = '<span>Reintentar carga</span>';
+        btn.innerHTML = '<span>Publicar Diseño</span>';
     }
 });
 
-// 4. Lógica de Edición Rápida (Fase 11)
+// 4. Lógica de Edición y Eliminación
 function openEditModal(id) {
     const product = allProducts.find(p => p.id === id);
     if (!product) return;
-
     document.getElementById('edit-id').value = id;
     document.getElementById('edit-status').value = product.status || 'normal';
     document.getElementById('edit-price').value = product.price;
-    
-    document.getElementById('edit-modal').classList.remove('hidden');
-    document.getElementById('edit-modal').classList.add('flex');
+    document.getElementById('edit-modal').classList.replace('hidden', 'flex');
 }
 
 function closeEditModal() {
-    document.getElementById('edit-modal').classList.add('hidden');
-    document.getElementById('edit-modal').classList.remove('flex');
+    document.getElementById('edit-modal').classList.replace('flex', 'hidden');
 }
 
 async function saveProductEdit() {
     const btn = document.getElementById('save-edit-btn');
     const id = parseInt(document.getElementById('edit-id').value);
-    const newStatus = document.getElementById('edit-status').value;
-    const newPrice = parseInt(document.getElementById('edit-price').value);
     const token = localStorage.getItem('gh_token');
 
     btn.disabled = true;
-    btn.innerHTML = `<i class="fas fa-spinner animate-spin"></i> Actualizando...`;
+    btn.innerHTML = `<i class="fas fa-spinner animate-spin"></i> Guardando...`;
 
     try {
-        // Obtenemos data fresca de GitHub para evitar conflictos
-        const dbRes = await fetch(`https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}/contents/${CONFIG.dbPath}`, {
+        const dbRes = await fetch(`https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}/contents/${CONFIG.dbPath}?v=${Date.now()}`, {
             headers: { 'Authorization': `token ${token}` }
         });
         const dbData = await dbRes.json();
         const content = JSON.parse(atob(dbData.content));
 
-        // Buscamos y actualizamos
         const idx = content.products.findIndex(p => p.id === id);
         if (idx !== -1) {
-            content.products[idx].status = newStatus;
-            content.products[idx].price = newPrice;
-
-            await githubApi(CONFIG.dbPath, `Update stock/price: ${content.products[idx].name}`, btoa(JSON.stringify(content, null, 2)), dbData.sha);
-            
-            // Actualizar memoria local y cerrar
-            allProducts = content.products;
-            renderAdminProducts();
+            content.products[idx].status = document.getElementById('edit-status').value;
+            content.products[idx].price = parseInt(document.getElementById('edit-price').value);
+            await githubApi(CONFIG.dbPath, `Update: ${content.products[idx].name}`, btoa(JSON.stringify(content, null, 2)), dbData.sha);
+            loadProductsForAdmin();
             closeEditModal();
-            alert("¡Inventario actualizado!");
         }
-    } catch (err) {
-        alert("Error al actualizar. Revisa tu conexión.");
-    } finally {
-        btn.disabled = false;
-        btn.innerHTML = `<i class="fas fa-save"></i> Actualizar Inventario`;
-    }
+    } catch (err) { alert("Error al actualizar."); }
+    finally { btn.disabled = false; btn.innerHTML = `Actualizar`; }
 }
 
-// 5. Lógica de Eliminación
 async function deleteProduct(productId) {
-    if (!confirm("¿Segura que quieres borrar este diseño?")) return;
+    if (!confirm("¿Borrar permanentemente?")) return;
     const token = localStorage.getItem('gh_token');
     try {
-        const dbRes = await fetch(`https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}/contents/${CONFIG.dbPath}`, {
+        const dbRes = await fetch(`https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}/contents/${CONFIG.dbPath}?v=${Date.now()}`, {
             headers: { 'Authorization': `token ${token}` }
         });
         const dbData = await dbRes.json();
         const content = JSON.parse(atob(dbData.content));
         content.products = content.products.filter(p => p.id !== productId);
-        await githubApi(CONFIG.dbPath, 'Producto eliminado', btoa(JSON.stringify(content, null, 2)), dbData.sha);
+        await githubApi(CONFIG.dbPath, 'Eliminado', btoa(JSON.stringify(content, null, 2)), dbData.sha);
         loadProductsForAdmin();
     } catch (err) { alert("Error al eliminar."); }
 }
