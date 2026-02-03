@@ -305,6 +305,16 @@
       ],
       "collection": "Perlas numero 6",
       "status": "normal"
+    },
+    {
+      "id": 1770149578287,
+      "name": "Perla numero 6 marron",
+      "price": 5000,
+      "images": [
+        "img/1770149576540-Numero_6_marron.JPG"
+      ],
+      "collection": "Perlas numero 6",
+      "status": "normal"
     }
   ]
 }
