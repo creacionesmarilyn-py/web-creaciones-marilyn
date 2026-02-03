@@ -745,6 +745,16 @@
       ],
       "collection": "Letras, numeros y otros",
       "status": "agotado"
+    },
+    {
+      "id": 1770155562420,
+      "name": "Letras doradas surtidas",
+      "price": 5000,
+      "images": [
+        "img/1770155560508-Letras_doradas.JPG"
+      ],
+      "collection": "Letras, numeros y otros",
+      "status": "normal"
     }
   ]
 }
