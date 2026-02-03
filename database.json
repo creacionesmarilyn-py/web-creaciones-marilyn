@@ -355,6 +355,16 @@
       ],
       "collection": "Perlas numero 6",
       "status": "normal"
+    },
+    {
+      "id": 1770150211784,
+      "name": "Perla numero 6 celeste opaco",
+      "price": 5000,
+      "images": [
+        "img/1770150209938-Celeste_opaco.jpeg"
+      ],
+      "collection": "Perlas numero 6",
+      "status": "normal"
     }
   ]
 }
