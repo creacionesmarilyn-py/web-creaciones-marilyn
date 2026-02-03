@@ -695,6 +695,16 @@
       ],
       "collection": "Craquelado numero 12",
       "status": "normal"
+    },
+    {
+      "id": 1770155181838,
+      "name": "Craquelado numero 12 naranjado",
+      "price": 5000,
+      "images": [
+        "img/1770155180587-Craquelado_Numero_12.JPG"
+      ],
+      "collection": "Craquelado numero 12",
+      "status": "normal"
     }
   ]
 }
