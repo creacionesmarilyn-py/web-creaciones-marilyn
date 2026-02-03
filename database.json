@@ -415,6 +415,16 @@
       ],
       "collection": "Perlas numero 6",
       "status": "normal"
+    },
+    {
+      "id": 1770150794486,
+      "name": "Perla numero 6 blanco cristal ",
+      "price": 5000,
+      "images": [
+        "img/1770150792723-Blanco_cristal_numero_6.jpeg"
+      ],
+      "collection": "Perlas numero 6",
+      "status": "normal"
     }
   ]
 }
