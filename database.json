@@ -555,6 +555,16 @@
       ],
       "collection": "Craquelado numero 10",
       "status": "normal"
+    },
+    {
+      "id": 1770154732198,
+      "name": "Craquelado numero 10 azul",
+      "price": 5000,
+      "images": [
+        "img/1770154730564-Craquelado_numero_10(3).JPG"
+      ],
+      "collection": "Craquelado numero 10",
+      "status": "normal"
     }
   ]
 }
