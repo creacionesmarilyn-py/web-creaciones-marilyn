@@ -315,6 +315,16 @@
       ],
       "collection": "Perlas numero 6",
       "status": "normal"
+    },
+    {
+      "id": 1770149859629,
+      "name": "Perlas numero 6 negro",
+      "price": 5000,
+      "images": [
+        "img/1770149857970-Numero_6_negro.JPG"
+      ],
+      "collection": "Perlas numero 6",
+      "status": "normal"
     }
   ]
 }
