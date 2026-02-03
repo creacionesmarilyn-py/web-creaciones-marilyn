@@ -425,6 +425,16 @@
       ],
       "collection": "Perlas numero 6",
       "status": "normal"
+    },
+    {
+      "id": 1770151227703,
+      "name": "Perla  numero 8 amarillo opaco",
+      "price": 5000,
+      "images": [
+        "img/1770151225885-Numero_8_amarillo_opaco.JPG"
+      ],
+      "collection": "Perlas numero 8",
+      "status": "normal"
     }
   ]
 }
