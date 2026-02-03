@@ -635,6 +635,16 @@
       ],
       "collection": "Craquelado numero 12",
       "status": "normal"
+    },
+    {
+      "id": 1770155006520,
+      "name": "Craquelado numero 12 arcoíris ",
+      "price": 5000,
+      "images": [
+        "img/1770155004988-Craquelado_numero_12(3).JPG"
+      ],
+      "collection": "Craquelado numero 12",
+      "status": "normal"
     }
   ]
 }
