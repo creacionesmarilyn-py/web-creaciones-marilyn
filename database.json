@@ -765,6 +765,16 @@
       ],
       "collection": "Letras, numeros y otros",
       "status": "normal"
+    },
+    {
+      "id": 1770155616594,
+      "name": "Numeros surtidos",
+      "price": 5000,
+      "images": [
+        "img/1770155614781-Numeros.JPG"
+      ],
+      "collection": "Letras, numeros y otros",
+      "status": "agotado"
     }
   ]
 }
