@@ -445,6 +445,16 @@
       ],
       "collection": "Perlas numero 8",
       "status": "normal"
+    },
+    {
+      "id": 1770151394931,
+      "name": "Perla numero 8 cruz plateada",
+      "price": 5000,
+      "images": [
+        "img/1770151393308-Perla_blanca_con_cruz_plateada_N_8.jpeg"
+      ],
+      "collection": "Perlas numero 8",
+      "status": "normal"
     }
   ]
 }
