@@ -775,6 +775,16 @@
       ],
       "collection": "Letras, numeros y otros",
       "status": "agotado"
+    },
+    {
+      "id": 1770155650948,
+      "name": "Pelotitas de futbol",
+      "price": 5000,
+      "images": [
+        "img/1770155649037-pict250315_1254380000.JPG"
+      ],
+      "collection": "Letras, numeros y otros",
+      "status": "normal"
     }
   ]
 }
