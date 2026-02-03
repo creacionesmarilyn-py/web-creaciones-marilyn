@@ -1,9 +1,9 @@
 {
   "siteConfig": {
     "logoText": "Creaciones Marilyn",
-    "heroTitle": "Bijutería & Bordados",
-    "heroSubtitle": "Diseños exclusivos hechos a mano para resaltar tu estilo",
-    "heroButtonText": "Ver Colección",
+    "heroTitle": "BijuterÃ­a & Bordados",
+    "heroSubtitle": "DiseÃ±os exclusivos hechos a mano para resaltar tu estilo",
+    "heroButtonText": "Ver ColecciÃ³n",
     "heroImage": "img/imagen_front.jpg",
     "whatsappNumber": "595991391542"
   },
@@ -638,10 +638,20 @@
     },
     {
       "id": 1770155006520,
-      "name": "Craquelado numero 12 arco�ris ",
+      "name": "Craquelado numero 12 arcoíris ",
       "price": 5000,
       "images": [
         "img/1770155004988-Craquelado_numero_12(3).JPG"
+      ],
+      "collection": "Craquelado numero 12",
+      "status": "normal"
+    },
+    {
+      "id": 1770155037715,
+      "name": "Craquelado numero 12 marron",
+      "price": 5000,
+      "images": [
+        "img/1770155036158-Craquelado_Numero_12(4).JPG"
       ],
       "collection": "Craquelado numero 12",
       "status": "normal"
