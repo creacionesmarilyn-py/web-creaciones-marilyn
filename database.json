@@ -525,6 +525,16 @@
       ],
       "collection": "Perlas numero 10",
       "status": "normal"
+    },
+    {
+      "id": 1770154598549,
+      "name": "Perla numero 10 rosado",
+      "price": 5000,
+      "images": [
+        "img/1770154597195-Numero_10_rosado.JPG"
+      ],
+      "collection": "Perlas numero 10",
+      "status": "normal"
     }
   ]
 }
