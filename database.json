@@ -485,6 +485,16 @@
       ],
       "collection": "Perlas numero 10",
       "status": "normal"
+    },
+    {
+      "id": 1770154485577,
+      "name": "Perla numero 10 dorado",
+      "price": 5000,
+      "images": [
+        "img/1770154484349-Numero_10_dorado.JPG"
+      ],
+      "collection": "perla numero 6",
+      "status": "normal"
     }
   ]
 }
