@@ -755,6 +755,16 @@
       ],
       "collection": "Letras, numeros y otros",
       "status": "normal"
+    },
+    {
+      "id": 1770155586843,
+      "name": "Letras en colores surtidas",
+      "price": 5000,
+      "images": [
+        "img/1770155585285-Letras_en_colores.JPG"
+      ],
+      "collection": "Letras, numeros y otros",
+      "status": "normal"
     }
   ]
 }
