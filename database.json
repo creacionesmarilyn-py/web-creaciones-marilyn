@@ -625,6 +625,16 @@
       ],
       "collection": "Craquelado numero 12",
       "status": "normal"
+    },
+    {
+      "id": 1770154974569,
+      "name": "Craquelado numero 12 fuccia",
+      "price": 5000,
+      "images": [
+        "img/1770154972787-Craquelado_Numero_12(2).JPG"
+      ],
+      "collection": "Craquelado numero 12",
+      "status": "normal"
     }
   ]
 }
