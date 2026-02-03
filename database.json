@@ -705,6 +705,16 @@
       ],
       "collection": "Craquelado numero 12",
       "status": "normal"
+    },
+    {
+      "id": 1770155282616,
+      "name": "Coranzoncitos surtidos",
+      "price": 5000,
+      "images": [
+        "img/1770155280781-Corazoncitos.JPG"
+      ],
+      "collection": "Letas, numero y otros",
+      "status": "normal"
     }
   ]
 }
