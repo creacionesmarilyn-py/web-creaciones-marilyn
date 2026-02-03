@@ -375,6 +375,16 @@
       ],
       "collection": "Perlas numero 6",
       "status": "normal"
+    },
+    {
+      "id": 1770150285528,
+      "name": "Perla numero 6 amarillo liso",
+      "price": 5000,
+      "images": [
+        "img/1770150282138-Amarillo_bola_lisa_numero_6.jpeg"
+      ],
+      "collection": "Perlas numero 6",
+      "status": "normal"
     }
   ]
 }
