@@ -335,6 +335,16 @@
       ],
       "collection": "Perlas numero 6",
       "status": "normal"
+    },
+    {
+      "id": 1770150082549,
+      "name": "Perla numero 6 verde opaco",
+      "price": 5000,
+      "images": [
+        "img/1770150080778-Numero_6_verde_opaco.JPG"
+      ],
+      "collection": "Perlas numero 6",
+      "status": "normal"
     }
   ]
 }
