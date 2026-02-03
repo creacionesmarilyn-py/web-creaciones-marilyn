@@ -475,6 +475,16 @@
       ],
       "collection": "Perlas numero 10",
       "status": "normal"
+    },
+    {
+      "id": 1770154460084,
+      "name": "Perla numero 10 blanco ",
+      "price": 5000,
+      "images": [
+        "img/1770154458317-Numero_10_blanco.JPG"
+      ],
+      "collection": "Perlas numero 10",
+      "status": "normal"
     }
   ]
 }
