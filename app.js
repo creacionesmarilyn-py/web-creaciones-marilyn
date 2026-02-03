@@ -1,4 +1,4 @@
-// app.js - Fase 8: Performance & Smooth Loading Creaciones Marilyn
+// app.js - Fase 12: Sincronización Directa con GitHub (Anti-Caché Vercel)
 let cart = JSON.parse(localStorage.getItem('marilyn_cart')) || [];
 let allProducts = [];
 let activeCategory = 'todas';
@@ -7,16 +7,39 @@ let activeCategory = 'todas';
 let currentGallery = [];
 let currentIndex = 0;
 
+// --- CONFIGURACIÓN DE ACCESO DIRECTO ---
+const GITHUB_RAW_URL = "https://raw.githubusercontent.com/creacionesmarilyn-py/web-creaciones-marilyn/main/database.json";
+
 async function loadStore() {
     try {
-        const response = await fetch('database.json?v=' + Date.now());
+        // CIRUGÍA: Cambiamos fetch local por conexión directa a GitHub con rompe-caché dinámico
+        const response = await fetch(`${GITHUB_RAW_URL}?v=${Date.now()}`);
+        
+        if (!response.ok) throw new Error("Error al conectar con la base de datos de GitHub");
+        
         const data = await response.json();
+        
+        // Mantenemos tu lógica de Fase 8: reversar para ver lo nuevo primero
         allProducts = data.products.reverse();
         
         renderCategories();
         applyFilters(); 
         updateCartUI();
-    } catch (e) { console.error("Error en carga:", e); }
+        console.log("🚀 Vitrina sincronizada en tiempo real con GitHub");
+    } catch (e) { 
+        console.error("Error en carga instantánea, intentando carga local:", e);
+        // Fallback: Si GitHub falla, intentamos cargar la copia local por seguridad
+        try {
+            const localResponse = await fetch('database.json?v=' + Date.now());
+            const localData = await localResponse.json();
+            allProducts = localData.products.reverse();
+            renderCategories();
+            applyFilters();
+            updateCartUI();
+        } catch (errLocal) {
+            console.error("Fallo total de carga:", errLocal);
+        }
+    }
 }
 
 function renderCategories() {
@@ -48,7 +71,7 @@ function filterByCategory(cat) {
     applyFilters();
 }
 
-// --- RENDERIZADO OPTIMIZADO (FASE 8) ---
+// --- RENDERIZADO OPTIMIZADO ---
 
 function renderProducts(products) {
     const grid = document.getElementById('product-grid');
