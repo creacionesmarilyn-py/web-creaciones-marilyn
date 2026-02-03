@@ -595,6 +595,16 @@
       ],
       "collection": "Perlas numero 10",
       "status": "normal"
+    },
+    {
+      "id": 1770154863476,
+      "name": "Craquelado numero 10 blanco",
+      "price": 5000,
+      "images": [
+        "img/1770154861821-Craquelado_numero_10.JPG"
+      ],
+      "collection": "Perlas numero 10",
+      "status": "normal"
     }
   ]
 }
