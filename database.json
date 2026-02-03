@@ -715,6 +715,16 @@
       ],
       "collection": "Letas, numeros y otros",
       "status": "normal"
+    },
+    {
+      "id": 1770155397885,
+      "name": "Corazoncitos surtidos",
+      "price": 5000,
+      "images": [
+        "img/1770155396102-Corazoncitos.JPG"
+      ],
+      "collection": "Letras, numeros y otros",
+      "status": "normal"
     }
   ]
 }
