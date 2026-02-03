@@ -565,6 +565,16 @@
       ],
       "collection": "Craquelado numero 10",
       "status": "normal"
+    },
+    {
+      "id": 1770154778321,
+      "name": "Craquelado numero 10 rosado",
+      "price": 5000,
+      "images": [
+        "img/1770154776579-Craquelado_numero_10(4).JPG"
+      ],
+      "collection": "Craquelado numero 10",
+      "status": "normal"
     }
   ]
 }
