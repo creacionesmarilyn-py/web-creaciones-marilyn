@@ -804,7 +804,7 @@
       "name": "Corazoncitos a colores",
       "price": 5000,
       "collection": "Colores pasteles y otras figuras",
-      "status": "oferta",
+      "status": "nuevo",
       "image": "img/colores-pasteles4.jpg",
       "images": [
         "img/colores-pasteles4.jpg"
@@ -848,10 +848,32 @@
       "name": "Maripositas de colores",
       "price": 5000,
       "collection": "Colores pasteles y otras figuras",
-      "status": "normal",
+      "status": "agotado",
       "image": "img/colores-pasteles5.jpg",
       "images": [
         "img/colores-pasteles5.jpg"
+      ]
+    },
+    {
+      "id": 1770321949101,
+      "name": "Corazoncitos blancos ",
+      "price": 5000,
+      "collection": "Colores pasteles y otras figuras",
+      "status": "agotado",
+      "image": "img/corazon-blanco.jpeg",
+      "images": [
+        "img/corazon-blanco.jpeg"
+      ]
+    },
+    {
+      "id": 1770322768749,
+      "name": "Media perlas negras",
+      "price": 5000,
+      "collection": "Media perlas",
+      "status": "normal",
+      "image": "img/pict2503151632090000.jpg",
+      "images": [
+        "img/pict2503151632090000.jpg"
       ]
     }
   ]
