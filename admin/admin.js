@@ -1,4 +1,4 @@
-// admin.js - Fase 12: AUTOMATIZACIÓN TOTAL (SUBIDA DIRECTA)
+// admin.js - Fase 12: CONTROL TOTAL (Subida Directa y Sincronizada)
 let itoken = localStorage.getItem('itoken') || "";
 const repo = "creacionesmarilyn-py/web-creaciones-marilyn";
 const url = `https://api.github.com/repos/${repo}/contents/database.json`;
@@ -7,175 +7,91 @@ const RAW_BASE_URL = "https://raw.githubusercontent.com/creacionesmarilyn-py/web
 let sha = "";
 let products = [];
 
-// --- 0. FUNCIONES DE UTILIDAD (Limpieza y Conversión) ---
-function sanitizeName(name) {
-    return name.toLowerCase()
-               .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-               .replace(/\s+/g, '-')
-               .replace(/[()]/g, '')
-               .replace(/[^a-z0-9.-]/g, '');
-}
-
-// Convierte un archivo a Base64 para que GitHub lo acepte
-const fileToBase64 = (file) => new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => resolve(reader.result.split(',')[1]);
-    reader.onerror = (error) => reject(error);
-});
-
-// --- 1. CARGA Y ACCESO ---
-function checkAccess() {
-    const overlay = document.getElementById('login-overlay');
-    if (itoken) {
-        overlay.classList.add('hidden');
-        loadProductsAdmin();
-    } else {
-        overlay.classList.remove('hidden');
-    }
-}
-
-function saveToken() {
-    const tokenInput = document.getElementById('gh-token').value.trim();
-    if (tokenInput) {
-        localStorage.setItem('itoken', tokenInput);
-        itoken = tokenInput;
-        checkAccess();
-    }
-}
+// Función para limpiar nombres (aros-1.jpg)
+const sanitize = (n) => n.toLowerCase().replace(/\s+/g, '-').replace(/[()]/g, '').replace(/[^a-z0-9.-]/g, '');
 
 async function loadProductsAdmin() {
+    if (!itoken) return;
     try {
-        const response = await fetch(url, {
-            headers: { 'Authorization': `token ${itoken}`, 'Accept': 'application/vnd.github.v3+json' }
+        const response = await fetch(`${url}?t=${Date.now()}`, { // Pedimos la versión real, no la cacheada
+            headers: { 'Authorization': `token ${itoken}` }
         });
-        if (response.status === 401) { localStorage.removeItem('itoken'); location.reload(); return; }
-
         const data = await response.json();
         sha = data.sha;
         const content = JSON.parse(decodeURIComponent(escape(atob(data.content))));
         products = content.products;
-        
         renderAdminProducts();
-        updateProductCount();
-    } catch (e) { console.error("Error cargando:", e); }
+    } catch (e) { console.error("Error:", e); }
 }
 
-function updateProductCount() {
-    const counter = document.getElementById('product-count');
-    if (counter) counter.textContent = `${products.length} diseños activos`;
-}
-
-// --- 2. SUBIDA DE IMAGEN A GITHUB ---
-async function uploadImageToGitHub(file) {
-    const fileName = sanitizeName(file.name);
-    const content = await fileToBase64(file);
-    const uploadUrl = `https://api.github.com/repos/${repo}/contents/img/${fileName}`;
-
-    // Intentamos subir la imagen
-    const response = await fetch(uploadUrl, {
-        method: 'PUT',
-        headers: {
-            'Authorization': `token ${itoken}`,
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            message: `Upload image: ${fileName}`,
-            content: content
-        })
+async function uploadImage(file) {
+    const fileName = sanitize(file.name);
+    const reader = new FileReader();
+    const base64Promise = new Promise(res => {
+        reader.onload = () => res(reader.result.split(',')[1]);
+        reader.readAsDataURL(file);
     });
+    const content = await base64Promise;
 
-    if (response.ok || response.status === 422) { 
-        // 422 significa que la imagen ya existe, así que la usamos igual
-        return `img/${fileName}`;
-    } else {
-        throw new Error("Error al subir imagen");
-    }
+    const res = await fetch(`https://api.github.com/repos/${repo}/contents/img/${fileName}`, {
+        method: 'PUT',
+        headers: { 'Authorization': `token ${itoken}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: `Subiendo ${fileName}`, content: content })
+    });
+    return `img/${fileName}`;
 }
 
-// --- 3. PROCESAR FORMULARIO (LA MAGIA) ---
 document.getElementById('product-form').addEventListener('submit', async (e) => {
     e.preventDefault();
     const btn = document.getElementById('submit-btn');
-    btn.disabled = true;
-    btn.innerHTML = '<i class="fas fa-spinner animate-spin"></i> Procesando...';
+    btn.disabled = true; btn.innerText = "Subiendo...";
 
     try {
-        const files = document.getElementById('p-image-file').files;
-        if (files.length === 0) throw new Error("Debes elegir al menos una imagen");
-
-        // Subimos todas las imágenes seleccionadas
-        const uploadedPaths = [];
-        for (let file of files) {
-            const path = await uploadImageToGitHub(file);
-            uploadedPaths.push(path);
-        }
-
-        const name = document.getElementById('p-name').value;
-        const price = parseInt(document.getElementById('p-price').value);
-        const collection = document.getElementById('p-collection').value;
-        const status = document.getElementById('p-status').value;
-
+        const file = document.getElementById('p-image-file').files[0];
+        const imgPath = await uploadImage(file);
+        
         const newProduct = {
             id: Date.now(),
-            name,
-            price,
-            collection,
-            status,
-            image: uploadedPaths[0],
-            images: uploadedPaths
+            name: document.getElementById('p-name').value,
+            price: parseInt(document.getElementById('p-price').value),
+            collection: document.getElementById('p-collection').value,
+            status: document.getElementById('p-status').value,
+            image: imgPath,
+            images: [imgPath]
         };
 
         const newProducts = [...products, newProduct];
-        await saveToGitHub(newProducts, "Nuevo producto con subida automática");
-        
-    } catch (err) {
-        alert("❌ Error: " + err.message);
-        btn.disabled = false;
-        btn.innerHTML = 'Subir a la Nube';
-    }
+        await saveToGitHub(newProducts);
+    } catch (err) { alert("Error: " + err.message); btn.disabled = false; }
 });
 
-// --- 4. RENDER Y OTROS ---
+async function saveToGitHub(newProducts) {
+    const newContent = btoa(unescape(encodeURIComponent(JSON.stringify({ products: newProducts }, null, 2))));
+    const res = await fetch(url, {
+        method: 'PUT',
+        headers: { 'Authorization': `token ${itoken}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: "Update DB", content: newContent, sha: sha })
+    });
+    if (res.ok) { alert("✅ ¡Éxito total!"); location.reload(); }
+}
+
 function renderAdminProducts() {
-    const container = document.getElementById('admin-product-list'); 
-    if (!container) return;
+    const container = document.getElementById('admin-product-list');
     container.innerHTML = products.map(p => {
-        const imgPath = p.images ? p.images[0] : p.image;
-        const fullImgUrl = imgPath.startsWith('http') ? imgPath : RAW_BASE_URL + imgPath;
-        return `
-            <div class="flex justify-between items-center py-4 border-b border-gray-50 group">
-                <div class="flex items-center gap-4">
-                    <img src="${fullImgUrl}" class="w-12 h-12 rounded-xl object-cover border shadow-sm">
-                    <div>
-                        <p class="font-black text-[11px] uppercase text-gray-800 mb-1">${p.name}</p>
-                        <p class="text-pink-600 font-black text-xs">Gs. ${p.price.toLocaleString()}</p>
-                    </div>
-                </div>
-                <button onclick="deleteProduct(${p.id})" class="text-gray-300 hover:text-red-500 p-2"><i class="fas fa-trash-alt"></i></button>
-            </div>
-        `;
+        let img = (p.images ? p.images[0] : p.image).replace(/^\//, '');
+        return `<div class="flex items-center gap-4 py-2 border-b">
+            <img src="${RAW_BASE_URL}${img}?v=${Date.now()}" class="w-10 h-10 object-cover rounded">
+            <span class="text-xs font-bold uppercase">${p.name}</span>
+        </div>`;
     }).join('');
 }
 
-async function saveToGitHub(newProducts, msg) {
-    const newContent = btoa(unescape(encodeURIComponent(JSON.stringify({ products: newProducts }, null, 2))));
-    const response = await fetch(url, {
-        method: 'PUT',
-        headers: { 'Authorization': `token ${itoken}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: msg, content: newContent, sha: sha })
-    });
-
-    if (response.ok) {
-        alert("✅ ¡Todo listo! Producto subido y guardado.");
-        location.reload();
-    }
+function checkAccess() {
+    const overlay = document.getElementById('login-overlay');
+    if (itoken) { overlay.classList.add('hidden'); loadProductsAdmin(); }
 }
-
-async function deleteProduct(id) {
-    if(!confirm("¿Borrar este diseño?")) return;
-    const newProducts = products.filter(p => p.id !== id);
-    await saveToGitHub(newProducts, "Producto eliminado");
+function saveToken() {
+    itoken = document.getElementById('gh-token').value.trim();
+    localStorage.setItem('itoken', itoken); checkAccess();
 }
-
 document.addEventListener('DOMContentLoaded', checkAccess);
