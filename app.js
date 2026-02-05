@@ -1,4 +1,4 @@
-// app.js - VERSIÓN TOTAL INTEGRADA (FASE 14 - NO BORRAR NADA)
+// app.js - VERSIÓN TOTAL INTEGRADA (FASE 14 - ESTABILIZACIÓN FINAL)
 let cart = JSON.parse(localStorage.getItem('marilyn_cart')) || [];
 let allProducts = [];
 let activeCategory = 'todas';
@@ -8,7 +8,7 @@ let currentIndex = 0;
 const GITHUB_RAW_URL = "https://raw.githubusercontent.com/creacionesmarilyn-py/web-creaciones-marilyn/main/database.json";
 const RAW_BASE_URL = "https://raw.githubusercontent.com/creacionesmarilyn-py/web-creaciones-marilyn/main/";
 
-// 1. CARGA DE DATOS
+// 1. CARGA DE DATOS CON "CACHE BUSTER" REFORZADO
 async function loadStore() {
     try {
         const response = await fetch(`${GITHUB_RAW_URL}?v=${Date.now()}`);
@@ -47,16 +47,31 @@ function applyFilters() {
     renderProducts(filtered);
 }
 
-// 3. DIBUJO DE PRODUCTOS (CHICK)
+// 3. DIBUJO DE PRODUCTOS CON ETIQUETAS DE ESTADO (CHICK)
 function renderProducts(products) {
     const grid = document.getElementById('product-grid');
     if(!grid) return;
     grid.innerHTML = products.length === 0 ? '<p class="text-center col-span-full py-20 text-gray-400 uppercase text-[10px]">Sin resultados</p>' : '';
     
     products.forEach(p => {
-        const isAgotado = p.status === 'agotado';
+        const status = p.status ? p.status.toLowerCase() : '';
+        const isAgotado = status === 'agotado';
+        const isOferta = status === 'oferta' || status === 'en oferta';
+        const isNuevo = status === 'nuevo' || status === 'nuevo ingreso';
+
+        // Lógica de Etiquetas (Badges)
+        let badgeHTML = '';
+        if (isAgotado) {
+            badgeHTML = `<div class="absolute inset-0 bg-white/40 backdrop-blur-[1px] flex items-center justify-center z-10 font-black text-gray-800 text-[10px] uppercase tracking-[0.2em]">Sin Stock</div>`;
+        } else if (isOferta) {
+            badgeHTML = `<div class="absolute top-3 left-3 bg-red-500 text-white px-3 py-1 rounded-full text-[9px] font-black uppercase z-20 shadow-lg animate-pulse">Oferta</div>`;
+        } else if (isNuevo) {
+            badgeHTML = `<div class="absolute top-3 left-3 bg-pink-500 text-white px-3 py-1 rounded-full text-[9px] font-black uppercase z-20 shadow-lg">Nuevo</div>`;
+        }
+
         let imgPath = (p.images && p.images.length > 0 ? p.images[0] : p.image).replace(/^\//, '');
         const fullImgUrl = imgPath.startsWith('http') ? imgPath : `${RAW_BASE_URL}${imgPath}?v=${Date.now()}`;
+        
         const galleryArray = (p.images ? p.images : [p.image]).map(img => 
             img.startsWith('http') ? img : `${RAW_BASE_URL}${img.replace(/^\//, '')}?v=${Date.now()}`
         );
@@ -65,14 +80,15 @@ function renderProducts(products) {
         div.className = `bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden group transition-all duration-500 ${isAgotado ? 'opacity-70' : 'hover:shadow-xl hover:-translate-y-1'}`;
         div.innerHTML = `
             <div class="relative h-64 overflow-hidden cursor-pointer" onclick='openGallery(${JSON.stringify(galleryArray)})'>
+                ${badgeHTML}
                 <img src="${fullImgUrl}" loading="lazy" class="w-full h-full object-cover transition-transform duration-700 ${!isAgotado ? 'group-hover:scale-110' : 'grayscale' }">
-                <div class="absolute top-3 right-3 bg-white/90 px-2 py-1 rounded-full text-[9px] font-bold uppercase text-gray-500">${p.collection}</div>
+                <div class="absolute top-3 right-3 bg-white/90 px-2 py-1 rounded-full text-[9px] font-bold uppercase text-gray-500 z-10">${p.collection}</div>
             </div>
             <div class="p-6 text-center">
                 <h4 class="font-bold text-gray-800 uppercase text-[11px] mb-1">${p.name}</h4>
                 <p class="text-pink-600 font-black mb-5 text-sm">Gs. ${p.price.toLocaleString('es-PY')}</p>
                 <button onclick="${isAgotado ? '' : `addToCart(${p.id}, '${p.name}', ${p.price})`}" 
-                        class="w-full ${isAgotado ? 'bg-gray-100 text-gray-400' : 'bg-gray-900 text-white hover:bg-pink-600'} py-3.5 rounded-xl text-[10px] font-bold uppercase transition-all">
+                        class="w-full ${isAgotado ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-gray-900 text-white hover:bg-pink-600'} py-3.5 rounded-xl text-[10px] font-bold uppercase transition-all">
                     ${isAgotado ? 'Agotado' : 'Agregar al carrito'}
                 </button>
             </div>
@@ -81,7 +97,7 @@ function renderProducts(products) {
     });
 }
 
-// 4. LÓGICA DEL CARRITO (RECONECTADO)
+// 4. LÓGICA DEL CARRITO
 function addToCart(id, name, price) { 
     const item = cart.find(i => i.id === id); 
     if (item) item.qty++; else cart.push({ id, name, price, qty: 1 }); 
@@ -104,9 +120,13 @@ function updateCartUI() {
     cart.forEach(item => {
         total += item.price * item.qty;
         const div = document.createElement('div');
-        div.className = "flex justify-between items-center mb-3 bg-gray-50 p-3 rounded-lg";
+        div.className = "flex justify-between items-center mb-3 bg-gray-50 p-3 rounded-lg shadow-sm";
         div.innerHTML = `<div class="text-left"><p class="font-bold text-[9px] uppercase">${item.name}</p><p class="text-pink-600 font-bold text-[10px]">Gs. ${item.price.toLocaleString()}</p></div>
-                        <div class="flex items-center gap-2"><button onclick="removeFromCart(${item.id})" class="w-6 h-6 bg-gray-200 rounded-full text-[10px]">-</button><span>${item.qty}</span><button onclick="addToCart(${item.id},'${item.name}',${item.price})" class="w-6 h-6 bg-gray-200 rounded-full text-[10px]">+</button></div>`;
+                        <div class="flex items-center gap-2">
+                            <button onclick="removeFromCart(${item.id})" class="w-6 h-6 flex items-center justify-center bg-gray-200 rounded-full text-xs">-</button>
+                            <span class="text-xs font-bold">${item.qty}</span>
+                            <button onclick="addToCart(${item.id},'${item.name}',${item.price})" class="w-6 h-6 flex items-center justify-center bg-gray-200 rounded-full text-xs">+</button>
+                        </div>`;
         container.appendChild(div);
     });
     document.getElementById('cart-total-display').textContent = `Gs. ${total.toLocaleString()}`;
@@ -117,7 +137,7 @@ function removeFromCart(id) {
     saveCart();
 }
 
-// 5. GALERÍA Y WHATSAPP (RECONECTADO)
+// 5. GALERÍA Y WHATSAPP
 function openGallery(images) { currentGallery = images; currentIndex = 0; updateGalleryModal(); document.getElementById('gallery-modal').classList.replace('hidden', 'flex'); }
 function closeGallery() { document.getElementById('gallery-modal').classList.replace('flex', 'hidden'); }
 function updateGalleryModal() { document.getElementById('modal-img').src = currentGallery[currentIndex]; document.getElementById('gallery-counter').textContent = `${currentIndex + 1} / ${currentGallery.length}`; }
