@@ -1,7 +1,9 @@
-// admin.js - Fase 12: Integración Profesional con Interfaz
+// admin.js - Fase 12: Integración Profesional con Interfaz e Imágenes RAW
 let itoken = localStorage.getItem('itoken') || "";
 const repo = "creacionesmarilyn-py/web-creaciones-marilyn";
 const url = `https://api.github.com/repos/${repo}/contents/database.json`;
+// DIRECCIÓN BASE PARA IMÁGENES
+const RAW_BASE_URL = "https://raw.githubusercontent.com/creacionesmarilyn-py/web-creaciones-marilyn/main/";
 
 let sha = "";
 let products = [];
@@ -10,10 +12,10 @@ let products = [];
 function checkAccess() {
     const overlay = document.getElementById('login-overlay');
     if (itoken) {
-        overlay.classList.add('hidden'); // Oculta el login si ya hay token
+        overlay.classList.add('hidden');
         loadProductsAdmin();
     } else {
-        overlay.classList.remove('hidden'); // Muestra el login si no hay
+        overlay.classList.remove('hidden');
     }
 }
 
@@ -77,27 +79,33 @@ function renderAdminProducts() {
         return;
     }
 
-    container.innerHTML = products.map(p => `
-        <div class="flex justify-between items-center py-4 group hover:bg-gray-50/50 transition-all px-2 rounded-xl">
-            <div class="flex items-center gap-4">
-                <div class="relative">
-                    <img src="${p.images ? p.images[0] : p.image}" class="w-12 h-12 rounded-xl object-cover shadow-sm border border-gray-100">
-                    <span class="absolute -top-1 -right-1 w-3 h-3 ${p.status === 'agotado' ? 'bg-red-500' : 'bg-green-500'} rounded-full border-2 border-white"></span>
-                </div>
-                <div>
-                    <p class="font-black text-[11px] uppercase text-gray-800 tracking-tight leading-none mb-1">${p.name}</p>
-                    <div class="flex gap-2 items-center">
-                        <p class="text-pink-600 font-black text-xs">Gs. ${p.price.toLocaleString('es-PY')}</p>
-                        <span class="text-[8px] bg-gray-100 text-gray-400 px-2 py-0.5 rounded-full font-bold uppercase">${p.collection}</span>
+    container.innerHTML = products.map(p => {
+        // CIRUGÍA: Reconstrucción de ruta de imagen
+        const imgPath = p.images ? p.images[0] : p.image;
+        const fullImgUrl = imgPath.startsWith('http') ? imgPath : RAW_BASE_URL + imgPath;
+
+        return `
+            <div class="flex justify-between items-center py-4 group hover:bg-gray-50/50 transition-all px-2 rounded-xl border-b border-gray-50 last:border-none">
+                <div class="flex items-center gap-4">
+                    <div class="relative">
+                        <img src="${fullImgUrl}" class="w-12 h-12 rounded-xl object-cover shadow-sm border border-gray-100">
+                        <span class="absolute -top-1 -right-1 w-3 h-3 ${p.status === 'agotado' ? 'bg-red-500' : 'bg-green-500'} rounded-full border-2 border-white"></span>
+                    </div>
+                    <div>
+                        <p class="font-black text-[11px] uppercase text-gray-800 tracking-tight leading-none mb-1">${p.name}</p>
+                        <div class="flex gap-2 items-center">
+                            <p class="text-pink-600 font-black text-xs">Gs. ${p.price.toLocaleString('es-PY')}</p>
+                            <span class="text-[8px] bg-gray-100 text-gray-400 px-2 py-0.5 rounded-full font-bold uppercase">${p.collection}</span>
+                        </div>
                     </div>
                 </div>
+                <div class="flex gap-2">
+                    <button onclick="openEditModal(${p.id})" class="text-gray-400 hover:text-blue-500 p-2 transition-colors"><i class="fas fa-edit text-sm"></i></button>
+                    <button onclick="deleteProduct(${p.id})" class="text-gray-400 hover:text-red-500 p-2 transition-colors"><i class="fas fa-trash-alt text-sm"></i></button>
+                </div>
             </div>
-            <div class="flex gap-2">
-                <button onclick="openEditModal(${p.id})" class="text-gray-400 hover:text-blue-500 p-2 transition-colors"><i class="fas fa-edit text-sm"></i></button>
-                <button onclick="deleteProduct(${p.id})" class="text-gray-400 hover:text-red-500 p-2 transition-colors"><i class="fas fa-trash-alt text-sm"></i></button>
-            </div>
-        </div>
-    `).join('');
+        `;
+    }).join('');
 }
 
 // --- 4. ACCIONES (GUARDAR / ELIMINAR) ---
