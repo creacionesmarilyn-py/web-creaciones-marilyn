@@ -1,4 +1,4 @@
-// admin.js - Fase 12: PANEL DE CONTROL (RESTAURADO)
+// admin.js - Fase 12: Integración Profesional con Interfaz
 let itoken = localStorage.getItem('itoken') || "";
 const repo = "creacionesmarilyn-py/web-creaciones-marilyn";
 const url = `https://api.github.com/repos/${repo}/contents/database.json`;
@@ -6,12 +6,35 @@ const url = `https://api.github.com/repos/${repo}/contents/database.json`;
 let sha = "";
 let products = [];
 
-async function loadProductsAdmin() {
-    if (!itoken) {
-        itoken = prompt("Ingresa tu Token de GitHub para administrar:");
-        if (itoken) localStorage.setItem('itoken', itoken);
+// --- 1. GESTIÓN DE ACCESO (LOGIN) ---
+function checkAccess() {
+    const overlay = document.getElementById('login-overlay');
+    if (itoken) {
+        overlay.classList.add('hidden'); // Oculta el login si ya hay token
+        loadProductsAdmin();
+    } else {
+        overlay.classList.remove('hidden'); // Muestra el login si no hay
     }
+}
 
+function saveToken() {
+    const tokenInput = document.getElementById('gh-token').value.trim();
+    if (tokenInput) {
+        localStorage.setItem('itoken', tokenInput);
+        itoken = tokenInput;
+        checkAccess();
+    } else {
+        alert("Por favor, ingresa un token válido.");
+    }
+}
+
+function logout() {
+    localStorage.removeItem('itoken');
+    location.reload();
+}
+
+// --- 2. CARGA DE DATOS ---
+async function loadProductsAdmin() {
     try {
         const response = await fetch(url, {
             headers: { 
@@ -21,9 +44,8 @@ async function loadProductsAdmin() {
         });
 
         if (response.status === 401) {
-            localStorage.removeItem('itoken');
-            alert("Token inválido. Reingresalo.");
-            location.reload();
+            alert("⚠️ Token inválido o expirado.");
+            logout();
             return;
         }
 
@@ -31,65 +53,82 @@ async function loadProductsAdmin() {
         sha = data.sha;
         const content = JSON.parse(decodeURIComponent(escape(atob(data.content))));
         products = content.products;
-        renderAdminProducts(); 
+        
+        renderAdminProducts();
+        updateProductCount();
     } catch (e) {
         console.error("Error:", e);
-        alert("Error de conexión. Revisa el Token.");
+        document.getElementById('admin-product-list').innerHTML = `<p class="text-red-500 text-center py-10 text-xs uppercase font-bold">Error de conexión con GitHub</p>`;
     }
 }
 
+function updateProductCount() {
+    const counter = document.getElementById('product-count');
+    if (counter) counter.textContent = `${products.length} productos`;
+}
+
+// --- 3. RENDERIZADO (DIBUJO) ---
 function renderAdminProducts() {
     const container = document.getElementById('admin-product-list'); 
     if (!container) return;
-    
+
+    if (products.length === 0) {
+        container.innerHTML = `<p class="text-gray-400 py-10 text-center text-xs uppercase tracking-widest">No hay productos en la nube</p>`;
+        return;
+    }
+
     container.innerHTML = products.map(p => `
-        <div class="flex justify-between items-center bg-white p-4 mb-3 rounded-xl shadow-sm border border-gray-100">
+        <div class="flex justify-between items-center py-4 group hover:bg-gray-50/50 transition-all px-2 rounded-xl">
             <div class="flex items-center gap-4">
-                <img src="${p.images ? p.images[0] : p.image}" class="w-12 h-12 rounded-lg object-cover">
+                <div class="relative">
+                    <img src="${p.images ? p.images[0] : p.image}" class="w-12 h-12 rounded-xl object-cover shadow-sm border border-gray-100">
+                    <span class="absolute -top-1 -right-1 w-3 h-3 ${p.status === 'agotado' ? 'bg-red-500' : 'bg-green-500'} rounded-full border-2 border-white"></span>
+                </div>
                 <div>
-                    <p class="font-bold text-xs uppercase text-gray-700">${p.name}</p>
-                    <p class="text-pink-600 font-black text-sm">Gs. ${p.price.toLocaleString('es-PY')}</p>
+                    <p class="font-black text-[11px] uppercase text-gray-800 tracking-tight leading-none mb-1">${p.name}</p>
+                    <div class="flex gap-2 items-center">
+                        <p class="text-pink-600 font-black text-xs">Gs. ${p.price.toLocaleString('es-PY')}</p>
+                        <span class="text-[8px] bg-gray-100 text-gray-400 px-2 py-0.5 rounded-full font-bold uppercase">${p.collection}</span>
+                    </div>
                 </div>
             </div>
-            <button onclick="deleteProduct(${p.id})" class="bg-red-50 text-red-500 p-3 rounded-xl hover:bg-red-500 hover:text-white transition-all active:scale-95">
-                <i class="fas fa-trash-alt"></i>
-            </button>
+            <div class="flex gap-2">
+                <button onclick="openEditModal(${p.id})" class="text-gray-400 hover:text-blue-500 p-2 transition-colors"><i class="fas fa-edit text-sm"></i></button>
+                <button onclick="deleteProduct(${p.id})" class="text-gray-400 hover:text-red-500 p-2 transition-colors"><i class="fas fa-trash-alt text-sm"></i></button>
+            </div>
         </div>
     `).join('');
 }
 
-async function deleteProduct(id) {
-    if(!confirm("¿Estás segura de eliminar este producto?")) return;
-    const newProducts = products.filter(p => p.id !== id);
-    await saveToGitHub(newProducts);
-}
-
+// --- 4. ACCIONES (GUARDAR / ELIMINAR) ---
 async function saveToGitHub(newProducts) {
     const newContent = btoa(unescape(encodeURIComponent(JSON.stringify({ products: newProducts }, null, 2))));
     
     try {
         const response = await fetch(url, {
             method: 'PUT',
-            headers: {
-                'Authorization': `token ${itoken}`,
-                'Content-Type': 'application/json'
-            },
+            headers: { 'Authorization': `token ${itoken}`, 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                message: "Eliminación de producto (Fase 12)",
+                message: "Actualización de inventario (Fase 12)",
                 content: newContent,
                 sha: sha
             })
         });
 
         if (response.ok) {
-            alert("¡Depósito actualizado con éxito!");
+            alert("✅ ¡Depósito actualizado!");
             location.reload();
         } else {
-            alert("Error al guardar en GitHub.");
+            alert("❌ Error al guardar.");
         }
-    } catch (e) {
-        console.error("Error:", e);
-    }
+    } catch (e) { console.error(e); }
 }
 
-document.addEventListener('DOMContentLoaded', loadProductsAdmin);
+async function deleteProduct(id) {
+    if(!confirm("¿Borrar este diseño de la nube?")) return;
+    const newProducts = products.filter(p => p.id !== id);
+    await saveToGitHub(newProducts);
+}
+
+// --- 5. INICIALIZACIÓN ---
+document.addEventListener('DOMContentLoaded', checkAccess);
