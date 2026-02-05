@@ -842,6 +842,17 @@
       "images": [
         "img/gotas-en-blanco.jpeg"
       ]
+    },
+    {
+      "id": 1770318361510,
+      "name": "Maripositas de colores",
+      "price": 5000,
+      "collection": "Colores pasteles y otras figuras",
+      "status": "normal",
+      "image": "img/colores-pasteles5.jpg",
+      "images": [
+        "img/colores-pasteles5.jpg"
+      ]
     }
   ]
 }
