@@ -820,6 +820,17 @@
       "images": [
         "img/b46f6b19-8c90-4eb3-b68a-c738bb2628f5.jpeg"
       ]
+    },
+    {
+      "id": 1770314892403,
+      "name": "Pelitas numero 6 colores pasteles",
+      "price": 5000,
+      "collection": "Colores pasteles y otras figuras",
+      "status": "normal",
+      "image": "img/colores-pasteles.jpg",
+      "images": [
+        "img/colores-pasteles.jpg"
+      ]
     }
   ]
 }
