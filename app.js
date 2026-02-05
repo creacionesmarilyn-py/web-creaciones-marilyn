@@ -271,3 +271,4 @@ function sendWhatsApp() {
 }
 
 document.addEventListener('DOMContentLoaded', loadStore);
+// Activacion definitiva de la Fase 12 - Control Total
