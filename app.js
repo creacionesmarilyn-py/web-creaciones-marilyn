@@ -160,3 +160,4 @@ function sendWhatsApp() {
     window.open(`https://wa.me/595991391542?text=${encodeURIComponent(msg)}`, '_blank');
 }
 document.addEventListener('DOMContentLoaded', loadStore);
+// Sincronización forzada 2026.
