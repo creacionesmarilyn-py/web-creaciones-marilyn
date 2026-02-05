@@ -831,6 +831,17 @@
       "images": [
         "img/Colores pasteles(3).JPG"
       ]
+    },
+    {
+      "id": 1770312755113,
+      "name": "Corazoncitos a colores",
+      "price": 5000,
+      "collection": "Colores pasteles y otras figuras",
+      "status": "normal",
+      "image": "img/colores-pasteles4.jpg",
+      "images": [
+        "img/colores-pasteles4.jpg"
+      ]
     }
   ]
 }
