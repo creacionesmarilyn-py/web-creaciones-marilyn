@@ -864,6 +864,17 @@
       "images": [
         "img/corazon-blanco.jpeg"
       ]
+    },
+    {
+      "id": 1770322768749,
+      "name": "Media perlas negras",
+      "price": 5000,
+      "collection": "Media perlas",
+      "status": "normal",
+      "image": "img/pict2503151632090000.jpg",
+      "images": [
+        "img/pict2503151632090000.jpg"
+      ]
     }
   ]
 }
