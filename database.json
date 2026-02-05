@@ -831,6 +831,17 @@
       "images": [
         "img/colores-pasteles.jpg"
       ]
+    },
+    {
+      "id": 1770317580931,
+      "name": "Gotas en blanco",
+      "price": 5000,
+      "collection": "Colores pasteles y otras figuras",
+      "status": "oferta",
+      "image": "img/gotas-en-blanco.jpeg",
+      "images": [
+        "img/gotas-en-blanco.jpeg"
+      ]
     }
   ]
 }
