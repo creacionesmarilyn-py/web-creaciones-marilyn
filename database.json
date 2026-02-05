@@ -820,6 +820,17 @@
       "images": [
         "img/Corazon blanco.jpeg"
       ]
+    },
+    {
+      "id": 1770312304940,
+      "name": "Florcitas coloridas",
+      "price": 5000,
+      "collection": "Colores pasteles y otras figuras",
+      "status": "normal",
+      "image": "img/Colores pasteles(3).JPG",
+      "images": [
+        "img/Colores pasteles(3).JPG"
+      ]
     }
   ]
 }
