@@ -1,4 +1,4 @@
-// app.js - VERSIÓN TOTAL INTEGRADA (FASE 14 - ESTABILIZACIÓN FINAL)
+// app.js - VERSIÓN MASTER ELITE (Sincronización Instantánea + Etiquetas)
 let cart = JSON.parse(localStorage.getItem('marilyn_cart')) || [];
 let allProducts = [];
 let activeCategory = 'todas';
@@ -8,23 +8,28 @@ let currentIndex = 0;
 const GITHUB_RAW_URL = "https://raw.githubusercontent.com/creacionesmarilyn-py/web-creaciones-marilyn/main/database.json";
 const RAW_BASE_URL = "https://raw.githubusercontent.com/creacionesmarilyn-py/web-creaciones-marilyn/main/";
 
-// 1. CARGA DE DATOS CON "CACHE BUSTER" REFORZADO
+// 1. CARGA DE DATOS (FUERZA BRUTA ANTI-CACHÉ)
 async function loadStore() {
     try {
-        const response = await fetch(`${GITHUB_RAW_URL}?v=${Date.now()}`);
+        // Usamos un token único por milisegundo y desactivamos la caché del navegador
+        const response = await fetch(`${GITHUB_RAW_URL}?v=${Date.now()}`, {
+            cache: "no-store"
+        });
         const data = await response.json();
         allProducts = data.products.reverse();
         renderCategories();
         applyFilters(); 
         updateCartUI();
-    } catch (e) { console.error("Error cargando base de datos:", e); }
+    } catch (e) { 
+        console.error("Error cargando base de datos:", e);
+    }
 }
 
 // 2. CATEGORÍAS Y FILTROS
 function renderCategories() {
     const container = document.getElementById('category-filters');
     if(!container) return;
-    const categories = ['todas', ...new Set(allProducts.map(p => p.collection.toLowerCase()))];
+    const categories = ['todas', ...new Set(allProducts.map(p => p.collection.toLowerCase().trim()))];
     container.innerHTML = categories.map(cat => `
         <button onclick="filterByCategory('${cat}')" 
                 class="whitespace-nowrap px-6 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all duration-300 shadow-sm
@@ -38,28 +43,28 @@ function filterByCategory(cat) { activeCategory = cat; renderCategories(); apply
 
 function applyFilters() {
     const searchInput = document.getElementById('search-input');
-    const searchTerm = searchInput ? searchInput.value.toLowerCase() : "";
+    const searchTerm = searchInput ? searchInput.value.toLowerCase().trim() : "";
     const filtered = allProducts.filter(p => {
         const matchesSearch = p.name.toLowerCase().includes(searchTerm);
-        const matchesCategory = activeCategory === 'todas' || p.collection.toLowerCase() === activeCategory;
+        const matchesCategory = activeCategory === 'todas' || p.collection.toLowerCase().trim() === activeCategory;
         return matchesSearch && matchesCategory;
     });
     renderProducts(filtered);
 }
 
-// 3. DIBUJO DE PRODUCTOS CON ETIQUETAS DE ESTADO (CHICK)
+// 3. DIBUJO DE PRODUCTOS (LÓGICA DE ETIQUETAS MEJORADA)
 function renderProducts(products) {
     const grid = document.getElementById('product-grid');
     if(!grid) return;
     grid.innerHTML = products.length === 0 ? '<p class="text-center col-span-full py-20 text-gray-400 uppercase text-[10px]">Sin resultados</p>' : '';
     
     products.forEach(p => {
-        const status = p.status ? p.status.toLowerCase() : '';
+        // Limpiamos el estado de espacios y lo pasamos a minúsculas
+        const status = (p.status || "").toLowerCase().trim();
         const isAgotado = status === 'agotado';
         const isOferta = status === 'oferta' || status === 'en oferta';
-        const isNuevo = status === 'nuevo' || status === 'nuevo ingreso';
+        const isNuevo = status === 'nuevo' || status === 'nuevo ingreso' || status === 'nuevo ingreso ';
 
-        // Lógica de Etiquetas (Badges)
         let badgeHTML = '';
         if (isAgotado) {
             badgeHTML = `<div class="absolute inset-0 bg-white/40 backdrop-blur-[1px] flex items-center justify-center z-10 font-black text-gray-800 text-[10px] uppercase tracking-[0.2em]">Sin Stock</div>`;
@@ -70,10 +75,12 @@ function renderProducts(products) {
         }
 
         let imgPath = (p.images && p.images.length > 0 ? p.images[0] : p.image).replace(/^\//, '');
-        const fullImgUrl = imgPath.startsWith('http') ? imgPath : `${RAW_BASE_URL}${imgPath}?v=${Date.now()}`;
+        // El timestamp ?v= se genera una sola vez por carga para todas las imágenes
+        const v = Date.now();
+        const fullImgUrl = imgPath.startsWith('http') ? imgPath : `${RAW_BASE_URL}${imgPath}?v=${v}`;
         
         const galleryArray = (p.images ? p.images : [p.image]).map(img => 
-            img.startsWith('http') ? img : `${RAW_BASE_URL}${img.replace(/^\//, '')}?v=${Date.now()}`
+            img.startsWith('http') ? img : `${RAW_BASE_URL}${img.replace(/^\//, '')}?v=${v}`
         );
 
         const div = document.createElement('div');
