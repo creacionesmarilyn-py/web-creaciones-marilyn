@@ -1,12 +1,4 @@
 {
-  "siteConfig": {
-    "logoText": "Creaciones Marilyn",
-    "heroTitle": "BijuterÃ­a & Bordados",
-    "heroSubtitle": "DiseÃ±os exclusivos hechos a mano para resaltar tu estilo",
-    "heroButtonText": "Ver ColecciÃ³n",
-    "heroImage": "img/imagen_front.jpg",
-    "whatsappNumber": "595991391542"
-  },
   "products": [
     {
       "id": 1,
@@ -795,6 +787,17 @@
       ],
       "collection": "Colores pasteles y otras figuras",
       "status": "normal"
+    },
+    {
+      "id": 1770309041306,
+      "name": "Conchitas surtidas",
+      "price": 5000,
+      "collection": "Colores pasteles y otras figuras",
+      "status": "normal",
+      "image": "img/Colores pasteles(1).JPG",
+      "images": [
+        "img/Colores pasteles(1).JPG"
+      ]
     }
   ]
 }
