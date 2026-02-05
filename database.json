@@ -919,6 +919,17 @@
       "images": [
         "img/pict2503151633320000.jpg"
       ]
+    },
+    {
+      "id": 1770315968382,
+      "name": "Craquelada N 12 turquesa",
+      "price": 10000,
+      "collection": "Craquelado N12 de 10000",
+      "status": "normal",
+      "image": "img/22811305-92fd-474f-8e15-bccf81835b9f.jpeg",
+      "images": [
+        "img/22811305-92fd-474f-8e15-bccf81835b9f.jpeg"
+      ]
     }
   ]
 }
