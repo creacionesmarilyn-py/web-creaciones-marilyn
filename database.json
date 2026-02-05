@@ -798,6 +798,17 @@
       "images": [
         "img/Colores pasteles(1).JPG"
       ]
+    },
+    {
+      "id": 1770310549812,
+      "name": "Estrellitas surtidas ",
+      "price": 5000,
+      "collection": "Colores pasteles y otras figuras",
+      "status": "normal",
+      "image": "img/Colores pasteles(2).JPG",
+      "images": [
+        "img/Colores pasteles(2).JPG"
+      ]
     }
   ]
 }
