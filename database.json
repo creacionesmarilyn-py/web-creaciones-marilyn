@@ -800,39 +800,6 @@
       ]
     },
     {
-      "id": 1770310549812,
-      "name": "Estrellitas surtidas ",
-      "price": 5000,
-      "collection": "Colores pasteles y otras figuras",
-      "status": "normal",
-      "image": "img/Colores pasteles(2).JPG",
-      "images": [
-        "img/Colores pasteles(2).JPG"
-      ]
-    },
-    {
-      "id": 1770310898099,
-      "name": "Corazon blanco",
-      "price": 5000,
-      "collection": "Colores pasteles y otras figuras",
-      "status": "normal",
-      "image": "img/Corazon blanco.jpeg",
-      "images": [
-        "img/Corazon blanco.jpeg"
-      ]
-    },
-    {
-      "id": 1770312304940,
-      "name": "Florcitas coloridas",
-      "price": 5000,
-      "collection": "Colores pasteles y otras figuras",
-      "status": "normal",
-      "image": "img/Colores pasteles(3).JPG",
-      "images": [
-        "img/Colores pasteles(3).JPG"
-      ]
-    },
-    {
       "id": 1770312755113,
       "name": "Corazoncitos a colores",
       "price": 5000,
@@ -841,6 +808,28 @@
       "image": "img/colores-pasteles4.jpg",
       "images": [
         "img/colores-pasteles4.jpg"
+      ]
+    },
+    {
+      "id": 1770303762681,
+      "name": "Craqueado N 12 negro",
+      "price": 10000,
+      "collection": "Craquelado N12 de 10000",
+      "status": "agotado",
+      "image": "img/b46f6b19-8c90-4eb3-b68a-c738bb2628f5.jpeg",
+      "images": [
+        "img/b46f6b19-8c90-4eb3-b68a-c738bb2628f5.jpeg"
+      ]
+    },
+    {
+      "id": 1770314892403,
+      "name": "Pelitas numero 6 colores pasteles",
+      "price": 5000,
+      "collection": "Colores pasteles y otras figuras",
+      "status": "agotado",
+      "image": "img/colores-pasteles.jpg",
+      "images": [
+        "img/colores-pasteles.jpg"
       ]
     }
   ]
