@@ -786,7 +786,7 @@
         "img/1770156185435-Arrocitos.jpeg"
       ],
       "collection": "Colores pasteles y otras figuras",
-      "status": "normal"
+      "status": "nuevo"
     },
     {
       "id": 1770309041306,
@@ -804,7 +804,7 @@
       "name": "Corazoncitos a colores",
       "price": 5000,
       "collection": "Colores pasteles y otras figuras",
-      "status": "normal",
+      "status": "oferta",
       "image": "img/colores-pasteles4.jpg",
       "images": [
         "img/colores-pasteles4.jpg"
@@ -830,6 +830,17 @@
       "image": "img/colores-pasteles.jpg",
       "images": [
         "img/colores-pasteles.jpg"
+      ]
+    },
+    {
+      "id": 1770317580931,
+      "name": "Gotas en blanco",
+      "price": 5000,
+      "collection": "Colores pasteles y otras figuras",
+      "status": "oferta",
+      "image": "img/gotas-en-blanco.jpeg",
+      "images": [
+        "img/gotas-en-blanco.jpeg"
       ]
     }
   ]
