@@ -1,28 +1,48 @@
-// app.js - VERSIÓN MASTER ELITE (Sincronización Instantánea + Etiquetas)
+// app.js - VERSIÓN MASTER ELITE (Sincronización vía API + Etiquetas)
 let cart = JSON.parse(localStorage.getItem('marilyn_cart')) || [];
 let allProducts = [];
 let activeCategory = 'todas';
 let currentGallery = [];
 let currentIndex = 0;
 
-const GITHUB_RAW_URL = "https://raw.githubusercontent.com/creacionesmarilyn-py/web-creaciones-marilyn/main/database.json";
+// URL de la API para sincronización instantánea (Igual que usa el Admin)
+const GITHUB_API_URL = "https://api.github.com/repos/creacionesmarilyn-py/web-creaciones-marilyn/contents/database.json";
 const RAW_BASE_URL = "https://raw.githubusercontent.com/creacionesmarilyn-py/web-creaciones-marilyn/main/";
 
-// 1. CARGA DE DATOS (FUERZA BRUTA ANTI-CACHÉ)
+// 1. CARGA DE DATOS (BYPASS DE CACHÉ VÍA API)
 async function loadStore() {
     try {
-        // Usamos un token único por milisegundo y desactivamos la caché del navegador
-        const response = await fetch(`${GITHUB_RAW_URL}?v=${Date.now()}`, {
-            cache: "no-store"
-        });
+        // Consultamos la API con un token de tiempo para forzar frescura total
+        const response = await fetch(`${GITHUB_API_URL}?v=${Date.now()}`);
+        if (!response.ok) throw new Error("Error en la conexión con la API");
+        
         const data = await response.json();
-        allProducts = data.products.reverse();
+        
+        // Decodificación Base64 manejando caracteres especiales (acentos/tildes)
+        const content = JSON.parse(decodeURIComponent(escape(atob(data.content))));
+        
+        allProducts = content.products.reverse();
+        
         renderCategories();
         applyFilters(); 
         updateCartUI();
+        console.log("🚀 Sincronización instantánea completada.");
     } catch (e) { 
         console.error("Error cargando base de datos:", e);
+        // Fallback en caso de que la API llegue a su límite de tasa
+        loadStoreFallback();
     }
+}
+
+// Fallback de seguridad usando el método anterior
+async function loadStoreFallback() {
+    try {
+        const response = await fetch(`https://raw.githubusercontent.com/creacionesmarilyn-py/web-creaciones-marilyn/main/database.json?v=${Date.now()}`);
+        const data = await response.json();
+        allProducts = data.products.reverse();
+        renderCategories();
+        applyFilters();
+    } catch (e) { console.error("Error en el fallback:", e); }
 }
 
 // 2. CATEGORÍAS Y FILTROS
@@ -45,42 +65,40 @@ function applyFilters() {
     const searchInput = document.getElementById('search-input');
     const searchTerm = searchInput ? searchInput.value.toLowerCase().trim() : "";
     const filtered = allProducts.filter(p => {
-        const matchesSearch = p.name.toLowerCase().includes(searchTerm);
-        const matchesCategory = activeCategory === 'todas' || p.collection.toLowerCase().trim() === activeCategory;
+        const matchesSearch = (p.name || "").toLowerCase().includes(searchTerm);
+        const matchesCategory = activeCategory === 'todas' || (p.collection || "").toLowerCase().trim() === activeCategory;
         return matchesSearch && matchesCategory;
     });
     renderProducts(filtered);
 }
 
-// 3. DIBUJO DE PRODUCTOS (LÓGICA DE ETIQUETAS MEJORADA)
+// 3. DIBUJO DE PRODUCTOS (LÓGICA DE ETIQUETAS BLINDADA)
 function renderProducts(products) {
     const grid = document.getElementById('product-grid');
     if(!grid) return;
     grid.innerHTML = products.length === 0 ? '<p class="text-center col-span-full py-20 text-gray-400 uppercase text-[10px]">Sin resultados</p>' : '';
     
     products.forEach(p => {
-        // Limpiamos el estado de espacios y lo pasamos a minúsculas
         const status = (p.status || "").toLowerCase().trim();
         const isAgotado = status === 'agotado';
         const isOferta = status === 'oferta' || status === 'en oferta';
-        const isNuevo = status === 'nuevo' || status === 'nuevo ingreso' || status === 'nuevo ingreso ';
+        const isNuevo = status === 'nuevo' || status === 'nuevo ingreso';
 
         let badgeHTML = '';
         if (isAgotado) {
             badgeHTML = `<div class="absolute inset-0 bg-white/40 backdrop-blur-[1px] flex items-center justify-center z-10 font-black text-gray-800 text-[10px] uppercase tracking-[0.2em]">Sin Stock</div>`;
         } else if (isOferta) {
-            badgeHTML = `<div class="absolute top-3 left-3 bg-red-500 text-white px-3 py-1 rounded-full text-[9px] font-black uppercase z-20 shadow-lg animate-pulse">Oferta</div>`;
+            badgeHTML = `<div class="absolute top-3 left-3 bg-red-600 text-white px-3 py-1 rounded-full text-[9px] font-black uppercase z-20 shadow-lg animate-pulse">Oferta</div>`;
         } else if (isNuevo) {
             badgeHTML = `<div class="absolute top-3 left-3 bg-pink-500 text-white px-3 py-1 rounded-full text-[9px] font-black uppercase z-20 shadow-lg">Nuevo</div>`;
         }
 
-        let imgPath = (p.images && p.images.length > 0 ? p.images[0] : p.image).replace(/^\//, '');
-        // El timestamp ?v= se genera una sola vez por carga para todas las imágenes
+        let imgPath = (p.images && p.images.length > 0 ? p.images[0] : (p.image || "")).replace(/^\//, '');
         const v = Date.now();
         const fullImgUrl = imgPath.startsWith('http') ? imgPath : `${RAW_BASE_URL}${imgPath}?v=${v}`;
         
         const galleryArray = (p.images ? p.images : [p.image]).map(img => 
-            img.startsWith('http') ? img : `${RAW_BASE_URL}${img.replace(/^\//, '')}?v=${v}`
+            (img || "").startsWith('http') ? img : `${RAW_BASE_URL}${(img || "").replace(/^\//, '')}?v=${v}`
         );
 
         const div = document.createElement('div');
@@ -136,7 +154,8 @@ function updateCartUI() {
                         </div>`;
         container.appendChild(div);
     });
-    document.getElementById('cart-total-display').textContent = `Gs. ${total.toLocaleString()}`;
+    const totalDisplay = document.getElementById('cart-total-display');
+    if(totalDisplay) totalDisplay.textContent = `Gs. ${total.toLocaleString()}`;
 }
 function removeFromCart(id) {
     const index = cart.findIndex(i => i.id === id);
@@ -147,7 +166,12 @@ function removeFromCart(id) {
 // 5. GALERÍA Y WHATSAPP
 function openGallery(images) { currentGallery = images; currentIndex = 0; updateGalleryModal(); document.getElementById('gallery-modal').classList.replace('hidden', 'flex'); }
 function closeGallery() { document.getElementById('gallery-modal').classList.replace('flex', 'hidden'); }
-function updateGalleryModal() { document.getElementById('modal-img').src = currentGallery[currentIndex]; document.getElementById('gallery-counter').textContent = `${currentIndex + 1} / ${currentGallery.length}`; }
+function updateGalleryModal() { 
+    const modalImg = document.getElementById('modal-img');
+    const counter = document.getElementById('gallery-counter');
+    if(modalImg) modalImg.src = currentGallery[currentIndex]; 
+    if(counter) counter.textContent = `${currentIndex + 1} / ${currentGallery.length}`; 
+}
 function nextImg() { currentIndex = (currentIndex + 1) % currentGallery.length; updateGalleryModal(); }
 function prevImg() { currentIndex = (currentIndex - 1 + currentGallery.length) % currentGallery.length; updateGalleryModal(); }
 function sendWhatsApp() {
