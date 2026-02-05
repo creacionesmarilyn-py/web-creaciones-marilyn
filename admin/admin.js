@@ -1,4 +1,4 @@
-// admin.js - Fase 12: VERSIÓN FINAL FUNCIONAL
+// admin.js - Fase 12: VERSIÓN FINAL CON LIMPIEZA AUTOMÁTICA DE NOMBRES
 let itoken = localStorage.getItem('itoken') || "";
 const repo = "creacionesmarilyn-py/web-creaciones-marilyn";
 const url = `https://api.github.com/repos/${repo}/contents/database.json`;
@@ -6,6 +6,16 @@ const RAW_BASE_URL = "https://raw.githubusercontent.com/creacionesmarilyn-py/web
 
 let sha = "";
 let products = [];
+
+// --- 0. FUNCIÓN DE LIMPIEZA QUIRÚRGICA ---
+// Esta función convierte "Color pastel (1).JPG" en "color-pastel-1.jpg" automáticamente
+function sanitizeName(name) {
+    return name.toLowerCase()
+               .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // Quita acentos
+               .replace(/\s+/g, '-')           // Cambia espacios por guiones
+               .replace(/[()]/g, '')           // Elimina paréntesis
+               .replace(/[^a-z0-9.-]/g, '');   // Elimina emojis y símbolos raros
+}
 
 // --- 1. ACCESO Y SEGURIDAD ---
 function checkAccess() {
@@ -98,8 +108,9 @@ document.getElementById('product-form').addEventListener('submit', async (e) => 
     const status = document.getElementById('p-status').value;
     const files = document.getElementById('p-image-file').files;
 
-    // Generamos rutas de imagen (asumiendo que las subirás a la carpeta img/)
-    const imageUrls = Array.from(files).map(file => `img/${file.name}`);
+    // --- INTEGRACIÓN DE LIMPIEZA ---
+    // Aquí es donde ocurre la magia: limpiamos cada nombre de archivo antes de guardarlo
+    const imageUrls = Array.from(files).map(file => `img/${sanitizeName(file.name)}`);
 
     const newProduct = {
         id: Date.now(),
@@ -112,7 +123,7 @@ document.getElementById('product-form').addEventListener('submit', async (e) => 
     };
 
     const newProducts = [...products, newProduct];
-    await saveToGitHub(newProducts, "Nuevo producto agregado");
+    await saveToGitHub(newProducts, "Nuevo producto agregado con nombre sanitizado");
 });
 
 // --- 5. EDITAR STOCK Y PRECIO ---
@@ -155,6 +166,8 @@ async function saveToGitHub(newProducts, msg) {
             location.reload();
         } else {
             alert("❌ Error al guardar.");
+            btn.disabled = false;
+            btn.innerHTML = 'Subir a la Nube';
         }
     } catch (e) { console.error(e); }
 }
