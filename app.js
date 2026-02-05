@@ -1,4 +1,4 @@
-// app.js - Fase 12: VITRINA PÚBLICA (Sincronización de Imágenes RAW)
+// app.js - Fase 12: VITRINA PÚBLICA (CON GPS DE IMÁGENES)
 let cart = JSON.parse(localStorage.getItem('marilyn_cart')) || [];
 let allProducts = [];
 let activeCategory = 'todas';
@@ -18,9 +18,7 @@ async function loadStore() {
         renderCategories();
         applyFilters(); 
         updateCartUI();
-    } catch (e) { 
-        console.error("Error:", e);
-    }
+    } catch (e) { console.error("Error:", e); }
 }
 
 function renderCategories() {
@@ -56,14 +54,10 @@ function renderProducts(products) {
     products.forEach(p => {
         const isAgotado = p.status === 'agotado';
         
-        // CIRUGÍA DE RUTAS: Convertimos rutas relativas en links directos a GitHub
+        // --- CIRUGÍA DE RUTAS ---
         const rawImgPath = p.images ? p.images[0] : p.image;
         const fullImgUrl = rawImgPath.startsWith('http') ? rawImgPath : RAW_BASE_URL + rawImgPath;
-        
-        // Preparamos la galería con rutas completas
-        const galleryArray = (p.images ? p.images : [p.image]).map(img => 
-            img.startsWith('http') ? img : RAW_BASE_URL + img
-        );
+        const galleryArray = (p.images ? p.images : [p.image]).map(img => img.startsWith('http') ? img : RAW_BASE_URL + img);
 
         const div = document.createElement('div');
         div.className = `bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden group transition-all duration-500 ${isAgotado ? 'opacity-70' : 'hover:shadow-xl hover:-translate-y-1'}`;
@@ -85,9 +79,9 @@ function renderProducts(products) {
     });
 }
 
-// FUNCIONES AUXILIARES
+// FUNCIONES AUXILIARES (Iguales a las anteriores)
 function openGallery(images) { currentGallery = images; currentIndex = 0; updateGalleryModal(); document.getElementById('gallery-modal').classList.replace('hidden', 'flex'); }
-function closeGallery() { document.getElementById('gallery-modal').classList.replace('flex', 'hidden'); }
+function closeGallery() { document.getElementById('gallery-modal').classList.add('hidden'); document.getElementById('gallery-modal').classList.remove('flex'); }
 function updateGalleryModal() { document.getElementById('modal-img').src = currentGallery[currentIndex]; document.getElementById('gallery-counter').textContent = `${currentIndex + 1} / ${currentGallery.length}`; }
 function nextImg() { currentIndex = (currentIndex + 1) % currentGallery.length; updateGalleryModal(); }
 function prevImg() { currentIndex = (currentIndex - 1 + currentGallery.length) % currentGallery.length; updateGalleryModal(); }
