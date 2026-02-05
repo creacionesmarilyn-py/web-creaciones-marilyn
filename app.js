@@ -1,31 +1,50 @@
-// app.js - VERSIÓN SINCRONIZADA CON MENÚ ADMIN
+// app.js - VERSIÓN MASTER PROFESIONAL (Sincronización API Instantánea)
 let cart = JSON.parse(localStorage.getItem('marilyn_cart')) || [];
 let allProducts = [];
 let activeCategory = 'todas';
 let currentGallery = [];
 let currentIndex = 0;
 
-const GITHUB_RAW_URL = "https://raw.githubusercontent.com/creacionesmarilyn-py/web-creaciones-marilyn/main/database.json";
+// URL de la API (Igual que el Admin para que sea instantáneo)
+const GITHUB_API_URL = "https://api.github.com/repos/creacionesmarilyn-py/web-creaciones-marilyn/contents/database.json";
 const RAW_BASE_URL = "https://raw.githubusercontent.com/creacionesmarilyn-py/web-creaciones-marilyn/main/";
 
-// 1. CARGA DE DATOS (CON CÓDIGO DE SEGURIDAD PARA CARGA RÁPIDA)
+// 1. CARGA DE DATOS (TÚNEL DE ALTA VELOCIDAD)
 async function loadStore() {
     try {
-        const response = await fetch(`${GITHUB_RAW_URL}?v=${Date.now()}`, { cache: "no-store" });
+        // Consultamos a la API con un "cache-buster" de tiempo
+        const response = await fetch(`${GITHUB_API_URL}?v=${Date.now()}`);
+        if (!response.ok) throw new Error("Error de conexión");
+
         const data = await response.json();
-        allProducts = data.products.reverse();
+        
+        // DECODIFICACIÓN PROFESIONAL (Igual a la del Admin para evitar errores de texto)
+        const content = JSON.parse(decodeURIComponent(escape(atob(data.content))));
+        allProducts = content.products.reverse();
+        
+        console.log("🚀 Sincronización API Exitosa. Productos cargados.");
+        
         renderCategories();
         applyFilters(); 
         updateCartUI();
-        console.log("🚀 Sincronización con Admin exitosa");
-    } catch (e) { console.error("Error:", e); }
+    } catch (e) { 
+        console.error("🚨 Error de Sincronización:", e);
+        // Fallback: Si la API falla, intentamos el método RAW tradicional
+        fetch(`https://raw.githubusercontent.com/creacionesmarilyn-py/web-creaciones-marilyn/main/database.json?v=${Date.now()}`)
+            .then(res => res.json())
+            .then(data => {
+                allProducts = data.products.reverse();
+                renderCategories();
+                applyFilters();
+            });
+    }
 }
 
-// 2. FILTROS
+// 2. FILTROS Y CATEGORÍAS
 function renderCategories() {
     const container = document.getElementById('category-filters');
     if(!container) return;
-    const categories = ['todas', ...new Set(allProducts.map(p => p.collection.toLowerCase().trim()))];
+    const categories = ['todas', ...new Set(allProducts.map(p => (p.collection || "").toLowerCase().trim()))];
     container.innerHTML = categories.map(cat => `
         <button onclick="filterByCategory('${cat}')" 
             class="whitespace-nowrap px-6 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all duration-300 shadow-sm
@@ -38,14 +57,14 @@ function filterByCategory(cat) { activeCategory = cat; renderCategories(); apply
 function applyFilters() {
     const searchTerm = document.getElementById('search-input')?.value.toLowerCase().trim() || "";
     const filtered = allProducts.filter(p => {
-        const matchesSearch = p.name.toLowerCase().includes(searchTerm);
-        const matchesCategory = activeCategory === 'todas' || p.collection.toLowerCase().trim() === activeCategory;
+        const matchesSearch = (p.name || "").toLowerCase().includes(searchTerm);
+        const matchesCategory = activeCategory === 'todas' || (p.collection || "").toLowerCase().trim() === activeCategory;
         return matchesSearch && matchesCategory;
     });
     renderProducts(filtered);
 }
 
-// 3. DIBUJO DE PRODUCTOS (MAPEO DE TUS PESTAÑAS DEL ADMIN)
+// 3. DIBUJO DE PRODUCTOS (TRIPLE BLINDAJE DE ETIQUETAS)
 function renderProducts(products) {
     const grid = document.getElementById('product-grid');
     if(!grid) return;
@@ -54,7 +73,7 @@ function renderProducts(products) {
     products.forEach(p => {
         const statusStr = (p.status || "").toLowerCase();
         
-        // Coincidencia con tus opciones del desplegable
+        // Coincidencia exacta con lo que elegís en tus pestañas del Admin
         const isAgotado = statusStr.includes("agotado") || statusStr.includes("sin stock");
         const isOferta = statusStr.includes("oferta");
         const isNuevo = statusStr.includes("nuevo");
@@ -94,7 +113,7 @@ function renderProducts(products) {
     });
 }
 
-// 4. CARRITO, GALERÍA Y WHATSAPP (FUNCIONES ÚNICAS)
+// 4. FUNCIONES DE APOYO (CARRITO Y GALERÍA)
 function addToCart(id, name, price) { 
     const item = cart.find(i => i.id === id); 
     if (item) item.qty++; else cart.push({ id, name, price, qty: 1 }); 
@@ -103,6 +122,7 @@ function addToCart(id, name, price) {
 function saveCart() { localStorage.setItem('marilyn_cart', JSON.stringify(cart)); updateCartUI(); }
 function toggleCart(open = null) {
     const drawer = document.getElementById('cart-drawer'), overlay = document.getElementById('cart-overlay');
+    if (!drawer || !overlay) return;
     if (open === true) { drawer.classList.remove('translate-x-full'); overlay.classList.remove('hidden'); }
     else { drawer.classList.add('translate-x-full'); overlay.classList.add('hidden'); }
 }
@@ -115,7 +135,8 @@ function updateCartUI() {
         total += item.price * item.qty;
         container.innerHTML += `<div class="flex justify-between items-center mb-3 bg-gray-50 p-3 rounded-lg"><div class="text-left"><p class="font-bold text-[9px] uppercase">${item.name}</p><p class="text-pink-600 font-bold text-[10px]">Gs. ${item.price.toLocaleString()}</p></div><div class="flex items-center gap-2"><button onclick="removeFromCart(${item.id})" class="w-6 h-6 bg-gray-200 rounded-full text-xs">-</button><span class="text-xs font-bold">${item.qty}</span><button onclick="addToCart(${item.id},'${item.name}',${item.price})" class="w-6 h-6 bg-gray-200 rounded-full text-xs">+</button></div></div>`;
     });
-    document.getElementById('cart-total-display').textContent = `Gs. ${total.toLocaleString()}`;
+    const display = document.getElementById('cart-total-display');
+    if(display) display.textContent = `Gs. ${total.toLocaleString()}`;
 }
 function removeFromCart(id) {
     const index = cart.findIndex(i => i.id === id);
@@ -124,7 +145,12 @@ function removeFromCart(id) {
 }
 function openGallery(images) { currentGallery = images; currentIndex = 0; updateGalleryModal(); document.getElementById('gallery-modal').classList.replace('hidden', 'flex'); }
 function closeGallery() { document.getElementById('gallery-modal').classList.replace('flex', 'hidden'); }
-function updateGalleryModal() { document.getElementById('modal-img').src = currentGallery[currentIndex]; document.getElementById('gallery-counter').textContent = `${currentIndex + 1} / ${currentGallery.length}`; }
+function updateGalleryModal() { 
+    const modalImg = document.getElementById('modal-img');
+    const counter = document.getElementById('gallery-counter');
+    if(modalImg) modalImg.src = currentGallery[currentIndex]; 
+    if(counter) counter.textContent = `${currentIndex + 1} / ${currentGallery.length}`; 
+}
 function nextImg() { currentIndex = (currentIndex + 1) % currentGallery.length; updateGalleryModal(); }
 function prevImg() { currentIndex = (currentIndex - 1 + currentGallery.length) % currentGallery.length; updateGalleryModal(); }
 function sendWhatsApp() {
