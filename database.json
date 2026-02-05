@@ -815,7 +815,7 @@
       "name": "Craqueado N 12 negro",
       "price": 10000,
       "collection": "Craquelado N12 de 10000",
-      "status": "agotado",
+      "status": "normal",
       "image": "img/b46f6b19-8c90-4eb3-b68a-c738bb2628f5.jpeg",
       "images": [
         "img/b46f6b19-8c90-4eb3-b68a-c738bb2628f5.jpeg"
@@ -874,6 +874,17 @@
       "image": "img/pict2503151632090000.jpg",
       "images": [
         "img/pict2503151632090000.jpg"
+      ]
+    },
+    {
+      "id": 1770323607446,
+      "name": "Media perlas rosadas",
+      "price": 5000,
+      "collection": "Media perlas",
+      "status": "nuevo",
+      "image": "img/pict2503151632310000.jpg",
+      "images": [
+        "img/pict2503151632310000.jpg"
       ]
     }
   ]
