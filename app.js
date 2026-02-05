@@ -1,11 +1,13 @@
-// app.js - Fase 12: VITRINA PÚBLICA (SINCRONIZADA)
+// app.js - Fase 12: VITRINA PÚBLICA (Sincronización de Imágenes RAW)
 let cart = JSON.parse(localStorage.getItem('marilyn_cart')) || [];
 let allProducts = [];
 let activeCategory = 'todas';
 let currentGallery = [];
 let currentIndex = 0;
 
+// CONFIGURACIÓN DE RUTAS
 const GITHUB_RAW_URL = "https://raw.githubusercontent.com/creacionesmarilyn-py/web-creaciones-marilyn/main/database.json";
+const RAW_BASE_URL = "https://raw.githubusercontent.com/creacionesmarilyn-py/web-creaciones-marilyn/main/";
 
 async function loadStore() {
     try {
@@ -50,15 +52,24 @@ function renderProducts(products) {
     const grid = document.getElementById('product-grid');
     if(!grid) return;
     grid.innerHTML = products.length === 0 ? '<p class="text-center col-span-full py-20 text-gray-400 uppercase text-[10px]">Sin resultados</p>' : '';
+    
     products.forEach(p => {
         const isAgotado = p.status === 'agotado';
-        const mainImg = p.images ? p.images[0] : p.image;
-        const galleryArray = p.images ? p.images : [p.image];
+        
+        // CIRUGÍA DE RUTAS: Convertimos rutas relativas en links directos a GitHub
+        const rawImgPath = p.images ? p.images[0] : p.image;
+        const fullImgUrl = rawImgPath.startsWith('http') ? rawImgPath : RAW_BASE_URL + rawImgPath;
+        
+        // Preparamos la galería con rutas completas
+        const galleryArray = (p.images ? p.images : [p.image]).map(img => 
+            img.startsWith('http') ? img : RAW_BASE_URL + img
+        );
+
         const div = document.createElement('div');
         div.className = `bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden group transition-all duration-500 ${isAgotado ? 'opacity-70' : 'hover:shadow-xl hover:-translate-y-1'}`;
         div.innerHTML = `
             <div class="relative h-64 overflow-hidden cursor-pointer" onclick='openGallery(${JSON.stringify(galleryArray)})'>
-                <img src="${mainImg}" loading="lazy" class="w-full h-full object-cover transition-transform duration-700 ${!isAgotado ? 'group-hover:scale-110' : 'grayscale' }">
+                <img src="${fullImgUrl}" loading="lazy" class="w-full h-full object-cover transition-transform duration-700 ${!isAgotado ? 'group-hover:scale-110' : 'grayscale' }">
                 <div class="absolute top-3 right-3 bg-white/90 px-2 py-1 rounded-full text-[9px] font-bold uppercase text-gray-500">${p.collection}</div>
             </div>
             <div class="p-6 text-center">
@@ -74,7 +85,7 @@ function renderProducts(products) {
     });
 }
 
-// FUNCIONES AUXILIARES (Galería, Carrito, WhatsApp)
+// FUNCIONES AUXILIARES
 function openGallery(images) { currentGallery = images; currentIndex = 0; updateGalleryModal(); document.getElementById('gallery-modal').classList.replace('hidden', 'flex'); }
 function closeGallery() { document.getElementById('gallery-modal').classList.replace('flex', 'hidden'); }
 function updateGalleryModal() { document.getElementById('modal-img').src = currentGallery[currentIndex]; document.getElementById('gallery-counter').textContent = `${currentIndex + 1} / ${currentGallery.length}`; }
