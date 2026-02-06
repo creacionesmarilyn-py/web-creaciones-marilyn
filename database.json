@@ -1803,6 +1803,17 @@
       "images": [
         "img/turquesa.jpeg"
       ]
+    },
+    {
+      "id": 1770401439858,
+      "name": "Hilo chino x 20 metros verde",
+      "price": 8000,
+      "collection": "Hilo chino x 20 metros ",
+      "status": "normal",
+      "image": "img/whatsapp-image-2026-02-06-at-8.39.34-am.jpeg",
+      "images": [
+        "img/whatsapp-image-2026-02-06-at-8.39.34-am.jpeg"
+      ]
     }
   ]
 }
