@@ -1770,6 +1770,17 @@
       "images": [
         "img/marron-oscuro.jpeg"
       ]
+    },
+    {
+      "id": 1770401364726,
+      "name": "Hilo chino x 20 metros rosa bebe",
+      "price": 8000,
+      "collection": "Hilo chino x 20 metros ",
+      "status": "normal",
+      "image": "img/rosa-bebe.jpeg",
+      "images": [
+        "img/rosa-bebe.jpeg"
+      ]
     }
   ]
 }
