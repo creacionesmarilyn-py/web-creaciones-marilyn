@@ -1066,6 +1066,17 @@
       "images": [
         "img/whatsapp-image-2026-02-03-at-12.53.20-pm.jpeg"
       ]
+    },
+    {
+      "id": 1770396319615,
+      "name": "Craquelado N 12 ",
+      "price": 10000,
+      "collection": "craquelado N12 de 10000",
+      "status": "normal",
+      "image": "img/whatsapp-image-2026-02-03-at-12.53.43-pm.jpeg",
+      "images": [
+        "img/whatsapp-image-2026-02-03-at-12.53.43-pm.jpeg"
+      ]
     }
   ]
 }
