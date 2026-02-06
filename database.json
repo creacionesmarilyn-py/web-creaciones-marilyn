@@ -1605,6 +1605,17 @@
       "images": [
         "img/whatsapp-image-2026-02-06-at-8.29.52-am.jpeg"
       ]
+    },
+    {
+      "id": 1770400083572,
+      "name": "Alambre de 3 metros dorado",
+      "price": 5000,
+      "collection": "Alambre de 3 metros 5000",
+      "status": "normal",
+      "image": "img/whatsapp-image-2026-02-06-at-8.32.23-am.jpeg",
+      "images": [
+        "img/whatsapp-image-2026-02-06-at-8.32.23-am.jpeg"
+      ]
     }
   ]
 }
