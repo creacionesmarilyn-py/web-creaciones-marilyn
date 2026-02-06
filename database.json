@@ -956,6 +956,17 @@
       "images": [
         "img/pict2503151634240000.jpg"
       ]
+    },
+    {
+      "id": 1770393635721,
+      "name": "Media perlas turquesas",
+      "price": 5000,
+      "collection": "Media perlas",
+      "status": "agotado",
+      "image": "img/pict2503151634520000.jpg",
+      "images": [
+        "img/pict2503151634520000.jpg"
+      ]
     }
   ]
 }
