@@ -1726,6 +1726,17 @@
       "images": [
         "img/fuccia-claro.jpeg"
       ]
+    },
+    {
+      "id": 1770401269113,
+      "name": "Hilo chino x 20 metros fuccia oscuro",
+      "price": 8000,
+      "collection": "Hilo chino x 20 metros ",
+      "status": "normal",
+      "image": "img/fuccia-oscuro.jpeg",
+      "images": [
+        "img/fuccia-oscuro.jpeg"
+      ]
     }
   ]
 }
