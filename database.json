@@ -1407,6 +1407,17 @@
       "images": [
         "img/whatsapp-image-2026-02-06-at-8.24.34-am.jpeg"
       ]
+    },
+    {
+      "id": 1770399405739,
+      "name": "Perlas N 10 lila",
+      "price": 10000,
+      "collection": "Perlas N 10 de 10000",
+      "status": "normal",
+      "image": "img/whatsapp-image-2026-02-06-at-8.25.07-am.jpeg",
+      "images": [
+        "img/whatsapp-image-2026-02-06-at-8.25.07-am.jpeg"
+      ]
     }
   ]
 }
