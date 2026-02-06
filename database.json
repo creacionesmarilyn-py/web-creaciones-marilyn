@@ -1484,6 +1484,17 @@
       "images": [
         "img/whatsapp-image-2026-02-06-at-8.26.44-am.jpeg"
       ]
+    },
+    {
+      "id": 1770399643800,
+      "name": "Perlas N 10 rojo",
+      "price": 10000,
+      "collection": "Perlas N 10 de 10000",
+      "status": "normal",
+      "image": "img/whatsapp-image-2026-02-06-at-8.26.57-am.jpeg",
+      "images": [
+        "img/whatsapp-image-2026-02-06-at-8.26.57-am.jpeg"
+      ]
     }
   ]
 }
