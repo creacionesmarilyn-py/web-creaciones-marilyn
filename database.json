@@ -945,6 +945,17 @@
       "images": [
         "img/pict2503151633520000.jpg"
       ]
+    },
+    {
+      "id": 1770393585211,
+      "name": "Media perlas azules",
+      "price": 5000,
+      "collection": "Media perlas",
+      "status": "normal",
+      "image": "img/pict2503151634240000.jpg",
+      "images": [
+        "img/pict2503151634240000.jpg"
+      ]
     }
   ]
 }
