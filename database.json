@@ -1,13 +1,6 @@
 {
   "products": [
     {
-      "id": 1,
-      "name": "Media Perlas Doradas",
-      "price": 5000,
-      "image": "img/media_perlas_doradas.jpg",
-      "collection": "Premium"
-    },
-    {
       "id": 1769910573653,
       "name": "Perla numero 4 amarilla",
       "price": 5000,
@@ -881,7 +874,7 @@
       "name": "Media perlas rosadas",
       "price": 5000,
       "collection": "Media perlas",
-      "status": "nuevo",
+      "status": "agotado",
       "image": "img/pict2503151632310000.jpg",
       "images": [
         "img/pict2503151632310000.jpg"
@@ -892,7 +885,7 @@
       "name": "Media perlas de corazón ",
       "price": 5000,
       "collection": "Media perlas",
-      "status": "oferta",
+      "status": "agotado",
       "image": "img/pict2503151632520000.jpg",
       "images": [
         "img/pict2503151632520000.jpg"
@@ -903,10 +896,1165 @@
       "name": "Media perla fuccia ",
       "price": 5000,
       "collection": "Media perlas",
-      "status": "nuevo",
+      "status": "agotado",
       "image": "img/pict2503151633140000.jpg",
       "images": [
         "img/pict2503151633140000.jpg"
+      ]
+    },
+    {
+      "id": 1770326615434,
+      "name": "Media perlas doradas",
+      "price": 5000,
+      "collection": "Media perlas",
+      "status": "oferta",
+      "image": "img/pict2503151633320000.jpg",
+      "images": [
+        "img/pict2503151633320000.jpg"
+      ]
+    },
+    {
+      "id": 1770315968382,
+      "name": "Craquelada N 12 turquesa",
+      "price": 10000,
+      "collection": "Craquelado N12 de 10000",
+      "status": "normal",
+      "image": "img/22811305-92fd-474f-8e15-bccf81835b9f.jpeg",
+      "images": [
+        "img/22811305-92fd-474f-8e15-bccf81835b9f.jpeg"
+      ]
+    },
+    {
+      "id": 1770393533232,
+      "name": "Media perlas doradas",
+      "price": 5000,
+      "collection": "Media perlas",
+      "status": "normal",
+      "image": "img/pict2503151633320000.jpg",
+      "images": [
+        "img/pict2503151633320000.jpg"
+      ]
+    },
+    {
+      "id": 1770393559797,
+      "name": "Media perlas plateadas",
+      "price": 5000,
+      "collection": "Media perlas",
+      "status": "normal",
+      "image": "img/pict2503151633520000.jpg",
+      "images": [
+        "img/pict2503151633520000.jpg"
+      ]
+    },
+    {
+      "id": 1770393585211,
+      "name": "Media perlas azules",
+      "price": 5000,
+      "collection": "Media perlas",
+      "status": "normal",
+      "image": "img/pict2503151634240000.jpg",
+      "images": [
+        "img/pict2503151634240000.jpg"
+      ]
+    },
+    {
+      "id": 1770393635721,
+      "name": "Media perlas turquesas",
+      "price": 5000,
+      "collection": "Media perlas",
+      "status": "agotado",
+      "image": "img/pict2503151634520000.jpg",
+      "images": [
+        "img/pict2503151634520000.jpg"
+      ]
+    },
+    {
+      "id": 1770393680021,
+      "name": "Media perlas rosadas 2",
+      "price": 5000,
+      "collection": "Media perlas",
+      "status": "agotado",
+      "image": "img/pict2503151635110000.jpg",
+      "images": [
+        "img/pict2503151635110000.jpg"
+      ]
+    },
+    {
+      "id": 1770393732147,
+      "name": "Media perlas blancas",
+      "price": 5000,
+      "collection": "Media perlas",
+      "status": "normal",
+      "image": "img/pict2503151636000000.jpg",
+      "images": [
+        "img/pict2503151636000000.jpg"
+      ]
+    },
+    {
+      "id": 1770393758846,
+      "name": "Media perlas amarillas",
+      "price": 5000,
+      "collection": "Media perlas",
+      "status": "agotado",
+      "image": "img/pict2503151636200000.jpg",
+      "images": [
+        "img/pict2503151636200000.jpg"
+      ]
+    },
+    {
+      "id": 1770393787268,
+      "name": "Media perlas lagrimas",
+      "price": 5000,
+      "collection": "Media perlas",
+      "status": "normal",
+      "image": "img/pict2503151636380000.jpg",
+      "images": [
+        "img/pict2503151636380000.jpg"
+      ]
+    },
+    {
+      "id": 1770396068375,
+      "name": "Craquelado N 12 fuccia",
+      "price": 10000,
+      "collection": "craquelado N12 de 10000",
+      "status": "normal",
+      "image": "img/whatsapp-image-2026-02-03-at-12.51.28-pm.jpeg",
+      "images": [
+        "img/whatsapp-image-2026-02-03-at-12.51.28-pm.jpeg"
+      ]
+    },
+    {
+      "id": 1770396147031,
+      "name": "Craquelado N 12 arcoíris ",
+      "price": 10000,
+      "collection": "craquelado N12 de 10000",
+      "status": "normal",
+      "image": "img/whatsapp-image-2026-02-03-at-12.52.08-pm.jpeg",
+      "images": [
+        "img/whatsapp-image-2026-02-03-at-12.52.08-pm.jpeg"
+      ]
+    },
+    {
+      "id": 1770396231968,
+      "name": "Craquelado N 12 marron",
+      "price": 10000,
+      "collection": "craquelado N12 de 10000",
+      "status": "normal",
+      "image": "img/whatsapp-image-2026-02-03-at-12.52.22-pm.jpeg",
+      "images": [
+        "img/whatsapp-image-2026-02-03-at-12.52.22-pm.jpeg"
+      ]
+    },
+    {
+      "id": 1770396255489,
+      "name": "Craquelado N 12 negro",
+      "price": 10000,
+      "collection": "craquelado N12 de 10000",
+      "status": "normal",
+      "image": "img/whatsapp-image-2026-02-03-at-12.52.45-pm.jpeg",
+      "images": [
+        "img/whatsapp-image-2026-02-03-at-12.52.45-pm.jpeg"
+      ]
+    },
+    {
+      "id": 1770396281203,
+      "name": "Craquelado N 12 blanco",
+      "price": 10000,
+      "collection": "craquelado N12 de 10000",
+      "status": "normal",
+      "image": "img/whatsapp-image-2026-02-03-at-12.53.20-pm.jpeg",
+      "images": [
+        "img/whatsapp-image-2026-02-03-at-12.53.20-pm.jpeg"
+      ]
+    },
+    {
+      "id": 1770396319615,
+      "name": "Craquelado N 12 ",
+      "price": 10000,
+      "collection": "craquelado N12 de 10000",
+      "status": "normal",
+      "image": "img/whatsapp-image-2026-02-03-at-12.53.43-pm.jpeg",
+      "images": [
+        "img/whatsapp-image-2026-02-03-at-12.53.43-pm.jpeg"
+      ]
+    },
+    {
+      "id": 1770396366446,
+      "name": "Craquelado N 12 amarillo ",
+      "price": 10000,
+      "collection": "craquelado N12 de 10000",
+      "status": "normal",
+      "image": "img/whatsapp-image-2026-02-03-at-12.54.03-pm.jpeg",
+      "images": [
+        "img/whatsapp-image-2026-02-03-at-12.54.03-pm.jpeg"
+      ]
+    },
+    {
+      "id": 1770396394450,
+      "name": "Craquelado N 12 verde opaco",
+      "price": 10000,
+      "collection": "craquelado N12 de 10000",
+      "status": "normal",
+      "image": "img/whatsapp-image-2026-02-03-at-12.54.35-pm.jpeg",
+      "images": [
+        "img/whatsapp-image-2026-02-03-at-12.54.35-pm.jpeg"
+      ]
+    },
+    {
+      "id": 1770396424828,
+      "name": "Craquelado N 12 lila",
+      "price": 10000,
+      "collection": "craquelado N12 de 10000",
+      "status": "normal",
+      "image": "img/whatsapp-image-2026-02-03-at-12.54.54-pm.jpeg",
+      "images": [
+        "img/whatsapp-image-2026-02-03-at-12.54.54-pm.jpeg"
+      ]
+    },
+    {
+      "id": 1770396452303,
+      "name": "Craquelado N 12 turquesa",
+      "price": 10000,
+      "collection": "craquelado N12 de 10000",
+      "status": "normal",
+      "image": "img/whatsapp-image-2026-02-03-at-12.55.24-pm.jpeg",
+      "images": [
+        "img/whatsapp-image-2026-02-03-at-12.55.24-pm.jpeg"
+      ]
+    },
+    {
+      "id": 1770397651479,
+      "name": "Craquelado N 10 negro",
+      "price": 10000,
+      "collection": "Craquelado N 10 de 10000",
+      "status": "normal",
+      "image": "img/whatsapp-image-2026-02-03-at-12.50.11-pm.jpeg",
+      "images": [
+        "img/whatsapp-image-2026-02-03-at-12.50.11-pm.jpeg"
+      ]
+    },
+    {
+      "id": 1770397671241,
+      "name": "Craquelado N 10 blanco",
+      "price": 10000,
+      "collection": "Craquelado N 10 de 10000",
+      "status": "normal",
+      "image": "img/whatsapp-image-2026-02-03-at-12.49.54-pm.jpeg",
+      "images": [
+        "img/whatsapp-image-2026-02-03-at-12.49.54-pm.jpeg"
+      ]
+    },
+    {
+      "id": 1770397689860,
+      "name": "Craquelado N 10 rojo",
+      "price": 10000,
+      "collection": "Craquelado N 10 de 10000",
+      "status": "normal",
+      "image": "img/whatsapp-image-2026-02-03-at-12.50.26-pm.jpeg",
+      "images": [
+        "img/whatsapp-image-2026-02-03-at-12.50.26-pm.jpeg"
+      ]
+    },
+    {
+      "id": 1770397714613,
+      "name": "Craquelado N 10 arcoiris",
+      "price": 10000,
+      "collection": "Craquelado N 10 de 10000",
+      "status": "normal",
+      "image": "img/whatsapp-image-2026-02-03-at-12.50.42-pm.jpeg",
+      "images": [
+        "img/whatsapp-image-2026-02-03-at-12.50.42-pm.jpeg"
+      ]
+    },
+    {
+      "id": 1770397737370,
+      "name": "Craquelado N 10 verde",
+      "price": 10000,
+      "collection": "Craquelado N 10 de 10000",
+      "status": "normal",
+      "image": "img/whatsapp-image-2026-02-03-at-12.50.54-pm.jpeg",
+      "images": [
+        "img/whatsapp-image-2026-02-03-at-12.50.54-pm.jpeg"
+      ]
+    },
+    {
+      "id": 1770397864112,
+      "name": "Craquelado N 10 rosado",
+      "price": 10000,
+      "collection": "Craquelado N 10 de 10000",
+      "status": "normal",
+      "image": "img/whatsapp-image-2026-02-06-at-8.10.23-am.jpeg",
+      "images": [
+        "img/whatsapp-image-2026-02-06-at-8.10.23-am.jpeg"
+      ]
+    },
+    {
+      "id": 1770398009732,
+      "name": "Perlas N 6  amarillo ",
+      "price": 10000,
+      "collection": "Perlas N 6 de 10000",
+      "status": "normal",
+      "image": "img/amarillo-claro-numero-6.jpeg",
+      "images": [
+        "img/amarillo-claro-numero-6.jpeg"
+      ]
+    },
+    {
+      "id": 1770398054402,
+      "name": "Perlas N 6 amarillo opaco",
+      "price": 10000,
+      "collection": "Perlas N 6 de 10000",
+      "status": "normal",
+      "image": "img/amarillo-numero-6.jpeg",
+      "images": [
+        "img/amarillo-numero-6.jpeg"
+      ]
+    },
+    {
+      "id": 1770398079843,
+      "name": "Perlas N 6 azul",
+      "price": 10000,
+      "collection": "Perlas N 6 de 10000",
+      "status": "normal",
+      "image": "img/azul-numero-6.jpeg",
+      "images": [
+        "img/azul-numero-6.jpeg"
+      ]
+    },
+    {
+      "id": 1770398099568,
+      "name": "Perlas N 6 celeste",
+      "price": 10000,
+      "collection": "Perlas N 6 de 10000",
+      "status": "normal",
+      "image": "img/celeste-numero-6.jpeg",
+      "images": [
+        "img/celeste-numero-6.jpeg"
+      ]
+    },
+    {
+      "id": 1770398121391,
+      "name": "Perlas N 6 dorado opaco",
+      "price": 10000,
+      "collection": "Perlas N 6 de 10000",
+      "status": "normal",
+      "image": "img/dorado-opaco-numero-.jpeg",
+      "images": [
+        "img/dorado-opaco-numero-.jpeg"
+      ]
+    },
+    {
+      "id": 1770398144801,
+      "name": "Perlas N 6 gris opaco",
+      "price": 10000,
+      "collection": "Perlas N 6 de 10000",
+      "status": "normal",
+      "image": "img/gris-opaco.jpeg",
+      "images": [
+        "img/gris-opaco.jpeg"
+      ]
+    },
+    {
+      "id": 1770398167815,
+      "name": "Perlas N 6 lila",
+      "price": 10000,
+      "collection": "Perlas N 6 de 10000",
+      "status": "normal",
+      "image": "img/lila-numero-6.jpeg",
+      "images": [
+        "img/lila-numero-6.jpeg"
+      ]
+    },
+    {
+      "id": 1770398195200,
+      "name": "Perlas N 6 cristal",
+      "price": 10000,
+      "collection": "Perlas N 6 de 10000",
+      "status": "normal",
+      "image": "img/perlas-de-cristal-numero-6.jpeg",
+      "images": [
+        "img/perlas-de-cristal-numero-6.jpeg"
+      ]
+    },
+    {
+      "id": 1770398218754,
+      "name": "Perlas N 6 turquesa",
+      "price": 10000,
+      "collection": "Perlas N 6 de 10000",
+      "status": "normal",
+      "image": "img/turquesa-numero-6.jpeg",
+      "images": [
+        "img/turquesa-numero-6.jpeg"
+      ]
+    },
+    {
+      "id": 1770398343717,
+      "name": "Perlas N 6 rosa viejo",
+      "price": 10000,
+      "collection": "Perlas N 6 de 10000",
+      "status": "normal",
+      "image": "img/rosa-viejo.jpeg",
+      "images": [
+        "img/rosa-viejo.jpeg"
+      ]
+    },
+    {
+      "id": 1770398391424,
+      "name": "Perlas N 8 amarillo",
+      "price": 10000,
+      "collection": "Perlas N 8 de 10000",
+      "status": "normal",
+      "image": "img/amarillo-numero-8.jpeg",
+      "images": [
+        "img/amarillo-numero-8.jpeg"
+      ]
+    },
+    {
+      "id": 1770398418839,
+      "name": "Perlas N 8 cruz plateada",
+      "price": 10000,
+      "collection": "Perlas N 8 de 10000",
+      "status": "normal",
+      "image": "img/blanco-con-cruz-plateada-8.jpeg",
+      "images": [
+        "img/blanco-con-cruz-plateada-8.jpeg"
+      ]
+    },
+    {
+      "id": 1770398434648,
+      "name": "Perlas N 8 celeste",
+      "price": 10000,
+      "collection": "Perlas N 8 de 10000",
+      "status": "normal",
+      "image": "img/celeste-numero-8.jpeg",
+      "images": [
+        "img/celeste-numero-8.jpeg"
+      ]
+    },
+    {
+      "id": 1770398451867,
+      "name": "Perlas N 8 fuccia",
+      "price": 10000,
+      "collection": "Perlas N 8 de 10000",
+      "status": "normal",
+      "image": "img/fuccia-numero-8.jpeg",
+      "images": [
+        "img/fuccia-numero-8.jpeg"
+      ]
+    },
+    {
+      "id": 1770398473227,
+      "name": "Perlas N 8 gris opaco",
+      "price": 10000,
+      "collection": "Perlas N 8 de 10000",
+      "status": "normal",
+      "image": "img/gris-numero-8.jpeg",
+      "images": [
+        "img/gris-numero-8.jpeg"
+      ]
+    },
+    {
+      "id": 1770398495015,
+      "name": "Perlas N 8 lila",
+      "price": 10000,
+      "collection": "Perlas N 8 de 10000",
+      "status": "normal",
+      "image": "img/lila-numero-8-.jpeg",
+      "images": [
+        "img/lila-numero-8-.jpeg"
+      ]
+    },
+    {
+      "id": 1770398519940,
+      "name": "Perlas N 8 lila fuerte",
+      "price": 10000,
+      "collection": "Perlas N 8 de 10000",
+      "status": "normal",
+      "image": "img/lila-numero-8.jpeg",
+      "images": [
+        "img/lila-numero-8.jpeg"
+      ]
+    },
+    {
+      "id": 1770398538850,
+      "name": "Perlas N 8  turquesa",
+      "price": 10000,
+      "collection": "Perlas N 8 de 10000",
+      "status": "normal",
+      "image": "img/turquesa-numero-8.jpeg",
+      "images": [
+        "img/turquesa-numero-8.jpeg"
+      ]
+    },
+    {
+      "id": 1770398594351,
+      "name": "Perlas N 8 vino",
+      "price": 10000,
+      "collection": "Perlas N 8 de 10000",
+      "status": "normal",
+      "image": "img/vino-numero-8.jpeg",
+      "images": [
+        "img/vino-numero-8.jpeg"
+      ]
+    },
+    {
+      "id": 1770399379434,
+      "name": "Perlas N 10 gris opaco",
+      "price": 10000,
+      "collection": "Perlas N 10 de 10000",
+      "status": "normal",
+      "image": "img/whatsapp-image-2026-02-06-at-8.24.34-am.jpeg",
+      "images": [
+        "img/whatsapp-image-2026-02-06-at-8.24.34-am.jpeg"
+      ]
+    },
+    {
+      "id": 1770399405739,
+      "name": "Perlas N 10 lila",
+      "price": 10000,
+      "collection": "Perlas N 10 de 10000",
+      "status": "normal",
+      "image": "img/whatsapp-image-2026-02-06-at-8.25.07-am.jpeg",
+      "images": [
+        "img/whatsapp-image-2026-02-06-at-8.25.07-am.jpeg"
+      ]
+    },
+    {
+      "id": 1770399426467,
+      "name": "Perlas N 10 turquesa",
+      "price": 10000,
+      "collection": "Perlas N 10 de 10000",
+      "status": "normal",
+      "image": "img/whatsapp-image-2026-02-06-at-8.25.41-am.jpeg",
+      "images": [
+        "img/whatsapp-image-2026-02-06-at-8.25.41-am.jpeg"
+      ]
+    },
+    {
+      "id": 1770399464081,
+      "name": "Perlas N 10 naranjado",
+      "price": 10000,
+      "collection": "Perlas N 10 de 10000",
+      "status": "normal",
+      "image": "img/whatsapp-image-2026-02-06-at-8.25.53-am.jpeg",
+      "images": [
+        "img/whatsapp-image-2026-02-06-at-8.25.53-am.jpeg"
+      ]
+    },
+    {
+      "id": 1770399487553,
+      "name": "Perlas N 10 marron",
+      "price": 10000,
+      "collection": "Perlas N 10 de 10000",
+      "status": "normal",
+      "image": "img/whatsapp-image-2026-02-06-at-8.26.10-am.jpeg",
+      "images": [
+        "img/whatsapp-image-2026-02-06-at-8.26.10-am.jpeg"
+      ]
+    },
+    {
+      "id": 1770399510928,
+      "name": "Perlas N 10 verde",
+      "price": 10000,
+      "collection": "Perlas N 10 de 10000",
+      "status": "normal",
+      "image": "img/whatsapp-image-2026-02-06-at-8.26.23-am.jpeg",
+      "images": [
+        "img/whatsapp-image-2026-02-06-at-8.26.23-am.jpeg"
+      ]
+    },
+    {
+      "id": 1770399569660,
+      "name": "Perlas N 10 amarillo ",
+      "price": 10000,
+      "collection": "Perlas N 10 de 10000",
+      "status": "normal",
+      "image": "img/whatsapp-image-2026-02-06-at-8.26.34-am.jpeg",
+      "images": [
+        "img/whatsapp-image-2026-02-06-at-8.26.34-am.jpeg"
+      ]
+    },
+    {
+      "id": 1770399592295,
+      "name": "Perlas N 10 dorado",
+      "price": 10000,
+      "collection": "Perlas N 10 de 10000",
+      "status": "normal",
+      "image": "img/whatsapp-image-2026-02-06-at-8.26.44-am.jpeg",
+      "images": [
+        "img/whatsapp-image-2026-02-06-at-8.26.44-am.jpeg"
+      ]
+    },
+    {
+      "id": 1770399643800,
+      "name": "Perlas N 10 rojo",
+      "price": 10000,
+      "collection": "Perlas N 10 de 10000",
+      "status": "normal",
+      "image": "img/whatsapp-image-2026-02-06-at-8.26.57-am.jpeg",
+      "images": [
+        "img/whatsapp-image-2026-02-06-at-8.26.57-am.jpeg"
+      ]
+    },
+    {
+      "id": 1770399769900,
+      "name": "Alambre de 3 metros lila",
+      "price": 5000,
+      "collection": "Alambre de 3 metros 5000",
+      "status": "normal",
+      "image": "img/whatsapp-image-2026-02-06-at-8.27.51-am.jpeg",
+      "images": [
+        "img/whatsapp-image-2026-02-06-at-8.27.51-am.jpeg"
+      ]
+    },
+    {
+      "id": 1770399806480,
+      "name": "Alambre de 3 metros lila suave",
+      "price": 5000,
+      "collection": "Alambre de 3 metros 5000",
+      "status": "normal",
+      "image": "img/whatsapp-image-2026-02-06-at-8.28.13-am.jpeg",
+      "images": [
+        "img/whatsapp-image-2026-02-06-at-8.28.13-am.jpeg"
+      ]
+    },
+    {
+      "id": 1770399827860,
+      "name": "Alambre de 3 metros rojo",
+      "price": 5000,
+      "collection": "Alambre de 3 metros 5000",
+      "status": "normal",
+      "image": "img/whatsapp-image-2026-02-06-at-8.28.24-am.jpeg",
+      "images": [
+        "img/whatsapp-image-2026-02-06-at-8.28.24-am.jpeg"
+      ]
+    },
+    {
+      "id": 1770399868356,
+      "name": "Alambre de 3 metros fuccia",
+      "price": 5000,
+      "collection": "Alambre de 3 metros 5000",
+      "status": "normal",
+      "image": "img/whatsapp-image-2026-02-06-at-8.28.34-am.jpeg",
+      "images": [
+        "img/whatsapp-image-2026-02-06-at-8.28.34-am.jpeg"
+      ]
+    },
+    {
+      "id": 1770399937115,
+      "name": "Alambre de 3 metros rosa claro",
+      "price": 5000,
+      "collection": "Alambre de 3 metros 5000",
+      "status": "normal",
+      "image": "img/whatsapp-image-2026-02-06-at-8.28.47-am.jpeg",
+      "images": [
+        "img/whatsapp-image-2026-02-06-at-8.28.47-am.jpeg"
+      ]
+    },
+    {
+      "id": 1770399958179,
+      "name": "Alambre de 3 metros verde",
+      "price": 5000,
+      "collection": "Alambre de 3 metros 5000",
+      "status": "normal",
+      "image": "img/whatsapp-image-2026-02-06-at-8.28.56-am.jpeg",
+      "images": [
+        "img/whatsapp-image-2026-02-06-at-8.28.56-am.jpeg"
+      ]
+    },
+    {
+      "id": 1770400002085,
+      "name": "Alambre de 3 metros color cobre",
+      "price": 5000,
+      "collection": "Alambre de 3 metros 5000",
+      "status": "normal",
+      "image": "img/whatsapp-image-2026-02-06-at-8.29.12-am.jpeg",
+      "images": [
+        "img/whatsapp-image-2026-02-06-at-8.29.12-am.jpeg"
+      ]
+    },
+    {
+      "id": 1770400021742,
+      "name": "Alambre de 3 metros azul",
+      "price": 5000,
+      "collection": "Alambre de 3 metros 5000",
+      "status": "normal",
+      "image": "img/whatsapp-image-2026-02-06-at-8.29.20-am.jpeg",
+      "images": [
+        "img/whatsapp-image-2026-02-06-at-8.29.20-am.jpeg"
+      ]
+    },
+    {
+      "id": 1770400043543,
+      "name": "Alambre de 3 metros plateado",
+      "price": 5000,
+      "collection": "Alambre de 3 metros 5000",
+      "status": "normal",
+      "image": "img/whatsapp-image-2026-02-06-at-8.29.37-am.jpeg",
+      "images": [
+        "img/whatsapp-image-2026-02-06-at-8.29.37-am.jpeg"
+      ]
+    },
+    {
+      "id": 1770400065545,
+      "name": "Alambre de 3 metros negro",
+      "price": 5000,
+      "collection": "Alambre de 3 metros 5000",
+      "status": "normal",
+      "image": "img/whatsapp-image-2026-02-06-at-8.29.52-am.jpeg",
+      "images": [
+        "img/whatsapp-image-2026-02-06-at-8.29.52-am.jpeg"
+      ]
+    },
+    {
+      "id": 1770400083572,
+      "name": "Alambre de 3 metros dorado",
+      "price": 5000,
+      "collection": "Alambre de 3 metros 5000",
+      "status": "normal",
+      "image": "img/whatsapp-image-2026-02-06-at-8.32.23-am.jpeg",
+      "images": [
+        "img/whatsapp-image-2026-02-06-at-8.32.23-am.jpeg"
+      ]
+    },
+    {
+      "id": 1770400200559,
+      "name": "Alambre de 7 metros azul",
+      "price": 10000,
+      "collection": "Alambre de 7 metros 10000",
+      "status": "normal",
+      "image": "img/whatsapp-image-2026-02-06-at-8.31.49-am.jpeg",
+      "images": [
+        "img/whatsapp-image-2026-02-06-at-8.31.49-am.jpeg"
+      ]
+    },
+    {
+      "id": 1770400224951,
+      "name": "Alambre de 7 metros verde",
+      "price": 10000,
+      "collection": "Alambre de 7 metros 10000",
+      "status": "normal",
+      "image": "img/whatsapp-image-2026-02-06-at-8.31.28-am.jpeg",
+      "images": [
+        "img/whatsapp-image-2026-02-06-at-8.31.28-am.jpeg"
+      ]
+    },
+    {
+      "id": 1770400247288,
+      "name": "Alambre de 7 metros rosa claro",
+      "price": 10000,
+      "collection": "Alambre de 7 metros 10000",
+      "status": "normal",
+      "image": "img/whatsapp-image-2026-02-06-at-8.31.21-am.jpeg",
+      "images": [
+        "img/whatsapp-image-2026-02-06-at-8.31.21-am.jpeg"
+      ]
+    },
+    {
+      "id": 1770400272121,
+      "name": "Alambre de 7 metros fuccia",
+      "price": 10000,
+      "collection": "Alambre de 7 metros 10000",
+      "status": "normal",
+      "image": "img/whatsapp-image-2026-02-06-at-8.31.13-am.jpeg",
+      "images": [
+        "img/whatsapp-image-2026-02-06-at-8.31.13-am.jpeg"
+      ]
+    },
+    {
+      "id": 1770400292754,
+      "name": "Alambre de 7 metros rojo",
+      "price": 10000,
+      "collection": "Alambre de 7 metros 10000",
+      "status": "normal",
+      "image": "img/whatsapp-image-2026-02-06-at-8.31.05-am.jpeg",
+      "images": [
+        "img/whatsapp-image-2026-02-06-at-8.31.05-am.jpeg"
+      ]
+    },
+    {
+      "id": 1770400321589,
+      "name": "Alambre de 7 metros lila suave",
+      "price": 10000,
+      "collection": "Alambre de 7 metros 10000",
+      "status": "normal",
+      "image": "img/whatsapp-image-2026-02-06-at-8.30.54-am.jpeg",
+      "images": [
+        "img/whatsapp-image-2026-02-06-at-8.30.54-am.jpeg"
+      ]
+    },
+    {
+      "id": 1770400343575,
+      "name": "Alambre de 7 metros lila",
+      "price": 10000,
+      "collection": "Alambre de 7 metros 10000",
+      "status": "normal",
+      "image": "img/whatsapp-image-2026-02-06-at-8.30.43-am.jpeg",
+      "images": [
+        "img/whatsapp-image-2026-02-06-at-8.30.43-am.jpeg"
+      ]
+    },
+    {
+      "id": 1770400361975,
+      "name": "Alambre de 7 metros dorado",
+      "price": 10000,
+      "collection": "Alambre de 7 metros 10000",
+      "status": "normal",
+      "image": "img/whatsapp-image-2026-02-06-at-8.30.33-am.jpeg",
+      "images": [
+        "img/whatsapp-image-2026-02-06-at-8.30.33-am.jpeg"
+      ]
+    },
+    {
+      "id": 1770400383687,
+      "name": "Alambre de 7 metros plateado",
+      "price": 10000,
+      "collection": "Alambre de 7 metros 10000",
+      "status": "normal",
+      "image": "img/whatsapp-image-2026-02-06-at-8.30.25-am.jpeg",
+      "images": [
+        "img/whatsapp-image-2026-02-06-at-8.30.25-am.jpeg"
+      ]
+    },
+    {
+      "id": 1770401233446,
+      "name": "Hilo chino x 20 metros fuccia claro",
+      "price": 8000,
+      "collection": "Hilo chino x 20 metros ",
+      "status": "normal",
+      "image": "img/fuccia-claro.jpeg",
+      "images": [
+        "img/fuccia-claro.jpeg"
+      ]
+    },
+    {
+      "id": 1770401269113,
+      "name": "Hilo chino x 20 metros fuccia oscuro",
+      "price": 8000,
+      "collection": "Hilo chino x 20 metros ",
+      "status": "normal",
+      "image": "img/fuccia-oscuro.jpeg",
+      "images": [
+        "img/fuccia-oscuro.jpeg"
+      ]
+    },
+    {
+      "id": 1770401288612,
+      "name": "Hilo chino x 20 metros lila oscuro",
+      "price": 8000,
+      "collection": "Hilo chino x 20 metros ",
+      "status": "normal",
+      "image": "img/lila-oscuro.jpeg",
+      "images": [
+        "img/lila-oscuro.jpeg"
+      ]
+    },
+    {
+      "id": 1770401313072,
+      "name": "Hilo chino x 20 metros lila pastel",
+      "price": 8000,
+      "collection": "Hilo chino x 20 metros ",
+      "status": "normal",
+      "image": "img/lila-pastel.jpeg",
+      "images": [
+        "img/lila-pastel.jpeg"
+      ]
+    },
+    {
+      "id": 1770401334240,
+      "name": "Hilo chino x 20 metros marron oscuro",
+      "price": 8000,
+      "collection": "Hilo chino x 20 metros ",
+      "status": "normal",
+      "image": "img/marron-oscuro.jpeg",
+      "images": [
+        "img/marron-oscuro.jpeg"
+      ]
+    },
+    {
+      "id": 1770401364726,
+      "name": "Hilo chino x 20 metros rosa bebe",
+      "price": 8000,
+      "collection": "Hilo chino x 20 metros ",
+      "status": "normal",
+      "image": "img/rosa-bebe.jpeg",
+      "images": [
+        "img/rosa-bebe.jpeg"
+      ]
+    },
+    {
+      "id": 1770401394544,
+      "name": "Hilo chino x 20 metros rosa chicle ",
+      "price": 8000,
+      "collection": "Hilo chino x 20 metros ",
+      "status": "normal",
+      "image": "img/rosa-chiqle.jpeg",
+      "images": [
+        "img/rosa-chiqle.jpeg"
+      ]
+    },
+    {
+      "id": 1770401419314,
+      "name": "Hilo chino x 20 metros turquesa",
+      "price": 8000,
+      "collection": "Hilo chino x 20 metros ",
+      "status": "normal",
+      "image": "img/turquesa.jpeg",
+      "images": [
+        "img/turquesa.jpeg"
+      ]
+    },
+    {
+      "id": 1770401439858,
+      "name": "Hilo chino x 20 metros verde",
+      "price": 8000,
+      "collection": "Hilo chino x 20 metros ",
+      "status": "normal",
+      "image": "img/whatsapp-image-2026-02-06-at-8.39.34-am.jpeg",
+      "images": [
+        "img/whatsapp-image-2026-02-06-at-8.39.34-am.jpeg"
+      ]
+    },
+    {
+      "id": 1770401468235,
+      "name": "Hilo chino x 20 metros verde claro",
+      "price": 8000,
+      "collection": "Hilo chino x 20 metros ",
+      "status": "normal",
+      "image": "img/whatsapp-image-2026-02-06-at-8.40.06-am.jpeg",
+      "images": [
+        "img/whatsapp-image-2026-02-06-at-8.40.06-am.jpeg"
+      ]
+    },
+    {
+      "id": 1770401489800,
+      "name": "Hilo chino x 20 metros verde limon",
+      "price": 8000,
+      "collection": "Hilo chino x 20 metros ",
+      "status": "normal",
+      "image": "img/whatsapp-image-2026-02-06-at-8.40.15-am.jpeg",
+      "images": [
+        "img/whatsapp-image-2026-02-06-at-8.40.15-am.jpeg"
+      ]
+    },
+    {
+      "id": 1770401517596,
+      "name": "Hilo chino x 20 metros amarillo ",
+      "price": 8000,
+      "collection": "Hilo chino x 20 metros ",
+      "status": "normal",
+      "image": "img/whatsapp-image-2026-02-06-at-8.41.17-am.jpeg",
+      "images": [
+        "img/whatsapp-image-2026-02-06-at-8.41.17-am.jpeg"
+      ]
+    },
+    {
+      "id": 1770401548443,
+      "name": "Hilo chino x 20 metros naranjado",
+      "price": 8000,
+      "collection": "Hilo chino x 20 metros ",
+      "status": "normal",
+      "image": "img/whatsapp-image-2026-02-06-at-8.42.01-am.jpeg",
+      "images": [
+        "img/whatsapp-image-2026-02-06-at-8.42.01-am.jpeg"
+      ]
+    },
+    {
+      "id": 1770401573545,
+      "name": "Hilo chino x 20 metros blanco",
+      "price": 8000,
+      "collection": "Hilo chino x 20 metros ",
+      "status": "normal",
+      "image": "img/whatsapp-image-2026-02-06-at-8.42.30-am.jpeg",
+      "images": [
+        "img/whatsapp-image-2026-02-06-at-8.42.30-am.jpeg"
+      ]
+    },
+    {
+      "id": 1770401599435,
+      "name": "Hilo chino x 20 metros rojo",
+      "price": 8000,
+      "collection": "Hilo chino x 20 metros ",
+      "status": "normal",
+      "image": "img/whatsapp-image-2026-02-06-at-8.42.58-am.jpeg",
+      "images": [
+        "img/whatsapp-image-2026-02-06-at-8.42.58-am.jpeg"
+      ]
+    },
+    {
+      "id": 1770401622097,
+      "name": "Hilo chino x 20 metros gris",
+      "price": 8000,
+      "collection": "Hilo chino x 20 metros ",
+      "status": "normal",
+      "image": "img/whatsapp-image-2026-02-06-at-8.43.14-am.jpeg",
+      "images": [
+        "img/whatsapp-image-2026-02-06-at-8.43.14-am.jpeg"
+      ]
+    },
+    {
+      "id": 1770401638499,
+      "name": "Hilo chino x 20 metros negro",
+      "price": 8000,
+      "collection": "Hilo chino x 20 metros ",
+      "status": "normal",
+      "image": "img/whatsapp-image-2026-02-06-at-8.43.27-am.jpeg",
+      "images": [
+        "img/whatsapp-image-2026-02-06-at-8.43.27-am.jpeg"
+      ]
+    },
+    {
+      "id": 1770401829315,
+      "name": "Buzios x 8 ud.",
+      "price": 5000,
+      "collection": "Accesorios para pulseras",
+      "status": "normal",
+      "image": "img/pict2503151329580000.jpg",
+      "images": [
+        "img/pict2503151329580000.jpg"
+      ]
+    },
+    {
+      "id": 1770401884660,
+      "name": "Frutitas x 8 ud.",
+      "price": 5000,
+      "collection": "Accesorios para pulseras",
+      "status": "normal",
+      "image": "img/pict2503151332050000.jpg",
+      "images": [
+        "img/pict2503151332050000.jpg"
+      ]
+    },
+    {
+      "id": 1770401915156,
+      "name": "Rueditas x 8 uni.",
+      "price": 5000,
+      "collection": "Accesorios para pulseras",
+      "status": "normal",
+      "image": "img/pict2503151334250000.jpg",
+      "images": [
+        "img/pict2503151334250000.jpg"
+      ]
+    },
+    {
+      "id": 1770401946305,
+      "name": "Ojitos turcos x 8 uni.",
+      "price": 5000,
+      "collection": "Accesorios para pulseras",
+      "status": "normal",
+      "image": "img/pict2503151335040000.jpg",
+      "images": [
+        "img/pict2503151335040000.jpg"
+      ]
+    },
+    {
+      "id": 1770401970133,
+      "name": "Argollitas chicas para pulseras",
+      "price": 5000,
+      "collection": "Accesorios para pulseras",
+      "status": "normal",
+      "image": "img/pict2503151336010000.jpg",
+      "images": [
+        "img/pict2503151336010000.jpg"
+      ]
+    },
+    {
+      "id": 1770402031875,
+      "name": "Dientes de cocodrilo",
+      "price": 5000,
+      "collection": "Accesorios para pulseras",
+      "status": "normal",
+      "image": "img/pict2503151336320000.jpg",
+      "images": [
+        "img/pict2503151336320000.jpg"
+      ]
+    },
+    {
+      "id": 1770402063447,
+      "name": "Gomitas para anteojos",
+      "price": 5000,
+      "collection": "Accesorios para pulseras",
+      "status": "normal",
+      "image": "img/pict2503151337090000.jpg",
+      "images": [
+        "img/pict2503151337090000.jpg"
+      ]
+    },
+    {
+      "id": 1770402114993,
+      "name": "Pico de loro ",
+      "price": 5000,
+      "collection": "Accesorios para pulseras",
+      "status": "normal",
+      "image": "img/pict2503151339130000.jpg",
+      "images": [
+        "img/pict2503151339130000.jpg"
+      ]
+    },
+    {
+      "id": 1770402150031,
+      "name": "Ganchos para aros dorado/plateado",
+      "price": 5000,
+      "collection": "Accesorios para pulseras",
+      "status": "normal",
+      "image": "img/pict2503151339370000.jpg",
+      "images": [
+        "img/pict2503151339370000.jpg"
+      ]
+    },
+    {
+      "id": 1770402176091,
+      "name": "Argollitas doradas ",
+      "price": 5000,
+      "collection": "Accesorios para pulseras",
+      "status": "normal",
+      "image": "img/pict2503151340370000.jpg",
+      "images": [
+        "img/pict2503151340370000.jpg"
+      ]
+    },
+    {
+      "id": 1770402203425,
+      "name": "Resortitos",
+      "price": 5000,
+      "collection": "Accesorios para pulseras",
+      "status": "normal",
+      "image": "img/pict2503151342300000.jpg",
+      "images": [
+        "img/pict2503151342300000.jpg"
+      ]
+    },
+    {
+      "id": 1770402232450,
+      "name": "Pico de loro dorado/plateado",
+      "price": 5000,
+      "collection": "Accesorios para pulseras",
+      "status": "normal",
+      "image": "img/pict2503151343330000.jpg",
+      "images": [
+        "img/pict2503151343330000.jpg"
+      ]
+    },
+    {
+      "id": 1770402330462,
+      "name": "Tapanudos",
+      "price": 5000,
+      "collection": "Accesorios para pulseras",
+      "status": "normal",
+      "image": "img/pict2503151345130000.jpg",
+      "images": [
+        "img/pict2503151345130000.jpg"
+      ]
+    },
+    {
+      "id": 1770402352622,
+      "name": "Tapanudos dorados",
+      "price": 5000,
+      "collection": "Accesorios para pulseras",
+      "status": "normal",
+      "image": "img/pict2503151346260000.jpg",
+      "images": [
+        "img/pict2503151346260000.jpg"
       ]
     }
   ]
