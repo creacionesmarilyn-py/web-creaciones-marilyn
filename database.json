@@ -1682,6 +1682,17 @@
       "images": [
         "img/whatsapp-image-2026-02-06-at-8.30.54-am.jpeg"
       ]
+    },
+    {
+      "id": 1770400343575,
+      "name": "Alambre de 7 metros lila",
+      "price": 10000,
+      "collection": "Alambre de 7 metros 10000",
+      "status": "normal",
+      "image": "img/whatsapp-image-2026-02-06-at-8.30.43-am.jpeg",
+      "images": [
+        "img/whatsapp-image-2026-02-06-at-8.30.43-am.jpeg"
+      ]
     }
   ]
 }
