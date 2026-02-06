@@ -1495,6 +1495,17 @@
       "images": [
         "img/whatsapp-image-2026-02-06-at-8.26.57-am.jpeg"
       ]
+    },
+    {
+      "id": 1770399769900,
+      "name": "Alambre de 3 metros lila",
+      "price": 5000,
+      "collection": "Alambre de 3 metros 5000",
+      "status": "normal",
+      "image": "img/whatsapp-image-2026-02-06-at-8.27.51-am.jpeg",
+      "images": [
+        "img/whatsapp-image-2026-02-06-at-8.27.51-am.jpeg"
+      ]
     }
   ]
 }
