@@ -1231,6 +1231,17 @@
       "images": [
         "img/celeste-numero-6.jpeg"
       ]
+    },
+    {
+      "id": 1770398121391,
+      "name": "Perlas N 6 dorado opaco",
+      "price": 10000,
+      "collection": "Perlas N 6 de 10000",
+      "status": "normal",
+      "image": "img/dorado-opaco-numero-.jpeg",
+      "images": [
+        "img/dorado-opaco-numero-.jpeg"
+      ]
     }
   ]
 }
