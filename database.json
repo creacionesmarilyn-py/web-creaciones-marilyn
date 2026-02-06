@@ -1352,6 +1352,17 @@
       "images": [
         "img/gris-numero-8.jpeg"
       ]
+    },
+    {
+      "id": 1770398495015,
+      "name": "Perlas N 8 lila",
+      "price": 10000,
+      "collection": "Perlas N 8 de 10000",
+      "status": "normal",
+      "image": "img/lila-numero-8-.jpeg",
+      "images": [
+        "img/lila-numero-8-.jpeg"
+      ]
     }
   ]
 }
