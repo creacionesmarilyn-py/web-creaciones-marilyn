@@ -1957,6 +1957,17 @@
       "images": [
         "img/pict2503151336010000.jpg"
       ]
+    },
+    {
+      "id": 1770402031875,
+      "name": "Dientes de cocodrilo",
+      "price": 5000,
+      "collection": "Accesorios para pulseras",
+      "status": "normal",
+      "image": "img/pict2503151336320000.jpg",
+      "images": [
+        "img/pict2503151336320000.jpg"
+      ]
     }
   ]
 }
