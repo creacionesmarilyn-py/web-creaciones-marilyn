@@ -1363,6 +1363,17 @@
       "images": [
         "img/lila-numero-8-.jpeg"
       ]
+    },
+    {
+      "id": 1770398519940,
+      "name": "Perlas N 8 lila fuerte",
+      "price": 10000,
+      "collection": "Perlas N 8 de 10000",
+      "status": "normal",
+      "image": "img/lila-numero-8.jpeg",
+      "images": [
+        "img/lila-numero-8.jpeg"
+      ]
     }
   ]
 }
