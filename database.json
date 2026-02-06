@@ -1242,6 +1242,17 @@
       "images": [
         "img/dorado-opaco-numero-.jpeg"
       ]
+    },
+    {
+      "id": 1770398144801,
+      "name": "Perlas N 6 gris opaco",
+      "price": 10000,
+      "collection": "Perlas N 6 de 10000",
+      "status": "normal",
+      "image": "img/gris-opaco.jpeg",
+      "images": [
+        "img/gris-opaco.jpeg"
+      ]
     }
   ]
 }
