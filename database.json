@@ -1253,6 +1253,17 @@
       "images": [
         "img/gris-opaco.jpeg"
       ]
+    },
+    {
+      "id": 1770398167815,
+      "name": "Perlas N 6 lila",
+      "price": 10000,
+      "collection": "Perlas N 6 de 10000",
+      "status": "normal",
+      "image": "img/lila-numero-6.jpeg",
+      "images": [
+        "img/lila-numero-6.jpeg"
+      ]
     }
   ]
 }
