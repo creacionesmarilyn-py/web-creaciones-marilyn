@@ -1660,6 +1660,17 @@
       "images": [
         "img/whatsapp-image-2026-02-06-at-8.31.13-am.jpeg"
       ]
+    },
+    {
+      "id": 1770400292754,
+      "name": "Alambre de 7 metros rojo",
+      "price": 10000,
+      "collection": "Alambre de 7 metros 10000",
+      "status": "normal",
+      "image": "img/whatsapp-image-2026-02-06-at-8.31.05-am.jpeg",
+      "images": [
+        "img/whatsapp-image-2026-02-06-at-8.31.05-am.jpeg"
+      ]
     }
   ]
 }
