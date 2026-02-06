@@ -1,13 +1,6 @@
 {
   "products": [
     {
-      "id": 1,
-      "name": "Media Perlas Doradas",
-      "price": 5000,
-      "image": "img/media_perlas_doradas.jpg",
-      "collection": "Premium"
-    },
-    {
       "id": 1769910573653,
       "name": "Perla numero 4 amarilla",
       "price": 5000,
