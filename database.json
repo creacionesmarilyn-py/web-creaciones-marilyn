@@ -1902,6 +1902,17 @@
       "images": [
         "img/whatsapp-image-2026-02-06-at-8.43.27-am.jpeg"
       ]
+    },
+    {
+      "id": 1770401829315,
+      "name": "Buzios x 8 ud.",
+      "price": 5000,
+      "collection": "Accesorios para pulseras",
+      "status": "normal",
+      "image": "img/pict2503151329580000.jpg",
+      "images": [
+        "img/pict2503151329580000.jpg"
+      ]
     }
   ]
 }
