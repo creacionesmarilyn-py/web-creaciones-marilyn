@@ -1968,6 +1968,17 @@
       "images": [
         "img/pict2503151336320000.jpg"
       ]
+    },
+    {
+      "id": 1770402063447,
+      "name": "Gomitas para anteojos",
+      "price": 5000,
+      "collection": "Accesorios para pulseras",
+      "status": "normal",
+      "image": "img/pict2503151337090000.jpg",
+      "images": [
+        "img/pict2503151337090000.jpg"
+      ]
     }
   ]
 }
