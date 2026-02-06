@@ -1627,6 +1627,17 @@
       "images": [
         "img/whatsapp-image-2026-02-06-at-8.31.49-am.jpeg"
       ]
+    },
+    {
+      "id": 1770400224951,
+      "name": "Alambre de 7 metros verde",
+      "price": 10000,
+      "collection": "Alambre de 7 metros 10000",
+      "status": "normal",
+      "image": "img/whatsapp-image-2026-02-06-at-8.31.28-am.jpeg",
+      "images": [
+        "img/whatsapp-image-2026-02-06-at-8.31.28-am.jpeg"
+      ]
     }
   ]
 }
