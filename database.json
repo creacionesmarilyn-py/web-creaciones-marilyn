@@ -1297,6 +1297,17 @@
       "images": [
         "img/rosa-viejo.jpeg"
       ]
+    },
+    {
+      "id": 1770398391424,
+      "name": "Perlas N 8 amarillo",
+      "price": 10000,
+      "collection": "Perlas N 8 de 10000",
+      "status": "normal",
+      "image": "img/amarillo-numero-8.jpeg",
+      "images": [
+        "img/amarillo-numero-8.jpeg"
+      ]
     }
   ]
 }
