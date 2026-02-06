@@ -2001,6 +2001,17 @@
       "images": [
         "img/pict2503151339370000.jpg"
       ]
+    },
+    {
+      "id": 1770402176091,
+      "name": "Argollitas doradas ",
+      "price": 5000,
+      "collection": "Accesorios para pulseras",
+      "status": "normal",
+      "image": "img/pict2503151340370000.jpg",
+      "images": [
+        "img/pict2503151340370000.jpg"
+      ]
     }
   ]
 }
