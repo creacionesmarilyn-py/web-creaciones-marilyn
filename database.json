@@ -1440,6 +1440,17 @@
       "images": [
         "img/whatsapp-image-2026-02-06-at-8.25.53-am.jpeg"
       ]
+    },
+    {
+      "id": 1770399487553,
+      "name": "Perlas N 10 marron",
+      "price": 10000,
+      "collection": "Perlas N 10 de 10000",
+      "status": "normal",
+      "image": "img/whatsapp-image-2026-02-06-at-8.26.10-am.jpeg",
+      "images": [
+        "img/whatsapp-image-2026-02-06-at-8.26.10-am.jpeg"
+      ]
     }
   ]
 }
