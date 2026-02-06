@@ -1572,6 +1572,17 @@
       "images": [
         "img/whatsapp-image-2026-02-06-at-8.29.12-am.jpeg"
       ]
+    },
+    {
+      "id": 1770400021742,
+      "name": "Alambre de 3 metros azul",
+      "price": 5000,
+      "collection": "Alambre de 3 metros 5000",
+      "status": "normal",
+      "image": "img/whatsapp-image-2026-02-06-at-8.29.20-am.jpeg",
+      "images": [
+        "img/whatsapp-image-2026-02-06-at-8.29.20-am.jpeg"
+      ]
     }
   ]
 }
