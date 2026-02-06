@@ -2012,6 +2012,17 @@
       "images": [
         "img/pict2503151340370000.jpg"
       ]
+    },
+    {
+      "id": 1770402203425,
+      "name": "Resortitos",
+      "price": 5000,
+      "collection": "Accesorios para pulseras",
+      "status": "normal",
+      "image": "img/pict2503151342300000.jpg",
+      "images": [
+        "img/pict2503151342300000.jpg"
+      ]
     }
   ]
 }
