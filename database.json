@@ -1330,6 +1330,17 @@
       "images": [
         "img/celeste-numero-8.jpeg"
       ]
+    },
+    {
+      "id": 1770398451867,
+      "name": "Perlas N 8 fuccia",
+      "price": 10000,
+      "collection": "Perlas N 8 de 10000",
+      "status": "normal",
+      "image": "img/fuccia-numero-8.jpeg",
+      "images": [
+        "img/fuccia-numero-8.jpeg"
+      ]
     }
   ]
 }
