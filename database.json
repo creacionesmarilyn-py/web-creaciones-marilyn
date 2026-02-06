@@ -1143,6 +1143,17 @@
       "images": [
         "img/whatsapp-image-2026-02-03-at-12.49.54-pm.jpeg"
       ]
+    },
+    {
+      "id": 1770397689860,
+      "name": "Craquelado N 10 rojo",
+      "price": 10000,
+      "collection": "Craquelado N 10 de 10000",
+      "status": "normal",
+      "image": "img/whatsapp-image-2026-02-03-at-12.50.26-pm.jpeg",
+      "images": [
+        "img/whatsapp-image-2026-02-03-at-12.50.26-pm.jpeg"
+      ]
     }
   ]
 }
