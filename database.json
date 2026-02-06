@@ -923,6 +923,17 @@
       "images": [
         "img/22811305-92fd-474f-8e15-bccf81835b9f.jpeg"
       ]
+    },
+    {
+      "id": 1770393533232,
+      "name": "Media perlas doradas",
+      "price": 5000,
+      "collection": "Media perlas",
+      "status": "normal",
+      "image": "img/pict2503151633320000.jpg",
+      "images": [
+        "img/pict2503151633320000.jpg"
+      ]
     }
   ]
 }
