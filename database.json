@@ -1748,6 +1748,17 @@
       "images": [
         "img/lila-oscuro.jpeg"
       ]
+    },
+    {
+      "id": 1770401313072,
+      "name": "Hilo chino x 20 metros lila pastel",
+      "price": 8000,
+      "collection": "Hilo chino x 20 metros ",
+      "status": "normal",
+      "image": "img/lila-pastel.jpeg",
+      "images": [
+        "img/lila-pastel.jpeg"
+      ]
     }
   ]
 }
