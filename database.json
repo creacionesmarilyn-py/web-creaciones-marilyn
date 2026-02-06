@@ -1649,6 +1649,17 @@
       "images": [
         "img/whatsapp-image-2026-02-06-at-8.31.21-am.jpeg"
       ]
+    },
+    {
+      "id": 1770400272121,
+      "name": "Alambre de 7 metros fuccia",
+      "price": 10000,
+      "collection": "Alambre de 7 metros 10000",
+      "status": "normal",
+      "image": "img/whatsapp-image-2026-02-06-at-8.31.13-am.jpeg",
+      "images": [
+        "img/whatsapp-image-2026-02-06-at-8.31.13-am.jpeg"
+      ]
     }
   ]
 }
