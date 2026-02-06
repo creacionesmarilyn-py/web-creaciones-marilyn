@@ -1341,6 +1341,17 @@
       "images": [
         "img/fuccia-numero-8.jpeg"
       ]
+    },
+    {
+      "id": 1770398473227,
+      "name": "Perlas N 8 gris opaco",
+      "price": 10000,
+      "collection": "Perlas N 8 de 10000",
+      "status": "normal",
+      "image": "img/gris-numero-8.jpeg",
+      "images": [
+        "img/gris-numero-8.jpeg"
+      ]
     }
   ]
 }
