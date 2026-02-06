@@ -1693,6 +1693,17 @@
       "images": [
         "img/whatsapp-image-2026-02-06-at-8.30.43-am.jpeg"
       ]
+    },
+    {
+      "id": 1770400361975,
+      "name": "Alambre de 7 metros dorado",
+      "price": 10000,
+      "collection": "Alambre de 7 metros 10000",
+      "status": "normal",
+      "image": "img/whatsapp-image-2026-02-06-at-8.30.33-am.jpeg",
+      "images": [
+        "img/whatsapp-image-2026-02-06-at-8.30.33-am.jpeg"
+      ]
     }
   ]
 }
