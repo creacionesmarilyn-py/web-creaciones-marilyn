@@ -1583,6 +1583,17 @@
       "images": [
         "img/whatsapp-image-2026-02-06-at-8.29.20-am.jpeg"
       ]
+    },
+    {
+      "id": 1770400043543,
+      "name": "Alambre de 3 metros plateado",
+      "price": 5000,
+      "collection": "Alambre de 3 metros 5000",
+      "status": "normal",
+      "image": "img/whatsapp-image-2026-02-06-at-8.29.37-am.jpeg",
+      "images": [
+        "img/whatsapp-image-2026-02-06-at-8.29.37-am.jpeg"
+      ]
     }
   ]
 }
