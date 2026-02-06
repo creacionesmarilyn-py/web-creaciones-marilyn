@@ -1,46 +1,28 @@
-// app.js - VERSIÓN MASTER PROFESIONAL (Sincronización API Instantánea)
+// app.js - VERSIÓN ESTRATÉGICA (Sincronización API + Agrupación + Anuncio)
 let cart = JSON.parse(localStorage.getItem('marilyn_cart')) || [];
 let allProducts = [];
 let activeCategory = 'todas';
 let currentGallery = [];
 let currentIndex = 0;
 
-// URL de la API (Igual que el Admin para que sea instantáneo)
 const GITHUB_API_URL = "https://api.github.com/repos/creacionesmarilyn-py/web-creaciones-marilyn/contents/database.json";
 const RAW_BASE_URL = "https://raw.githubusercontent.com/creacionesmarilyn-py/web-creaciones-marilyn/main/";
 
-// 1. CARGA DE DATOS (TÚNEL DE ALTA VELOCIDAD)
 async function loadStore() {
     try {
-        // Consultamos a la API con un "cache-buster" de tiempo
         const response = await fetch(`${GITHUB_API_URL}?v=${Date.now()}`);
         if (!response.ok) throw new Error("Error de conexión");
-
         const data = await response.json();
-        
-        // DECODIFICACIÓN PROFESIONAL (Igual a la del Admin para evitar errores de texto)
         const content = JSON.parse(decodeURIComponent(escape(atob(data.content))));
         allProducts = content.products.reverse();
-        
-        console.log("🚀 Sincronización API Exitosa. Productos cargados.");
         
         renderCategories();
         applyFilters(); 
         updateCartUI();
-    } catch (e) { 
-        console.error("🚨 Error de Sincronización:", e);
-        // Fallback: Si la API falla, intentamos el método RAW tradicional
-        fetch(`https://raw.githubusercontent.com/creacionesmarilyn-py/web-creaciones-marilyn/main/database.json?v=${Date.now()}`)
-            .then(res => res.json())
-            .then(data => {
-                allProducts = data.products.reverse();
-                renderCategories();
-                applyFilters();
-            });
-    }
+        checkAnnouncements(); // Verificamos si hay algún combo para anunciar
+    } catch (e) { console.error("🚨 Error de Sincronización:", e); }
 }
 
-// 2. FILTROS Y CATEGORÍAS
 function renderCategories() {
     const container = document.getElementById('category-filters');
     if(!container) return;
@@ -59,61 +41,125 @@ function applyFilters() {
     const filtered = allProducts.filter(p => {
         const matchesSearch = (p.name || "").toLowerCase().includes(searchTerm);
         const matchesCategory = activeCategory === 'todas' || (p.collection || "").toLowerCase().trim() === activeCategory;
-        return matchesSearch && matchesCategory;
+        // IMPORTANTE: Excluimos el producto con estado "anuncio" de la lista normal
+        return matchesSearch && matchesCategory && (p.status || "").toLowerCase() !== 'anuncio';
     });
     renderProducts(filtered);
 }
 
-// 3. DIBUJO DE PRODUCTOS (TRIPLE BLINDAJE DE ETIQUETAS)
+// NUEVA LÓGICA: AGRUPACIÓN POR COLECCIÓN CON SCROLL HORIZONTAL
 function renderProducts(products) {
     const grid = document.getElementById('product-grid');
     if(!grid) return;
-    grid.innerHTML = products.length === 0 ? '<p class="text-center col-span-full py-20 text-gray-400 uppercase text-[10px]">Sin resultados</p>' : '';
-    
-    products.forEach(p => {
-        const statusStr = (p.status || "").toLowerCase();
-        
-        // Coincidencia exacta con lo que elegís en tus pestañas del Admin
-        const isAgotado = statusStr.includes("agotado") || statusStr.includes("sin stock");
-        const isOferta = statusStr.includes("oferta");
-        const isNuevo = statusStr.includes("nuevo");
 
-        let badgeHTML = '';
-        if (isAgotado) {
-            badgeHTML = `<div class="absolute inset-0 bg-white/40 backdrop-blur-[1px] flex items-center justify-center z-10 font-black text-gray-800 text-[10px] uppercase tracking-[0.2em]">Sin Stock</div>`;
-        } else if (isOferta) {
-            badgeHTML = `<div class="absolute top-3 left-3 bg-red-600 text-white px-3 py-1 rounded-full text-[9px] font-black uppercase z-20 shadow-lg animate-pulse">Oferta</div>`;
-        } else if (isNuevo) {
-            badgeHTML = `<div class="absolute top-3 left-3 bg-pink-500 text-white px-3 py-1 rounded-full text-[9px] font-black uppercase z-20 shadow-lg">Nuevo</div>`;
-        }
+    if (products.length === 0) {
+        grid.innerHTML = '<p class="text-center col-span-full py-20 text-gray-400 uppercase text-[10px]">Sin resultados</p>';
+        return;
+    }
 
-        const imgPath = (p.images && p.images.length > 0 ? p.images[0] : p.image).replace(/^\//, '');
-        const fullImgUrl = imgPath.startsWith('http') ? imgPath : `${RAW_BASE_URL}${imgPath}?v=${Date.now()}`;
-        const galleryArray = (p.images ? p.images : [p.image]).map(img => 
-            img.startsWith('http') ? img : `${RAW_BASE_URL}${img.replace(/^\//, '')}?v=${Date.now()}`
-        );
+    const searchTerm = document.getElementById('search-input')?.value.toLowerCase().trim() || "";
 
-        const div = document.createElement('div');
-        div.className = `bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden group transition-all duration-500 ${isAgotado ? 'opacity-70' : 'hover:shadow-xl hover:-translate-y-1'}`;
-        div.innerHTML = `
+    // SI ESTÁ EN "TODAS" Y NO HAY BÚSQUEDA, AGRUPAMOS POR COLECCIÓN
+    if (activeCategory === 'todas' && searchTerm === "") {
+        const grouped = products.reduce((acc, p) => {
+            const col = p.collection || "Otros";
+            if (!acc[col]) acc[col] = [];
+            acc[col].push(p);
+            return acc;
+        }, {});
+
+        grid.innerHTML = Object.keys(grouped).map(category => `
+            <div class="category-section">
+                <div class="flex justify-between items-center mb-6 px-2">
+                    <h3 onclick="filterByCategory('${category.toLowerCase()}')" class="text-sm font-black uppercase tracking-widest text-gray-800 cursor-pointer hover:text-pink-600 transition-colors">
+                        ${category} <i class="fas fa-chevron-right text-[10px] ml-2 opacity-30"></i>
+                    </h3>
+                    <span class="text-[9px] text-gray-400 font-bold uppercase">${grouped[category].length} items</span>
+                </div>
+                <div class="flex overflow-x-auto space-x-6 pb-6 no-scrollbar snap-x snap-mandatory">
+                    ${grouped[category].map(p => createProductCard(p, true)).join('')}
+                </div>
+            </div>
+        `).join('');
+    } else {
+        // SI ES UNA CATEGORÍA ESPECÍFICA O HAY BÚSQUEDA, GRID NORMAL
+        grid.innerHTML = `<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            ${products.map(p => createProductCard(p, false)).join('')}
+        </div>`;
+    }
+}
+
+// FUNCIÓN PARA CREAR LA TARJETA (Mantiene tu diseño original de ayer)
+function createProductCard(p, isHorizontal = false) {
+    const statusStr = (p.status || "").toLowerCase();
+    const isAgotado = statusStr.includes("agotado") || statusStr.includes("sin stock");
+    const isOferta = statusStr.includes("oferta");
+    const isNuevo = statusStr.includes("nuevo");
+
+    let badgeHTML = '';
+    if (isAgotado) {
+        badgeHTML = `<div class="absolute inset-0 bg-white/40 backdrop-blur-[1px] flex items-center justify-center z-10 font-black text-gray-800 text-[10px] uppercase tracking-[0.2em]">Sin Stock</div>`;
+    } else if (isOferta) {
+        badgeHTML = `<div class="absolute top-3 left-3 bg-red-600 text-white px-3 py-1 rounded-full text-[9px] font-black uppercase z-20 shadow-lg animate-pulse">Oferta</div>`;
+    } else if (isNuevo) {
+        badgeHTML = `<div class="absolute top-3 left-3 bg-pink-500 text-white px-3 py-1 rounded-full text-[9px] font-black uppercase z-20 shadow-lg">Nuevo</div>`;
+    }
+
+    const imgPath = (p.images && p.images.length > 0 ? p.images[0] : p.image).replace(/^\//, '');
+    const fullImgUrl = imgPath.startsWith('http') ? imgPath : `${RAW_BASE_URL}${imgPath}?v=${Date.now()}`;
+    const galleryArray = (p.images ? p.images : [p.image]).map(img => 
+        img.startsWith('http') ? img : `${RAW_BASE_URL}${img.replace(/^\//, '')}?v=${Date.now()}`
+    );
+
+    return `
+        <div class="${isHorizontal ? 'min-w-[280px] md:min-w-[320px] snap-start' : ''} bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden group transition-all duration-500 hover:shadow-xl">
             <div class="relative h-64 overflow-hidden cursor-pointer" onclick='openGallery(${JSON.stringify(galleryArray)})'>
                 ${badgeHTML}
                 <img src="${fullImgUrl}" loading="lazy" class="w-full h-full object-cover transition-transform duration-700 ${!isAgotado ? 'group-hover:scale-110' : 'grayscale' }">
                 <div class="absolute top-3 right-3 bg-white/90 px-2 py-1 rounded-full text-[9px] font-bold uppercase text-gray-500 z-10">${p.collection}</div>
             </div>
             <div class="p-6 text-center">
-                <h4 class="font-bold text-gray-800 uppercase text-[11px] mb-1">${p.name}</h4>
+                <h4 class="font-bold text-gray-800 uppercase text-[11px] mb-1 line-clamp-1">${p.name}</h4>
                 <p class="text-pink-600 font-black mb-5 text-sm">Gs. ${p.price.toLocaleString('es-PY')}</p>
                 <button onclick="${isAgotado ? '' : `addToCart(${p.id}, '${p.name}', ${p.price})`}" 
                     class="w-full ${isAgotado ? 'bg-gray-100 text-gray-400' : 'bg-gray-900 text-white hover:bg-pink-600'} py-3.5 rounded-xl text-[10px] font-bold uppercase transition-all">
                     ${isAgotado ? 'Agotado' : 'Agregar al carrito'}
                 </button>
-            </div>`;
-        grid.appendChild(div);
-    });
+            </div>
+        </div>`;
 }
 
-// 4. FUNCIONES DE APOYO (CARRITO Y GALERÍA)
+// LÓGICA DE ANUNCIOS (POPUP)
+function checkAnnouncements() {
+    const announcement = allProducts.find(p => (p.status || "").toLowerCase() === 'anuncio');
+    if (announcement) {
+        const modal = document.getElementById('announcement-modal');
+        const content = document.getElementById('announcement-content');
+        const imgPath = (announcement.images && announcement.images.length > 0 ? announcement.images[0] : announcement.image).replace(/^\//, '');
+        const fullImgUrl = imgPath.startsWith('http') ? imgPath : `${RAW_BASE_URL}${imgPath}?v=${Date.now()}`;
+
+        content.innerHTML = `
+            <img src="${fullImgUrl}" class="w-full h-72 object-cover">
+            <div class="p-8 text-center">
+                <span class="bg-red-100 text-red-600 text-[9px] font-black uppercase px-3 py-1 rounded-full mb-3 inline-block tracking-widest">Oferta de Combo</span>
+                <h2 class="text-xl font-black text-gray-900 uppercase mb-2">${announcement.name}</h2>
+                <p class="text-pink-600 font-black text-2xl mb-6">Gs. ${announcement.price.toLocaleString()}</p>
+                <button onclick="addToCart(${announcement.id}, '${announcement.name}', ${announcement.price}); closeAnnouncement();" 
+                    class="w-full bg-gray-900 text-white py-4 rounded-2xl font-bold uppercase hover:bg-pink-600 shadow-xl transition-all">
+                    ¡Lo quiero ahora!
+                </button>
+            </div>
+        `;
+        // Aparece a los 2 segundos para no asustar al entrar
+        setTimeout(() => modal.classList.replace('hidden', 'flex'), 2000);
+    }
+}
+
+function closeAnnouncement() {
+    document.getElementById('announcement-modal').classList.replace('flex', 'hidden');
+}
+
+// RESTO DE FUNCIONES MANTENIDAS AL 100%
 function addToCart(id, name, price) { 
     const item = cart.find(i => i.id === id); 
     if (item) item.qty++; else cart.push({ id, name, price, qty: 1 }); 
@@ -160,4 +206,3 @@ function sendWhatsApp() {
     window.open(`https://wa.me/595991391542?text=${encodeURIComponent(msg)}`, '_blank');
 }
 document.addEventListener('DOMContentLoaded', loadStore);
-// Sincronización forzada 2026.
