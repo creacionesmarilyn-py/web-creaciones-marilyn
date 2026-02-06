@@ -934,6 +934,17 @@
       "images": [
         "img/pict2503151633320000.jpg"
       ]
+    },
+    {
+      "id": 1770393559797,
+      "name": "Media perlas plateadas",
+      "price": 5000,
+      "collection": "Media perlas",
+      "status": "normal",
+      "image": "img/pict2503151633520000.jpg",
+      "images": [
+        "img/pict2503151633520000.jpg"
+      ]
     }
   ]
 }
