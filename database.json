@@ -1759,6 +1759,17 @@
       "images": [
         "img/lila-pastel.jpeg"
       ]
+    },
+    {
+      "id": 1770401334240,
+      "name": "Hilo chino x 20 metros marron oscuro",
+      "price": 8000,
+      "collection": "Hilo chino x 20 metros ",
+      "status": "normal",
+      "image": "img/marron-oscuro.jpeg",
+      "images": [
+        "img/marron-oscuro.jpeg"
+      ]
     }
   ]
 }
