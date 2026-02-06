@@ -1792,6 +1792,17 @@
       "images": [
         "img/rosa-chiqle.jpeg"
       ]
+    },
+    {
+      "id": 1770401419314,
+      "name": "Hilo chino x 20 metros turquesa",
+      "price": 8000,
+      "collection": "Hilo chino x 20 metros ",
+      "status": "normal",
+      "image": "img/turquesa.jpeg",
+      "images": [
+        "img/turquesa.jpeg"
+      ]
     }
   ]
 }
