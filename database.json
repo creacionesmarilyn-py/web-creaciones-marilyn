@@ -1715,6 +1715,17 @@
       "images": [
         "img/whatsapp-image-2026-02-06-at-8.30.25-am.jpeg"
       ]
+    },
+    {
+      "id": 1770401233446,
+      "name": "Hilo chino x 20 metros fuccia claro",
+      "price": 8000,
+      "collection": "Hilo chino x 20 metros ",
+      "status": "normal",
+      "image": "img/fuccia-claro.jpeg",
+      "images": [
+        "img/fuccia-claro.jpeg"
+      ]
     }
   ]
 }
