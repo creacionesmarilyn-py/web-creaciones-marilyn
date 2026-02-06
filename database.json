@@ -1396,6 +1396,17 @@
       "images": [
         "img/vino-numero-8.jpeg"
       ]
+    },
+    {
+      "id": 1770399379434,
+      "name": "Perlas N 10 gris opaco",
+      "price": 10000,
+      "collection": "Perlas N 10 de 10000",
+      "status": "normal",
+      "image": "img/whatsapp-image-2026-02-06-at-8.24.34-am.jpeg",
+      "images": [
+        "img/whatsapp-image-2026-02-06-at-8.24.34-am.jpeg"
+      ]
     }
   ]
 }
