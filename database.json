@@ -1550,6 +1550,17 @@
       "images": [
         "img/whatsapp-image-2026-02-06-at-8.28.47-am.jpeg"
       ]
+    },
+    {
+      "id": 1770399958179,
+      "name": "Alambre de 3 metros verde",
+      "price": 5000,
+      "collection": "Alambre de 3 metros 5000",
+      "status": "normal",
+      "image": "img/whatsapp-image-2026-02-06-at-8.28.56-am.jpeg",
+      "images": [
+        "img/whatsapp-image-2026-02-06-at-8.28.56-am.jpeg"
+      ]
     }
   ]
 }
