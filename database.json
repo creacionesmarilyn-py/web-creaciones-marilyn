@@ -978,6 +978,17 @@
       "images": [
         "img/pict2503151635110000.jpg"
       ]
+    },
+    {
+      "id": 1770393732147,
+      "name": "Media perlas blancas",
+      "price": 5000,
+      "collection": "Media perlas",
+      "status": "normal",
+      "image": "img/pict2503151636000000.jpg",
+      "images": [
+        "img/pict2503151636000000.jpg"
+      ]
     }
   ]
 }
