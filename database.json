@@ -1165,6 +1165,17 @@
       "images": [
         "img/whatsapp-image-2026-02-03-at-12.50.42-pm.jpeg"
       ]
+    },
+    {
+      "id": 1770397737370,
+      "name": "Craquelado N 10 verde",
+      "price": 10000,
+      "collection": "Craquelado N 10 de 10000",
+      "status": "normal",
+      "image": "img/whatsapp-image-2026-02-03-at-12.50.54-pm.jpeg",
+      "images": [
+        "img/whatsapp-image-2026-02-03-at-12.50.54-pm.jpeg"
+      ]
     }
   ]
 }
