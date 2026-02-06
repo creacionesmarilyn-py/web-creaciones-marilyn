@@ -2034,6 +2034,17 @@
       "images": [
         "img/pict2503151343330000.jpg"
       ]
+    },
+    {
+      "id": 1770402330462,
+      "name": "Tapanudos",
+      "price": 5000,
+      "collection": "Accesorios para pulseras",
+      "status": "normal",
+      "image": "img/pict2503151345130000.jpg",
+      "images": [
+        "img/pict2503151345130000.jpg"
+      ]
     }
   ]
 }
