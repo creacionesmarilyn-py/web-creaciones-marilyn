@@ -1110,6 +1110,17 @@
       "images": [
         "img/whatsapp-image-2026-02-03-at-12.54.54-pm.jpeg"
       ]
+    },
+    {
+      "id": 1770396452303,
+      "name": "Craquelado N 12 turquesa",
+      "price": 10000,
+      "collection": "craquelado N12 de 10000",
+      "status": "normal",
+      "image": "img/whatsapp-image-2026-02-03-at-12.55.24-pm.jpeg",
+      "images": [
+        "img/whatsapp-image-2026-02-03-at-12.55.24-pm.jpeg"
+      ]
     }
   ]
 }
