@@ -1308,6 +1308,17 @@
       "images": [
         "img/amarillo-numero-8.jpeg"
       ]
+    },
+    {
+      "id": 1770398418839,
+      "name": "Perlas N 8 cruz plateada",
+      "price": 10000,
+      "collection": "Perlas N 8 de 10000",
+      "status": "normal",
+      "image": "img/blanco-con-cruz-plateada-8.jpeg",
+      "images": [
+        "img/blanco-con-cruz-plateada-8.jpeg"
+      ]
     }
   ]
 }
