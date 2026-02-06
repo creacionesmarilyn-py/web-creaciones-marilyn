@@ -967,6 +967,17 @@
       "images": [
         "img/pict2503151634520000.jpg"
       ]
+    },
+    {
+      "id": 1770393680021,
+      "name": "Media perlas rosadas 2",
+      "price": 5000,
+      "collection": "Media perlas",
+      "status": "agotado",
+      "image": "img/pict2503151635110000.jpg",
+      "images": [
+        "img/pict2503151635110000.jpg"
+      ]
     }
   ]
 }
