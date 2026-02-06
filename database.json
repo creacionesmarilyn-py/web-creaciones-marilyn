@@ -1451,6 +1451,17 @@
       "images": [
         "img/whatsapp-image-2026-02-06-at-8.26.10-am.jpeg"
       ]
+    },
+    {
+      "id": 1770399510928,
+      "name": "Perlas N 10 verde",
+      "price": 10000,
+      "collection": "Perlas N 10 de 10000",
+      "status": "normal",
+      "image": "img/whatsapp-image-2026-02-06-at-8.26.23-am.jpeg",
+      "images": [
+        "img/whatsapp-image-2026-02-06-at-8.26.23-am.jpeg"
+      ]
     }
   ]
 }
