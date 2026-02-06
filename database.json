@@ -1220,6 +1220,17 @@
       "images": [
         "img/azul-numero-6.jpeg"
       ]
+    },
+    {
+      "id": 1770398099568,
+      "name": "Perlas N 6 celeste",
+      "price": 10000,
+      "collection": "Perlas N 6 de 10000",
+      "status": "normal",
+      "image": "img/celeste-numero-6.jpeg",
+      "images": [
+        "img/celeste-numero-6.jpeg"
+      ]
     }
   ]
 }
