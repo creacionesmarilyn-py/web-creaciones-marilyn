@@ -2211,6 +2211,17 @@
       "images": [
         "img/combo-para-zapatillas-230.000-gs..jpeg"
       ]
+    },
+    {
+      "id": 1770669883736,
+      "name": "Combo para pulseras + cajita",
+      "price": 135000,
+      "collection": "Combos",
+      "status": "oferta",
+      "destacado": false,
+      "images": [
+        "img/combo-para-pulseras-135.000-gs-.jpeg"
+      ]
     }
   ]
 }
