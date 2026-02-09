@@ -2222,6 +2222,17 @@
       "images": [
         "img/combo-para-pulseras-135.000-gs-.jpeg"
       ]
+    },
+    {
+      "id": 1770678066003,
+      "name": "Combo para zapatillas + tira",
+      "price": 135000,
+      "collection": "Combos",
+      "status": "anuncio",
+      "destacado": false,
+      "images": [
+        "img/combo-135000-gs.jpeg"
+      ]
     }
   ]
 }
