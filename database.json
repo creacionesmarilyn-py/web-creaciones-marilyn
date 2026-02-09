@@ -2152,7 +2152,7 @@
       "price": 165000,
       "collection": "Combos",
       "status": "oferta",
-      "destacado": false,
+      "destacado": true,
       "images": [
         "img/combo-para-decorar-bombillas-165.000-gs.jpeg"
       ]
