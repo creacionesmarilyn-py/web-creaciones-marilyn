@@ -8,7 +8,8 @@
         "img/1769910571801-Numero_4_amarillo.JPG"
       ],
       "collection": "Perlas numero 4",
-      "status": "normal"
+      "status": "normal",
+      "destacado": false
     },
     {
       "id": 1769910617964,
@@ -18,7 +19,8 @@
         "img/1769910616544-Numero_4_azul.JPG"
       ],
       "collection": "Perlas numero 4",
-      "status": "normal"
+      "status": "normal",
+      "destacado": false
     },
     {
       "id": 1769910717877,
@@ -28,7 +30,8 @@
         "img/1769910716096-Numero_4_blanco.JPG"
       ],
       "collection": "Perlas numero 4",
-      "status": "agotado"
+      "status": "agotado",
+      "destacado": false
     },
     {
       "id": 1769910748543,
@@ -38,7 +41,8 @@
         "img/1769910747064-Numero_4_celeste.JPG"
       ],
       "collection": "Perlas numero 4",
-      "status": "agotado"
+      "status": "agotado",
+      "destacado": false
     },
     {
       "id": 1769910781914,
@@ -48,7 +52,8 @@
         "img/1769910780256-Numero_4_dorado.JPG"
       ],
       "collection": "Perlas numero 4",
-      "status": "agotado"
+      "status": "agotado",
+      "destacado": false
     },
     {
       "id": 1769910811723,
@@ -58,7 +63,8 @@
         "img/1769910810272-Numero_4_lila.JPG"
       ],
       "collection": "Perlas numero 4",
-      "status": "agotado"
+      "status": "agotado",
+      "destacado": false
     },
     {
       "id": 1769910911083,
@@ -68,7 +74,8 @@
         "img/1769910909399-Numero_6_perlado.JPG"
       ],
       "collection": "Perlas numero 6",
-      "status": "agotado"
+      "status": "agotado",
+      "destacado": false
     },
     {
       "id": 1769910945095,
@@ -78,7 +85,8 @@
         "img/1769910943441-Numero_6_purpura.JPG"
       ],
       "collection": "Perlas numero 6",
-      "status": "agotado"
+      "status": "agotado",
+      "destacado": false
     },
     {
       "id": 1769910969971,
@@ -88,7 +96,8 @@
         "img/1769910968464-Numero_6_rosado.JPG"
       ],
       "collection": "Perlas numero 6",
-      "status": "normal"
+      "status": "normal",
+      "destacado": false
     },
     {
       "id": 1769911007801,
@@ -98,7 +107,8 @@
         "img/1769911006176-Numero_6_salmon.JPG"
       ],
       "collection": "Perlas numero 6",
-      "status": "agotado"
+      "status": "agotado",
+      "destacado": false
     },
     {
       "id": 1769911082810,
@@ -108,7 +118,8 @@
         "img/1769911081135-Numero_8_amarillo.JPG"
       ],
       "collection": "Perlas numero 8",
-      "status": "normal"
+      "status": "normal",
+      "destacado": false
     },
     {
       "id": 1769911157198,
@@ -118,7 +129,8 @@
         "img/1769911155536-Numero_8_azul.JPG"
       ],
       "collection": "Perlas numero 8",
-      "status": "normal"
+      "status": "normal",
+      "destacado": false
     },
     {
       "id": 1769911210041,
@@ -128,7 +140,8 @@
         "img/1769911208447-Numero_8_blanco(1).JPG"
       ],
       "collection": "Perlas numero 8",
-      "status": "normal"
+      "status": "normal",
+      "destacado": false
     },
     {
       "id": 1769911245013,
@@ -138,7 +151,8 @@
         "img/1769911243287-Numero_8_celeste.JPG"
       ],
       "collection": "Perlas numero 8",
-      "status": "normal"
+      "status": "normal",
+      "destacado": false
     },
     {
       "id": 1769911276783,
@@ -148,7 +162,8 @@
         "img/1769911275311-Numero_8_dorado.JPG"
       ],
       "collection": "Perlas numero 8",
-      "status": "agotado"
+      "status": "agotado",
+      "destacado": false
     },
     {
       "id": 1769911373178,
@@ -159,7 +174,8 @@
         "img/1769911371330-WhatsApp_Image_2025-05-19_at_06.43.06.jpeg"
       ],
       "collection": "Combos de 100000",
-      "status": "oferta"
+      "status": "anuncio",
+      "destacado": true
     },
     {
       "id": 1770056451608,
@@ -169,7 +185,8 @@
         "img/1770056449735-Numero_8_lila.JPG"
       ],
       "collection": "Perlas numero 8",
-      "status": "normal"
+      "status": "normal",
+      "destacado": false
     },
     {
       "id": 1770056486219,
@@ -179,7 +196,8 @@
         "img/1770056484321-Numero_8_marron.JPG"
       ],
       "collection": "Perlas numero 8",
-      "status": "normal"
+      "status": "normal",
+      "destacado": false
     },
     {
       "id": 1770056515217,
@@ -189,7 +207,8 @@
         "img/1770056513607-Numero_8_negro.JPG"
       ],
       "collection": "Perlas numero 8",
-      "status": "normal"
+      "status": "normal",
+      "destacado": false
     },
     {
       "id": 1770056545854,
@@ -199,7 +218,8 @@
         "img/1770056544390-Numero_8_perlado.JPG"
       ],
       "collection": "Perlas numero 8",
-      "status": "normal"
+      "status": "normal",
+      "destacado": false
     },
     {
       "id": 1770056577298,
@@ -209,7 +229,8 @@
         "img/1770056575535-Numero_8_rojo.JPG"
       ],
       "collection": "Perlas numero 8",
-      "status": "normal"
+      "status": "normal",
+      "destacado": false
     },
     {
       "id": 1770056604273,
@@ -219,7 +240,8 @@
         "img/1770056602617-Numero_8_rosado.JPG"
       ],
       "collection": "Perlas numero 8",
-      "status": "normal"
+      "status": "normal",
+      "destacado": false
     },
     {
       "id": 1770056640834,
@@ -229,7 +251,8 @@
         "img/1770056639132-Numero_8_verde_hoja.JPG"
       ],
       "collection": "Perlas numero 8",
-      "status": "normal"
+      "status": "normal",
+      "destacado": false
     },
     {
       "id": 1770059423980,
@@ -239,7 +262,8 @@
         "img/1770059422066-Numero_6_amarillo.JPG"
       ],
       "collection": "Perlas numero 6",
-      "status": "normal"
+      "status": "normal",
+      "destacado": false
     },
     {
       "id": 1770059482160,
@@ -249,7 +273,8 @@
         "img/1770059480205-Numero_6_azul.JPG"
       ],
       "collection": "Perlas numero 6",
-      "status": "agotado"
+      "status": "agotado",
+      "destacado": false
     },
     {
       "id": 1770059527991,
@@ -259,7 +284,8 @@
         "img/1770059526442-Numero_6_blanco.JPG"
       ],
       "collection": "Perlas numero 6",
-      "status": "normal"
+      "status": "normal",
+      "destacado": false
     },
     {
       "id": 1770059566038,
@@ -269,7 +295,8 @@
         "img/1770059564035-Numero_6_celeste.JPG"
       ],
       "collection": "Perlas numero 6",
-      "status": "normal"
+      "status": "normal",
+      "destacado": false
     },
     {
       "id": 1770059615110,
@@ -279,7 +306,8 @@
         "img/1770059613261-Numero_6_dorado.JPG"
       ],
       "collection": "Perlas numero 6",
-      "status": "normal"
+      "status": "normal",
+      "destacado": false
     },
     {
       "id": 1770149578287,
@@ -289,7 +317,8 @@
         "img/1770149576540-Numero_6_marron.JPG"
       ],
       "collection": "Perlas numero 6",
-      "status": "normal"
+      "status": "normal",
+      "destacado": false
     },
     {
       "id": 1770149859629,
@@ -299,7 +328,8 @@
         "img/1770149857970-Numero_6_negro.JPG"
       ],
       "collection": "Perlas numero 6",
-      "status": "normal"
+      "status": "normal",
+      "destacado": false
     },
     {
       "id": 1770150033658,
@@ -309,7 +339,8 @@
         "img/1770150031794-Numero_6_rojo.JPG"
       ],
       "collection": "Perlas numero 6",
-      "status": "normal"
+      "status": "normal",
+      "destacado": false
     },
     {
       "id": 1770150082549,
@@ -319,7 +350,8 @@
         "img/1770150080778-Numero_6_verde_opaco.JPG"
       ],
       "collection": "Perlas numero 6",
-      "status": "normal"
+      "status": "normal",
+      "destacado": false
     },
     {
       "id": 1770150185415,
@@ -329,7 +361,8 @@
         "img/1770150183738-Celeste.jpeg"
       ],
       "collection": "Perlas numero 6",
-      "status": "normal"
+      "status": "normal",
+      "destacado": false
     },
     {
       "id": 1770150211784,
@@ -339,7 +372,8 @@
         "img/1770150209938-Celeste_opaco.jpeg"
       ],
       "collection": "Perlas numero 6",
-      "status": "normal"
+      "status": "normal",
+      "destacado": false
     },
     {
       "id": 1770150247982,
@@ -349,7 +383,8 @@
         "img/1770150246044-Cristal_de_plastico_N_6.jpeg"
       ],
       "collection": "Perlas numero 6",
-      "status": "normal"
+      "status": "normal",
+      "destacado": false
     },
     {
       "id": 1770150285528,
@@ -359,7 +394,8 @@
         "img/1770150282138-Amarillo_bola_lisa_numero_6.jpeg"
       ],
       "collection": "Perlas numero 6",
-      "status": "normal"
+      "status": "normal",
+      "destacado": false
     },
     {
       "id": 1770150318133,
@@ -369,7 +405,8 @@
         "img/1770150316387-Perla_Rosa_Viejo_N_6.jpeg"
       ],
       "collection": "Perlas numero 6",
-      "status": "normal"
+      "status": "normal",
+      "destacado": false
     },
     {
       "id": 1770150347726,
@@ -379,7 +416,8 @@
         "img/1770150346106-Rosado_cristal_numero_6.jpeg"
       ],
       "collection": "Perlas numero 6",
-      "status": "normal"
+      "status": "normal",
+      "destacado": false
     },
     {
       "id": 1770150376346,
@@ -389,7 +427,8 @@
         "img/1770150374786-Blanco_cristal_numero_6.jpeg"
       ],
       "collection": "Perlas numero 6",
-      "status": "normal"
+      "status": "normal",
+      "destacado": false
     },
     {
       "id": 1770150829831,
@@ -399,7 +438,8 @@
         "img/1770150828128-Numero_6_verde.JPG"
       ],
       "collection": "Perlas numero 6",
-      "status": "normal"
+      "status": "normal",
+      "destacado": false
     },
     {
       "id": 1770151227703,
@@ -409,7 +449,8 @@
         "img/1770151225885-Numero_8_amarillo_opaco.JPG"
       ],
       "collection": "Perlas numero 8",
-      "status": "normal"
+      "status": "normal",
+      "destacado": false
     },
     {
       "id": 1770151354920,
@@ -419,7 +460,8 @@
         "img/1770151353261-Perla_blanca_con_cruz_dorada_N_8.jpeg"
       ],
       "collection": "Perlas numero 8",
-      "status": "normal"
+      "status": "normal",
+      "destacado": false
     },
     {
       "id": 1770151394931,
@@ -429,7 +471,8 @@
         "img/1770151393308-Perla_blanca_con_cruz_plateada_N_8.jpeg"
       ],
       "collection": "Perlas numero 8",
-      "status": "normal"
+      "status": "normal",
+      "destacado": false
     },
     {
       "id": 1770151422573,
@@ -439,7 +482,8 @@
         "img/1770151421053-Transparentes_numero_8jpeg.jpeg"
       ],
       "collection": "Perlas numero 8",
-      "status": "normal"
+      "status": "normal",
+      "destacado": false
     },
     {
       "id": 1770151544127,
@@ -449,7 +493,8 @@
         "img/1770151542428-Numero_8_verde_opaco.JPG"
       ],
       "collection": "Perlas numero 8",
-      "status": "normal"
+      "status": "normal",
+      "destacado": false
     },
     {
       "id": 1770154432746,
@@ -459,7 +504,8 @@
         "img/1770154431069-Numero_10__verde.JPG"
       ],
       "collection": "Perlas numero 10",
-      "status": "normal"
+      "status": "normal",
+      "destacado": false
     },
     {
       "id": 1770154460084,
@@ -469,7 +515,8 @@
         "img/1770154458317-Numero_10_blanco.JPG"
       ],
       "collection": "Perlas numero 10",
-      "status": "normal"
+      "status": "normal",
+      "destacado": false
     },
     {
       "id": 1770154485577,
@@ -479,7 +526,8 @@
         "img/1770154484349-Numero_10_dorado.JPG"
       ],
       "collection": "perla numero 6",
-      "status": "normal"
+      "status": "normal",
+      "destacado": false
     },
     {
       "id": 1770154510038,
@@ -489,7 +537,8 @@
         "img/1770154508379-Numero_10_negro.JPG"
       ],
       "collection": "Perlas numero 10",
-      "status": "normal"
+      "status": "normal",
+      "destacado": false
     },
     {
       "id": 1770154536335,
@@ -499,7 +548,8 @@
         "img/1770154534811-Numero_10_perladoJPG.jpg"
       ],
       "collection": "Perlas numero 10",
-      "status": "normal"
+      "status": "normal",
+      "destacado": false
     },
     {
       "id": 1770154562515,
@@ -509,7 +559,8 @@
         "img/1770154561131-Numero_10_rojo.JPG"
       ],
       "collection": "Perlas numero 10",
-      "status": "normal"
+      "status": "normal",
+      "destacado": false
     },
     {
       "id": 1770154598549,
@@ -519,7 +570,8 @@
         "img/1770154597195-Numero_10_rosado.JPG"
       ],
       "collection": "Perlas numero 10",
-      "status": "normal"
+      "status": "normal",
+      "destacado": false
     },
     {
       "id": 1770154672288,
@@ -529,7 +581,8 @@
         "img/1770154670427-Craquelado_numero_10(1).JPG"
       ],
       "collection": "Craquelado numero 10",
-      "status": "normal"
+      "status": "normal",
+      "destacado": false
     },
     {
       "id": 1770154711935,
@@ -539,7 +592,8 @@
         "img/1770154710251-Craquelado_numero_10(2).JPG"
       ],
       "collection": "Craquelado numero 10",
-      "status": "normal"
+      "status": "normal",
+      "destacado": false
     },
     {
       "id": 1770154732198,
@@ -549,7 +603,8 @@
         "img/1770154730564-Craquelado_numero_10(3).JPG"
       ],
       "collection": "Craquelado numero 10",
-      "status": "normal"
+      "status": "normal",
+      "destacado": false
     },
     {
       "id": 1770154778321,
@@ -559,7 +614,8 @@
         "img/1770154776579-Craquelado_numero_10(4).JPG"
       ],
       "collection": "Craquelado numero 10",
-      "status": "normal"
+      "status": "normal",
+      "destacado": false
     },
     {
       "id": 1770154809856,
@@ -569,7 +625,8 @@
         "img/1770154807900-Craquelado_numero_10(5).JPG"
       ],
       "collection": "Craquelado numero 10",
-      "status": "normal"
+      "status": "normal",
+      "destacado": false
     },
     {
       "id": 1770154836699,
@@ -579,7 +636,8 @@
         "img/1770154835069-Craquelado_numero_10(6).JPG"
       ],
       "collection": "Perlas numero 10",
-      "status": "normal"
+      "status": "normal",
+      "destacado": false
     },
     {
       "id": 1770154863476,
@@ -589,7 +647,8 @@
         "img/1770154861821-Craquelado_numero_10.JPG"
       ],
       "collection": "Perlas numero 10",
-      "status": "normal"
+      "status": "normal",
+      "destacado": false
     },
     {
       "id": 1770154914670,
@@ -599,7 +658,8 @@
         "img/1770154912894-Craquelado_Numero_12_.JPG"
       ],
       "collection": "Craquelado numero 12",
-      "status": "normal"
+      "status": "normal",
+      "destacado": false
     },
     {
       "id": 1770154943982,
@@ -609,7 +669,8 @@
         "img/1770154942304-Craquelado_Numero_12(1).JPG"
       ],
       "collection": "Craquelado numero 12",
-      "status": "normal"
+      "status": "normal",
+      "destacado": false
     },
     {
       "id": 1770154974569,
@@ -619,7 +680,8 @@
         "img/1770154972787-Craquelado_Numero_12(2).JPG"
       ],
       "collection": "Craquelado numero 12",
-      "status": "normal"
+      "status": "normal",
+      "destacado": false
     },
     {
       "id": 1770155006520,
@@ -629,7 +691,8 @@
         "img/1770155004988-Craquelado_numero_12(3).JPG"
       ],
       "collection": "Craquelado numero 12",
-      "status": "normal"
+      "status": "normal",
+      "destacado": false
     },
     {
       "id": 1770155037715,
@@ -639,7 +702,8 @@
         "img/1770155036158-Craquelado_Numero_12(4).JPG"
       ],
       "collection": "Craquelado numero 12",
-      "status": "normal"
+      "status": "normal",
+      "destacado": false
     },
     {
       "id": 1770155059970,
@@ -649,7 +713,8 @@
         "img/1770155058363-Craquelado_Numero_12(5).JPG"
       ],
       "collection": "Craquelado numero 12",
-      "status": "normal"
+      "status": "normal",
+      "destacado": false
     },
     {
       "id": 1770155087547,
@@ -659,7 +724,8 @@
         "img/1770155086030-Craquelado_Numero_12(6).JPG"
       ],
       "collection": "Craquelado numero 12",
-      "status": "normal"
+      "status": "normal",
+      "destacado": false
     },
     {
       "id": 1770155115417,
@@ -669,7 +735,8 @@
         "img/1770155113803-Craquelado_Numero_12(7).JPG"
       ],
       "collection": "Craquelado numero 12",
-      "status": "normal"
+      "status": "normal",
+      "destacado": false
     },
     {
       "id": 1770155151714,
@@ -679,7 +746,8 @@
         "img/1770155150012-Craquelado_Numero_12(8).JPG"
       ],
       "collection": "Craquelado numero 12",
-      "status": "normal"
+      "status": "normal",
+      "destacado": false
     },
     {
       "id": 1770155181838,
@@ -689,7 +757,8 @@
         "img/1770155180587-Craquelado_Numero_12.JPG"
       ],
       "collection": "Craquelado numero 12",
-      "status": "normal"
+      "status": "normal",
+      "destacado": false
     },
     {
       "id": 1770155397885,
@@ -699,7 +768,8 @@
         "img/1770155396102-Corazoncitos.JPG"
       ],
       "collection": "Letras, numeros y otros",
-      "status": "normal"
+      "status": "normal",
+      "destacado": false
     },
     {
       "id": 1770155437014,
@@ -709,7 +779,8 @@
         "img/1770155435202-Letras_A.JPG"
       ],
       "collection": "Letras, numeros y otros",
-      "status": "normal"
+      "status": "normal",
+      "destacado": false
     },
     {
       "id": 1770155495540,
@@ -719,7 +790,8 @@
         "img/1770155494179-Letras_blanco_y_negro.JPG"
       ],
       "collection": "Letras, numeros y otros",
-      "status": "normal"
+      "status": "normal",
+      "destacado": false
     },
     {
       "id": 1770155532192,
@@ -729,7 +801,8 @@
         "img/1770155530702-Letras_cuadradas.JPG"
       ],
       "collection": "Letras, numeros y otros",
-      "status": "agotado"
+      "status": "agotado",
+      "destacado": false
     },
     {
       "id": 1770155562420,
@@ -739,7 +812,8 @@
         "img/1770155560508-Letras_doradas.JPG"
       ],
       "collection": "Letras, numeros y otros",
-      "status": "normal"
+      "status": "normal",
+      "destacado": false
     },
     {
       "id": 1770155586843,
@@ -749,7 +823,8 @@
         "img/1770155585285-Letras_en_colores.JPG"
       ],
       "collection": "Letras, numeros y otros",
-      "status": "normal"
+      "status": "normal",
+      "destacado": false
     },
     {
       "id": 1770155616594,
@@ -759,7 +834,8 @@
         "img/1770155614781-Numeros.JPG"
       ],
       "collection": "Letras, numeros y otros",
-      "status": "agotado"
+      "status": "agotado",
+      "destacado": false
     },
     {
       "id": 1770155650948,
@@ -769,7 +845,8 @@
         "img/1770155649037-pict250315_1254380000.JPG"
       ],
       "collection": "Letras, numeros y otros",
-      "status": "oferta"
+      "status": "oferta",
+      "destacado": false
     },
     {
       "id": 1770156187352,
@@ -779,7 +856,8 @@
         "img/1770156185435-Arrocitos.jpeg"
       ],
       "collection": "Colores pasteles y otras figuras",
-      "status": "nuevo"
+      "status": "nuevo",
+      "destacado": false
     },
     {
       "id": 1770309041306,
@@ -787,10 +865,10 @@
       "price": 5000,
       "collection": "Colores pasteles y otras figuras",
       "status": "nuevo",
-      "image": "img/Colores pasteles(1).JPG",
       "images": [
         "img/Colores pasteles(1).JPG"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770312755113,
@@ -798,10 +876,10 @@
       "price": 5000,
       "collection": "Colores pasteles y otras figuras",
       "status": "nuevo",
-      "image": "img/colores-pasteles4.jpg",
       "images": [
         "img/colores-pasteles4.jpg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770303762681,
@@ -809,21 +887,21 @@
       "price": 10000,
       "collection": "Craquelado N12 de 10000",
       "status": "normal",
-      "image": "img/b46f6b19-8c90-4eb3-b68a-c738bb2628f5.jpeg",
       "images": [
         "img/b46f6b19-8c90-4eb3-b68a-c738bb2628f5.jpeg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770314892403,
-      "name": "Pelitas numero 6 colores pasteles",
+      "name": "Perlas numero 6 colores pasteles",
       "price": 5000,
       "collection": "Colores pasteles y otras figuras",
       "status": "agotado",
-      "image": "img/colores-pasteles.jpg",
       "images": [
         "img/colores-pasteles.jpg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770317580931,
@@ -831,10 +909,10 @@
       "price": 5000,
       "collection": "Colores pasteles y otras figuras",
       "status": "oferta",
-      "image": "img/gotas-en-blanco.jpeg",
       "images": [
         "img/gotas-en-blanco.jpeg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770318361510,
@@ -842,10 +920,10 @@
       "price": 5000,
       "collection": "Colores pasteles y otras figuras",
       "status": "agotado",
-      "image": "img/colores-pasteles5.jpg",
       "images": [
         "img/colores-pasteles5.jpg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770321949101,
@@ -853,10 +931,10 @@
       "price": 5000,
       "collection": "Colores pasteles y otras figuras",
       "status": "agotado",
-      "image": "img/corazon-blanco.jpeg",
       "images": [
         "img/corazon-blanco.jpeg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770322768749,
@@ -864,10 +942,10 @@
       "price": 5000,
       "collection": "Media perlas",
       "status": "normal",
-      "image": "img/pict2503151632090000.jpg",
       "images": [
         "img/pict2503151632090000.jpg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770323607446,
@@ -875,10 +953,10 @@
       "price": 5000,
       "collection": "Media perlas",
       "status": "agotado",
-      "image": "img/pict2503151632310000.jpg",
       "images": [
         "img/pict2503151632310000.jpg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770324463321,
@@ -886,10 +964,10 @@
       "price": 5000,
       "collection": "Media perlas",
       "status": "agotado",
-      "image": "img/pict2503151632520000.jpg",
       "images": [
         "img/pict2503151632520000.jpg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770325108811,
@@ -897,10 +975,10 @@
       "price": 5000,
       "collection": "Media perlas",
       "status": "agotado",
-      "image": "img/pict2503151633140000.jpg",
       "images": [
         "img/pict2503151633140000.jpg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770326615434,
@@ -908,10 +986,10 @@
       "price": 5000,
       "collection": "Media perlas",
       "status": "oferta",
-      "image": "img/pict2503151633320000.jpg",
       "images": [
         "img/pict2503151633320000.jpg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770315968382,
@@ -919,10 +997,10 @@
       "price": 10000,
       "collection": "Craquelado N12 de 10000",
       "status": "normal",
-      "image": "img/22811305-92fd-474f-8e15-bccf81835b9f.jpeg",
       "images": [
         "img/22811305-92fd-474f-8e15-bccf81835b9f.jpeg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770393533232,
@@ -930,10 +1008,10 @@
       "price": 5000,
       "collection": "Media perlas",
       "status": "normal",
-      "image": "img/pict2503151633320000.jpg",
       "images": [
         "img/pict2503151633320000.jpg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770393559797,
@@ -941,10 +1019,10 @@
       "price": 5000,
       "collection": "Media perlas",
       "status": "normal",
-      "image": "img/pict2503151633520000.jpg",
       "images": [
         "img/pict2503151633520000.jpg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770393585211,
@@ -952,10 +1030,10 @@
       "price": 5000,
       "collection": "Media perlas",
       "status": "normal",
-      "image": "img/pict2503151634240000.jpg",
       "images": [
         "img/pict2503151634240000.jpg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770393635721,
@@ -963,10 +1041,10 @@
       "price": 5000,
       "collection": "Media perlas",
       "status": "agotado",
-      "image": "img/pict2503151634520000.jpg",
       "images": [
         "img/pict2503151634520000.jpg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770393680021,
@@ -974,10 +1052,10 @@
       "price": 5000,
       "collection": "Media perlas",
       "status": "agotado",
-      "image": "img/pict2503151635110000.jpg",
       "images": [
         "img/pict2503151635110000.jpg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770393732147,
@@ -985,10 +1063,10 @@
       "price": 5000,
       "collection": "Media perlas",
       "status": "normal",
-      "image": "img/pict2503151636000000.jpg",
       "images": [
         "img/pict2503151636000000.jpg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770393758846,
@@ -996,10 +1074,10 @@
       "price": 5000,
       "collection": "Media perlas",
       "status": "agotado",
-      "image": "img/pict2503151636200000.jpg",
       "images": [
         "img/pict2503151636200000.jpg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770393787268,
@@ -1007,10 +1085,10 @@
       "price": 5000,
       "collection": "Media perlas",
       "status": "normal",
-      "image": "img/pict2503151636380000.jpg",
       "images": [
         "img/pict2503151636380000.jpg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770396068375,
@@ -1018,10 +1096,10 @@
       "price": 10000,
       "collection": "craquelado N12 de 10000",
       "status": "normal",
-      "image": "img/whatsapp-image-2026-02-03-at-12.51.28-pm.jpeg",
       "images": [
         "img/whatsapp-image-2026-02-03-at-12.51.28-pm.jpeg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770396147031,
@@ -1029,10 +1107,10 @@
       "price": 10000,
       "collection": "craquelado N12 de 10000",
       "status": "normal",
-      "image": "img/whatsapp-image-2026-02-03-at-12.52.08-pm.jpeg",
       "images": [
         "img/whatsapp-image-2026-02-03-at-12.52.08-pm.jpeg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770396231968,
@@ -1040,10 +1118,10 @@
       "price": 10000,
       "collection": "craquelado N12 de 10000",
       "status": "normal",
-      "image": "img/whatsapp-image-2026-02-03-at-12.52.22-pm.jpeg",
       "images": [
         "img/whatsapp-image-2026-02-03-at-12.52.22-pm.jpeg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770396255489,
@@ -1051,10 +1129,10 @@
       "price": 10000,
       "collection": "craquelado N12 de 10000",
       "status": "normal",
-      "image": "img/whatsapp-image-2026-02-03-at-12.52.45-pm.jpeg",
       "images": [
         "img/whatsapp-image-2026-02-03-at-12.52.45-pm.jpeg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770396281203,
@@ -1062,10 +1140,10 @@
       "price": 10000,
       "collection": "craquelado N12 de 10000",
       "status": "normal",
-      "image": "img/whatsapp-image-2026-02-03-at-12.53.20-pm.jpeg",
       "images": [
         "img/whatsapp-image-2026-02-03-at-12.53.20-pm.jpeg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770396319615,
@@ -1073,10 +1151,10 @@
       "price": 10000,
       "collection": "craquelado N12 de 10000",
       "status": "normal",
-      "image": "img/whatsapp-image-2026-02-03-at-12.53.43-pm.jpeg",
       "images": [
         "img/whatsapp-image-2026-02-03-at-12.53.43-pm.jpeg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770396366446,
@@ -1084,10 +1162,10 @@
       "price": 10000,
       "collection": "craquelado N12 de 10000",
       "status": "normal",
-      "image": "img/whatsapp-image-2026-02-03-at-12.54.03-pm.jpeg",
       "images": [
         "img/whatsapp-image-2026-02-03-at-12.54.03-pm.jpeg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770396394450,
@@ -1095,10 +1173,10 @@
       "price": 10000,
       "collection": "craquelado N12 de 10000",
       "status": "normal",
-      "image": "img/whatsapp-image-2026-02-03-at-12.54.35-pm.jpeg",
       "images": [
         "img/whatsapp-image-2026-02-03-at-12.54.35-pm.jpeg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770396424828,
@@ -1106,10 +1184,10 @@
       "price": 10000,
       "collection": "craquelado N12 de 10000",
       "status": "normal",
-      "image": "img/whatsapp-image-2026-02-03-at-12.54.54-pm.jpeg",
       "images": [
         "img/whatsapp-image-2026-02-03-at-12.54.54-pm.jpeg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770396452303,
@@ -1117,10 +1195,10 @@
       "price": 10000,
       "collection": "craquelado N12 de 10000",
       "status": "normal",
-      "image": "img/whatsapp-image-2026-02-03-at-12.55.24-pm.jpeg",
       "images": [
         "img/whatsapp-image-2026-02-03-at-12.55.24-pm.jpeg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770397651479,
@@ -1128,10 +1206,10 @@
       "price": 10000,
       "collection": "Craquelado N 10 de 10000",
       "status": "normal",
-      "image": "img/whatsapp-image-2026-02-03-at-12.50.11-pm.jpeg",
       "images": [
         "img/whatsapp-image-2026-02-03-at-12.50.11-pm.jpeg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770397671241,
@@ -1139,10 +1217,10 @@
       "price": 10000,
       "collection": "Craquelado N 10 de 10000",
       "status": "normal",
-      "image": "img/whatsapp-image-2026-02-03-at-12.49.54-pm.jpeg",
       "images": [
         "img/whatsapp-image-2026-02-03-at-12.49.54-pm.jpeg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770397689860,
@@ -1150,10 +1228,10 @@
       "price": 10000,
       "collection": "Craquelado N 10 de 10000",
       "status": "normal",
-      "image": "img/whatsapp-image-2026-02-03-at-12.50.26-pm.jpeg",
       "images": [
         "img/whatsapp-image-2026-02-03-at-12.50.26-pm.jpeg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770397714613,
@@ -1161,10 +1239,10 @@
       "price": 10000,
       "collection": "Craquelado N 10 de 10000",
       "status": "normal",
-      "image": "img/whatsapp-image-2026-02-03-at-12.50.42-pm.jpeg",
       "images": [
         "img/whatsapp-image-2026-02-03-at-12.50.42-pm.jpeg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770397737370,
@@ -1172,10 +1250,10 @@
       "price": 10000,
       "collection": "Craquelado N 10 de 10000",
       "status": "normal",
-      "image": "img/whatsapp-image-2026-02-03-at-12.50.54-pm.jpeg",
       "images": [
         "img/whatsapp-image-2026-02-03-at-12.50.54-pm.jpeg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770397864112,
@@ -1183,10 +1261,10 @@
       "price": 10000,
       "collection": "Craquelado N 10 de 10000",
       "status": "normal",
-      "image": "img/whatsapp-image-2026-02-06-at-8.10.23-am.jpeg",
       "images": [
         "img/whatsapp-image-2026-02-06-at-8.10.23-am.jpeg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770398009732,
@@ -1194,10 +1272,10 @@
       "price": 10000,
       "collection": "Perlas N 6 de 10000",
       "status": "normal",
-      "image": "img/amarillo-claro-numero-6.jpeg",
       "images": [
         "img/amarillo-claro-numero-6.jpeg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770398054402,
@@ -1205,10 +1283,10 @@
       "price": 10000,
       "collection": "Perlas N 6 de 10000",
       "status": "normal",
-      "image": "img/amarillo-numero-6.jpeg",
       "images": [
         "img/amarillo-numero-6.jpeg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770398079843,
@@ -1216,10 +1294,10 @@
       "price": 10000,
       "collection": "Perlas N 6 de 10000",
       "status": "normal",
-      "image": "img/azul-numero-6.jpeg",
       "images": [
         "img/azul-numero-6.jpeg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770398099568,
@@ -1227,10 +1305,10 @@
       "price": 10000,
       "collection": "Perlas N 6 de 10000",
       "status": "normal",
-      "image": "img/celeste-numero-6.jpeg",
       "images": [
         "img/celeste-numero-6.jpeg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770398121391,
@@ -1238,10 +1316,10 @@
       "price": 10000,
       "collection": "Perlas N 6 de 10000",
       "status": "normal",
-      "image": "img/dorado-opaco-numero-.jpeg",
       "images": [
         "img/dorado-opaco-numero-.jpeg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770398144801,
@@ -1249,10 +1327,10 @@
       "price": 10000,
       "collection": "Perlas N 6 de 10000",
       "status": "normal",
-      "image": "img/gris-opaco.jpeg",
       "images": [
         "img/gris-opaco.jpeg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770398167815,
@@ -1260,10 +1338,10 @@
       "price": 10000,
       "collection": "Perlas N 6 de 10000",
       "status": "normal",
-      "image": "img/lila-numero-6.jpeg",
       "images": [
         "img/lila-numero-6.jpeg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770398195200,
@@ -1271,10 +1349,10 @@
       "price": 10000,
       "collection": "Perlas N 6 de 10000",
       "status": "normal",
-      "image": "img/perlas-de-cristal-numero-6.jpeg",
       "images": [
         "img/perlas-de-cristal-numero-6.jpeg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770398218754,
@@ -1282,10 +1360,10 @@
       "price": 10000,
       "collection": "Perlas N 6 de 10000",
       "status": "normal",
-      "image": "img/turquesa-numero-6.jpeg",
       "images": [
         "img/turquesa-numero-6.jpeg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770398343717,
@@ -1293,10 +1371,10 @@
       "price": 10000,
       "collection": "Perlas N 6 de 10000",
       "status": "normal",
-      "image": "img/rosa-viejo.jpeg",
       "images": [
         "img/rosa-viejo.jpeg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770398391424,
@@ -1304,10 +1382,10 @@
       "price": 10000,
       "collection": "Perlas N 8 de 10000",
       "status": "normal",
-      "image": "img/amarillo-numero-8.jpeg",
       "images": [
         "img/amarillo-numero-8.jpeg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770398418839,
@@ -1315,10 +1393,10 @@
       "price": 10000,
       "collection": "Perlas N 8 de 10000",
       "status": "normal",
-      "image": "img/blanco-con-cruz-plateada-8.jpeg",
       "images": [
         "img/blanco-con-cruz-plateada-8.jpeg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770398434648,
@@ -1326,10 +1404,10 @@
       "price": 10000,
       "collection": "Perlas N 8 de 10000",
       "status": "normal",
-      "image": "img/celeste-numero-8.jpeg",
       "images": [
         "img/celeste-numero-8.jpeg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770398451867,
@@ -1337,10 +1415,10 @@
       "price": 10000,
       "collection": "Perlas N 8 de 10000",
       "status": "normal",
-      "image": "img/fuccia-numero-8.jpeg",
       "images": [
         "img/fuccia-numero-8.jpeg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770398473227,
@@ -1348,10 +1426,10 @@
       "price": 10000,
       "collection": "Perlas N 8 de 10000",
       "status": "normal",
-      "image": "img/gris-numero-8.jpeg",
       "images": [
         "img/gris-numero-8.jpeg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770398495015,
@@ -1359,10 +1437,10 @@
       "price": 10000,
       "collection": "Perlas N 8 de 10000",
       "status": "normal",
-      "image": "img/lila-numero-8-.jpeg",
       "images": [
         "img/lila-numero-8-.jpeg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770398519940,
@@ -1370,10 +1448,10 @@
       "price": 10000,
       "collection": "Perlas N 8 de 10000",
       "status": "normal",
-      "image": "img/lila-numero-8.jpeg",
       "images": [
         "img/lila-numero-8.jpeg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770398538850,
@@ -1381,10 +1459,10 @@
       "price": 10000,
       "collection": "Perlas N 8 de 10000",
       "status": "normal",
-      "image": "img/turquesa-numero-8.jpeg",
       "images": [
         "img/turquesa-numero-8.jpeg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770398594351,
@@ -1392,10 +1470,10 @@
       "price": 10000,
       "collection": "Perlas N 8 de 10000",
       "status": "normal",
-      "image": "img/vino-numero-8.jpeg",
       "images": [
         "img/vino-numero-8.jpeg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770399379434,
@@ -1403,10 +1481,10 @@
       "price": 10000,
       "collection": "Perlas N 10 de 10000",
       "status": "normal",
-      "image": "img/whatsapp-image-2026-02-06-at-8.24.34-am.jpeg",
       "images": [
         "img/whatsapp-image-2026-02-06-at-8.24.34-am.jpeg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770399405739,
@@ -1414,10 +1492,10 @@
       "price": 10000,
       "collection": "Perlas N 10 de 10000",
       "status": "normal",
-      "image": "img/whatsapp-image-2026-02-06-at-8.25.07-am.jpeg",
       "images": [
         "img/whatsapp-image-2026-02-06-at-8.25.07-am.jpeg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770399426467,
@@ -1425,10 +1503,10 @@
       "price": 10000,
       "collection": "Perlas N 10 de 10000",
       "status": "normal",
-      "image": "img/whatsapp-image-2026-02-06-at-8.25.41-am.jpeg",
       "images": [
         "img/whatsapp-image-2026-02-06-at-8.25.41-am.jpeg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770399464081,
@@ -1436,10 +1514,10 @@
       "price": 10000,
       "collection": "Perlas N 10 de 10000",
       "status": "normal",
-      "image": "img/whatsapp-image-2026-02-06-at-8.25.53-am.jpeg",
       "images": [
         "img/whatsapp-image-2026-02-06-at-8.25.53-am.jpeg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770399487553,
@@ -1447,10 +1525,10 @@
       "price": 10000,
       "collection": "Perlas N 10 de 10000",
       "status": "normal",
-      "image": "img/whatsapp-image-2026-02-06-at-8.26.10-am.jpeg",
       "images": [
         "img/whatsapp-image-2026-02-06-at-8.26.10-am.jpeg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770399510928,
@@ -1458,10 +1536,10 @@
       "price": 10000,
       "collection": "Perlas N 10 de 10000",
       "status": "normal",
-      "image": "img/whatsapp-image-2026-02-06-at-8.26.23-am.jpeg",
       "images": [
         "img/whatsapp-image-2026-02-06-at-8.26.23-am.jpeg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770399569660,
@@ -1469,10 +1547,10 @@
       "price": 10000,
       "collection": "Perlas N 10 de 10000",
       "status": "normal",
-      "image": "img/whatsapp-image-2026-02-06-at-8.26.34-am.jpeg",
       "images": [
         "img/whatsapp-image-2026-02-06-at-8.26.34-am.jpeg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770399592295,
@@ -1480,10 +1558,10 @@
       "price": 10000,
       "collection": "Perlas N 10 de 10000",
       "status": "normal",
-      "image": "img/whatsapp-image-2026-02-06-at-8.26.44-am.jpeg",
       "images": [
         "img/whatsapp-image-2026-02-06-at-8.26.44-am.jpeg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770399643800,
@@ -1491,10 +1569,10 @@
       "price": 10000,
       "collection": "Perlas N 10 de 10000",
       "status": "normal",
-      "image": "img/whatsapp-image-2026-02-06-at-8.26.57-am.jpeg",
       "images": [
         "img/whatsapp-image-2026-02-06-at-8.26.57-am.jpeg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770399769900,
@@ -1502,10 +1580,10 @@
       "price": 5000,
       "collection": "Alambre de 3 metros 5000",
       "status": "normal",
-      "image": "img/whatsapp-image-2026-02-06-at-8.27.51-am.jpeg",
       "images": [
         "img/whatsapp-image-2026-02-06-at-8.27.51-am.jpeg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770399806480,
@@ -1513,10 +1591,10 @@
       "price": 5000,
       "collection": "Alambre de 3 metros 5000",
       "status": "normal",
-      "image": "img/whatsapp-image-2026-02-06-at-8.28.13-am.jpeg",
       "images": [
         "img/whatsapp-image-2026-02-06-at-8.28.13-am.jpeg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770399827860,
@@ -1524,10 +1602,10 @@
       "price": 5000,
       "collection": "Alambre de 3 metros 5000",
       "status": "normal",
-      "image": "img/whatsapp-image-2026-02-06-at-8.28.24-am.jpeg",
       "images": [
         "img/whatsapp-image-2026-02-06-at-8.28.24-am.jpeg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770399868356,
@@ -1535,10 +1613,10 @@
       "price": 5000,
       "collection": "Alambre de 3 metros 5000",
       "status": "normal",
-      "image": "img/whatsapp-image-2026-02-06-at-8.28.34-am.jpeg",
       "images": [
         "img/whatsapp-image-2026-02-06-at-8.28.34-am.jpeg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770399937115,
@@ -1546,10 +1624,10 @@
       "price": 5000,
       "collection": "Alambre de 3 metros 5000",
       "status": "normal",
-      "image": "img/whatsapp-image-2026-02-06-at-8.28.47-am.jpeg",
       "images": [
         "img/whatsapp-image-2026-02-06-at-8.28.47-am.jpeg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770399958179,
@@ -1557,10 +1635,10 @@
       "price": 5000,
       "collection": "Alambre de 3 metros 5000",
       "status": "normal",
-      "image": "img/whatsapp-image-2026-02-06-at-8.28.56-am.jpeg",
       "images": [
         "img/whatsapp-image-2026-02-06-at-8.28.56-am.jpeg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770400002085,
@@ -1568,21 +1646,21 @@
       "price": 5000,
       "collection": "Alambre de 3 metros 5000",
       "status": "normal",
-      "image": "img/whatsapp-image-2026-02-06-at-8.29.12-am.jpeg",
       "images": [
         "img/whatsapp-image-2026-02-06-at-8.29.12-am.jpeg"
-      ]
+      ],
+      "destacado": false
     },
     {
-      "id": 1770400021742,
+      "id": 177040021742,
       "name": "Alambre de 3 metros azul",
       "price": 5000,
       "collection": "Alambre de 3 metros 5000",
       "status": "normal",
-      "image": "img/whatsapp-image-2026-02-06-at-8.29.20-am.jpeg",
       "images": [
         "img/whatsapp-image-2026-02-06-at-8.29.20-am.jpeg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770400043543,
@@ -1590,10 +1668,10 @@
       "price": 5000,
       "collection": "Alambre de 3 metros 5000",
       "status": "normal",
-      "image": "img/whatsapp-image-2026-02-06-at-8.29.37-am.jpeg",
       "images": [
         "img/whatsapp-image-2026-02-06-at-8.29.37-am.jpeg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770400065545,
@@ -1601,10 +1679,10 @@
       "price": 5000,
       "collection": "Alambre de 3 metros 5000",
       "status": "normal",
-      "image": "img/whatsapp-image-2026-02-06-at-8.29.52-am.jpeg",
       "images": [
         "img/whatsapp-image-2026-02-06-at-8.29.52-am.jpeg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770400083572,
@@ -1612,10 +1690,10 @@
       "price": 5000,
       "collection": "Alambre de 3 metros 5000",
       "status": "normal",
-      "image": "img/whatsapp-image-2026-02-06-at-8.32.23-am.jpeg",
       "images": [
         "img/whatsapp-image-2026-02-06-at-8.32.23-am.jpeg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770400200559,
@@ -1623,10 +1701,10 @@
       "price": 10000,
       "collection": "Alambre de 7 metros 10000",
       "status": "normal",
-      "image": "img/whatsapp-image-2026-02-06-at-8.31.49-am.jpeg",
       "images": [
         "img/whatsapp-image-2026-02-06-at-8.31.49-am.jpeg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770400224951,
@@ -1634,10 +1712,10 @@
       "price": 10000,
       "collection": "Alambre de 7 metros 10000",
       "status": "normal",
-      "image": "img/whatsapp-image-2026-02-06-at-8.31.28-am.jpeg",
       "images": [
         "img/whatsapp-image-2026-02-06-at-8.31.28-am.jpeg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770400247288,
@@ -1645,10 +1723,10 @@
       "price": 10000,
       "collection": "Alambre de 7 metros 10000",
       "status": "normal",
-      "image": "img/whatsapp-image-2026-02-06-at-8.31.21-am.jpeg",
       "images": [
         "img/whatsapp-image-2026-02-06-at-8.31.21-am.jpeg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770400272121,
@@ -1656,10 +1734,10 @@
       "price": 10000,
       "collection": "Alambre de 7 metros 10000",
       "status": "normal",
-      "image": "img/whatsapp-image-2026-02-06-at-8.31.13-am.jpeg",
       "images": [
         "img/whatsapp-image-2026-02-06-at-8.31.13-am.jpeg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770400292754,
@@ -1667,10 +1745,10 @@
       "price": 10000,
       "collection": "Alambre de 7 metros 10000",
       "status": "normal",
-      "image": "img/whatsapp-image-2026-02-06-at-8.31.05-am.jpeg",
       "images": [
         "img/whatsapp-image-2026-02-06-at-8.31.05-am.jpeg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770400321589,
@@ -1678,10 +1756,10 @@
       "price": 10000,
       "collection": "Alambre de 7 metros 10000",
       "status": "normal",
-      "image": "img/whatsapp-image-2026-02-06-at-8.30.54-am.jpeg",
       "images": [
         "img/whatsapp-image-2026-02-06-at-8.30.54-am.jpeg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770400343575,
@@ -1689,10 +1767,10 @@
       "price": 10000,
       "collection": "Alambre de 7 metros 10000",
       "status": "normal",
-      "image": "img/whatsapp-image-2026-02-06-at-8.30.43-am.jpeg",
       "images": [
         "img/whatsapp-image-2026-02-06-at-8.30.43-am.jpeg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770400361975,
@@ -1700,10 +1778,10 @@
       "price": 10000,
       "collection": "Alambre de 7 metros 10000",
       "status": "normal",
-      "image": "img/whatsapp-image-2026-02-06-at-8.30.33-am.jpeg",
       "images": [
         "img/whatsapp-image-2026-02-06-at-8.30.33-am.jpeg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770400383687,
@@ -1711,10 +1789,10 @@
       "price": 10000,
       "collection": "Alambre de 7 metros 10000",
       "status": "normal",
-      "image": "img/whatsapp-image-2026-02-06-at-8.30.25-am.jpeg",
       "images": [
         "img/whatsapp-image-2026-02-06-at-8.30.25-am.jpeg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770401233446,
@@ -1722,10 +1800,10 @@
       "price": 8000,
       "collection": "Hilo chino x 20 metros ",
       "status": "normal",
-      "image": "img/fuccia-claro.jpeg",
       "images": [
         "img/fuccia-claro.jpeg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770401269113,
@@ -1733,10 +1811,10 @@
       "price": 8000,
       "collection": "Hilo chino x 20 metros ",
       "status": "normal",
-      "image": "img/fuccia-oscuro.jpeg",
       "images": [
         "img/fuccia-oscuro.jpeg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770401288612,
@@ -1744,10 +1822,10 @@
       "price": 8000,
       "collection": "Hilo chino x 20 metros ",
       "status": "normal",
-      "image": "img/lila-oscuro.jpeg",
       "images": [
         "img/lila-oscuro.jpeg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770401313072,
@@ -1755,10 +1833,10 @@
       "price": 8000,
       "collection": "Hilo chino x 20 metros ",
       "status": "normal",
-      "image": "img/lila-pastel.jpeg",
       "images": [
         "img/lila-pastel.jpeg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770401334240,
@@ -1766,10 +1844,10 @@
       "price": 8000,
       "collection": "Hilo chino x 20 metros ",
       "status": "normal",
-      "image": "img/marron-oscuro.jpeg",
       "images": [
         "img/marron-oscuro.jpeg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770401364726,
@@ -1777,10 +1855,10 @@
       "price": 8000,
       "collection": "Hilo chino x 20 metros ",
       "status": "normal",
-      "image": "img/rosa-bebe.jpeg",
       "images": [
         "img/rosa-bebe.jpeg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770401394544,
@@ -1788,10 +1866,10 @@
       "price": 8000,
       "collection": "Hilo chino x 20 metros ",
       "status": "normal",
-      "image": "img/rosa-chiqle.jpeg",
       "images": [
         "img/rosa-chiqle.jpeg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770401419314,
@@ -1799,10 +1877,10 @@
       "price": 8000,
       "collection": "Hilo chino x 20 metros ",
       "status": "normal",
-      "image": "img/turquesa.jpeg",
       "images": [
         "img/turquesa.jpeg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770401439858,
@@ -1810,10 +1888,10 @@
       "price": 8000,
       "collection": "Hilo chino x 20 metros ",
       "status": "normal",
-      "image": "img/whatsapp-image-2026-02-06-at-8.39.34-am.jpeg",
       "images": [
         "img/whatsapp-image-2026-02-06-at-8.39.34-am.jpeg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770401468235,
@@ -1821,10 +1899,10 @@
       "price": 8000,
       "collection": "Hilo chino x 20 metros ",
       "status": "normal",
-      "image": "img/whatsapp-image-2026-02-06-at-8.40.06-am.jpeg",
       "images": [
         "img/whatsapp-image-2026-02-06-at-8.40.06-am.jpeg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770401489800,
@@ -1832,10 +1910,10 @@
       "price": 8000,
       "collection": "Hilo chino x 20 metros ",
       "status": "normal",
-      "image": "img/whatsapp-image-2026-02-06-at-8.40.15-am.jpeg",
       "images": [
         "img/whatsapp-image-2026-02-06-at-8.40.15-am.jpeg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770401517596,
@@ -1843,10 +1921,10 @@
       "price": 8000,
       "collection": "Hilo chino x 20 metros ",
       "status": "normal",
-      "image": "img/whatsapp-image-2026-02-06-at-8.41.17-am.jpeg",
       "images": [
         "img/whatsapp-image-2026-02-06-at-8.41.17-am.jpeg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770401548443,
@@ -1854,10 +1932,10 @@
       "price": 8000,
       "collection": "Hilo chino x 20 metros ",
       "status": "normal",
-      "image": "img/whatsapp-image-2026-02-06-at-8.42.01-am.jpeg",
       "images": [
         "img/whatsapp-image-2026-02-06-at-8.42.01-am.jpeg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770401573545,
@@ -1865,10 +1943,10 @@
       "price": 8000,
       "collection": "Hilo chino x 20 metros ",
       "status": "normal",
-      "image": "img/whatsapp-image-2026-02-06-at-8.42.30-am.jpeg",
       "images": [
         "img/whatsapp-image-2026-02-06-at-8.42.30-am.jpeg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770401599435,
@@ -1876,10 +1954,10 @@
       "price": 8000,
       "collection": "Hilo chino x 20 metros ",
       "status": "normal",
-      "image": "img/whatsapp-image-2026-02-06-at-8.42.58-am.jpeg",
       "images": [
         "img/whatsapp-image-2026-02-06-at-8.42.58-am.jpeg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770401622097,
@@ -1887,10 +1965,10 @@
       "price": 8000,
       "collection": "Hilo chino x 20 metros ",
       "status": "normal",
-      "image": "img/whatsapp-image-2026-02-06-at-8.43.14-am.jpeg",
       "images": [
         "img/whatsapp-image-2026-02-06-at-8.43.14-am.jpeg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770401638499,
@@ -1898,10 +1976,10 @@
       "price": 8000,
       "collection": "Hilo chino x 20 metros ",
       "status": "normal",
-      "image": "img/whatsapp-image-2026-02-06-at-8.43.27-am.jpeg",
       "images": [
         "img/whatsapp-image-2026-02-06-at-8.43.27-am.jpeg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770401829315,
@@ -1909,10 +1987,10 @@
       "price": 5000,
       "collection": "Accesorios para pulseras",
       "status": "normal",
-      "image": "img/pict2503151329580000.jpg",
       "images": [
         "img/pict2503151329580000.jpg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770401884660,
@@ -1920,10 +1998,10 @@
       "price": 5000,
       "collection": "Accesorios para pulseras",
       "status": "normal",
-      "image": "img/pict2503151332050000.jpg",
       "images": [
         "img/pict2503151332050000.jpg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770401915156,
@@ -1931,10 +2009,10 @@
       "price": 5000,
       "collection": "Accesorios para pulseras",
       "status": "normal",
-      "image": "img/pict2503151334250000.jpg",
       "images": [
         "img/pict2503151334250000.jpg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770401946305,
@@ -1942,10 +2020,10 @@
       "price": 5000,
       "collection": "Accesorios para pulseras",
       "status": "normal",
-      "image": "img/pict2503151335040000.jpg",
       "images": [
         "img/pict2503151335040000.jpg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770401970133,
@@ -1953,10 +2031,10 @@
       "price": 5000,
       "collection": "Accesorios para pulseras",
       "status": "normal",
-      "image": "img/pict2503151336010000.jpg",
       "images": [
         "img/pict2503151336010000.jpg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770402031875,
@@ -1964,10 +2042,10 @@
       "price": 5000,
       "collection": "Accesorios para pulseras",
       "status": "normal",
-      "image": "img/pict2503151336320000.jpg",
       "images": [
         "img/pict2503151336320000.jpg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770402063447,
@@ -1975,10 +2053,10 @@
       "price": 5000,
       "collection": "Accesorios para pulseras",
       "status": "normal",
-      "image": "img/pict2503151337090000.jpg",
       "images": [
         "img/pict2503151337090000.jpg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770402114993,
@@ -1986,10 +2064,10 @@
       "price": 5000,
       "collection": "Accesorios para pulseras",
       "status": "normal",
-      "image": "img/pict2503151339130000.jpg",
       "images": [
         "img/pict2503151339130000.jpg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770402150031,
@@ -1997,10 +2075,10 @@
       "price": 5000,
       "collection": "Accesorios para pulseras",
       "status": "normal",
-      "image": "img/pict2503151339370000.jpg",
       "images": [
         "img/pict2503151339370000.jpg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770402176091,
@@ -2008,10 +2086,10 @@
       "price": 5000,
       "collection": "Accesorios para pulseras",
       "status": "normal",
-      "image": "img/pict2503151340370000.jpg",
       "images": [
         "img/pict2503151340370000.jpg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770402203425,
@@ -2019,10 +2097,10 @@
       "price": 5000,
       "collection": "Accesorios para pulseras",
       "status": "normal",
-      "image": "img/pict2503151342300000.jpg",
       "images": [
         "img/pict2503151342300000.jpg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770402232450,
@@ -2030,10 +2108,10 @@
       "price": 5000,
       "collection": "Accesorios para pulseras",
       "status": "normal",
-      "image": "img/pict2503151343330000.jpg",
       "images": [
         "img/pict2503151343330000.jpg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770402330462,
@@ -2041,10 +2119,10 @@
       "price": 5000,
       "collection": "Accesorios para pulseras",
       "status": "normal",
-      "image": "img/pict2503151345130000.jpg",
       "images": [
         "img/pict2503151345130000.jpg"
-      ]
+      ],
+      "destacado": false
     },
     {
       "id": 1770402352622,
@@ -2052,10 +2130,10 @@
       "price": 5000,
       "collection": "Accesorios para pulseras",
       "status": "normal",
-      "image": "img/pict2503151346260000.jpg",
       "images": [
         "img/pict2503151346260000.jpg"
-      ]
+      ],
+      "destacado": false
     }
   ]
 }
