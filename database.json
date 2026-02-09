@@ -2156,6 +2156,17 @@
       "images": [
         "img/combo-para-decorar-bombillas-165.000-gs.jpeg"
       ]
+    },
+    {
+      "id": 1770669537101,
+      "name": "Combo para decorar zapatillas ",
+      "price": 120000,
+      "collection": "Combos",
+      "status": "oferta",
+      "destacado": false,
+      "images": [
+        "img/combo-para-zapatillas-120.000-gs.jpeg"
+      ]
     }
   ]
 }
