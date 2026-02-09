@@ -2229,7 +2229,7 @@
       "price": 135000,
       "collection": "Combos",
       "status": "oferta",
-      "destacado": false,
+      "destacado": true,
       "images": [
         "img/combo-135000-gs.jpeg"
       ]
