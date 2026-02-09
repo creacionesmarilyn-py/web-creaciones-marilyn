@@ -2134,6 +2134,17 @@
         "img/pict2503151346260000.jpg"
       ],
       "destacado": false
+    },
+    {
+      "id": 1770669389854,
+      "name": "Combo bolígrafos: 4 pompones, dos hilos, un pegamento, cinco tipos de perlitas, dos paquetes de gomitas, 10 boligrados",
+      "price": 100000,
+      "collection": "Combos",
+      "status": "oferta",
+      "destacado": false,
+      "images": [
+        "img/combo-boligrafos-4-pompones-dos-hilos-un-pegamento-cinco-tipos-de-perlitas-dos-paquetes-de-gomitas-10-boligrados.jpeg"
+      ]
     }
   ]
 }
