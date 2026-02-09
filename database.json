@@ -2167,6 +2167,17 @@
       "images": [
         "img/combo-para-zapatillas-120.000-gs.jpeg"
       ]
+    },
+    {
+      "id": 1770669582905,
+      "name": "Combo para zapatillas + tira y flores",
+      "price": 150000,
+      "collection": "Combos",
+      "status": "oferta",
+      "destacado": false,
+      "images": [
+        "img/combo-para-zapatillas-150.000-gs.jpeg"
+      ]
     }
   ]
 }
