@@ -1,4 +1,4 @@
-// app.js - FASE 3: VITRINA INTELIGENTE (Destacados + Pop-up Dinámico)
+// app.js - FASE 3: VITRINA INTELIGENTE (Destacados + Pop-up Dinámico + Meta Tracking)
 let cart = JSON.parse(localStorage.getItem('marilyn_cart')) || [];
 let allProducts = [];
 let activeCategory = 'todas';
@@ -15,7 +15,6 @@ async function loadStore() {
         const data = await response.json();
         const content = JSON.parse(decodeURIComponent(escape(atob(data.content))));
         
-        // Mantenemos el reverse para que lo nuevo esté arriba, pero la lógica de render priorizará destacados
         allProducts = content.products.reverse();
         
         renderCategories();
@@ -28,7 +27,6 @@ async function loadStore() {
 function renderCategories() {
     const container = document.getElementById('category-filters');
     if(!container) return;
-    // Filtramos para que no aparezca "anuncio" como una categoría
     const categories = ['todas', ...new Set(allProducts
         .filter(p => (p.status || "").toLowerCase() !== 'anuncio')
         .map(p => (p.collection || "").toLowerCase().trim()))];
@@ -47,13 +45,11 @@ function applyFilters() {
     const filtered = allProducts.filter(p => {
         const matchesSearch = (p.name || "").toLowerCase().includes(searchTerm);
         const matchesCategory = activeCategory === 'todas' || (p.collection || "").toLowerCase().trim() === activeCategory;
-        // IMPORTANTE: Excluimos el producto con estado "anuncio" de la lista normal
         return matchesSearch && matchesCategory && (p.status || "").toLowerCase() !== 'anuncio';
     });
     renderProducts(filtered);
 }
 
-// RENDERIZADO CON PRIORIDAD DE DESTACADOS
 function renderProducts(products) {
     const grid = document.getElementById('product-grid');
     if(!grid) return;
@@ -66,11 +62,9 @@ function renderProducts(products) {
     const searchTerm = document.getElementById('search-input')?.value.toLowerCase().trim() || "";
 
     if (activeCategory === 'todas' && searchTerm === "") {
-        // FASE 3: EXTRAEMOS DESTACADOS PARA LA SECCIÓN SUPERIOR
         const destacados = products.filter(p => p.destacado === true).slice(0, 3);
         const noDestacados = products.filter(p => p.destacado !== true);
 
-        // Agrupamos el resto por colección
         const grouped = noDestacados.reduce((acc, p) => {
             const col = p.collection || "Otros";
             if (!acc[col]) acc[col] = [];
@@ -80,7 +74,6 @@ function renderProducts(products) {
 
         let finalHTML = '';
 
-        // Si hay destacados, creamos la sección "favoritos" arriba de todo
         if (destacados.length > 0) {
             finalHTML += `
                 <div class="category-section mb-12">
@@ -97,7 +90,6 @@ function renderProducts(products) {
             `;
         }
 
-        // Renderizamos las colecciones normales
         finalHTML += Object.keys(grouped).sort().map(category => `
             <div class="category-section">
                 <div class="flex justify-between items-center mb-6 px-2">
@@ -114,8 +106,6 @@ function renderProducts(products) {
 
         grid.innerHTML = finalHTML;
     } else {
-        // GRID NORMAL (Búsqueda o categoría específica)
-        // También priorizamos destacados dentro del grid
         const sorted = [...products].sort((a, b) => (b.destacado === true) - (a.destacado === true));
         grid.innerHTML = `<div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
             ${sorted.map(p => createProductCard(p, false)).join('')}
@@ -196,7 +186,6 @@ function closeAnnouncement() {
     modal.classList.replace('flex', 'hidden');
 }
 
-// RESTO DE FUNCIONES (addToCart, saveCart, toggleCart, updateCartUI, removeFromCart, openGallery, closeGallery, updateGalleryModal, nextImg, prevImg, sendWhatsApp) - SIN CAMBIOS
 function addToCart(id, name, price) { 
     const item = cart.find(i => i.id === id); 
     if (item) item.qty++; else cart.push({ id, name, price, qty: 1 }); 
@@ -236,10 +225,19 @@ function updateGalleryModal() {
 }
 function nextImg() { currentIndex = (currentIndex + 1) % currentGallery.length; updateGalleryModal(); }
 function prevImg() { currentIndex = (currentIndex - 1 + currentGallery.length) % currentGallery.length; updateGalleryModal(); }
+
+// FUNCIÓN ACTUALIZADA CON META TRACKING (CONTACTO)
 function sendWhatsApp() {
+    // DISPARO DE EVENTO A META PIXEL
+    if (typeof fbq === 'function') {
+        fbq('track', 'Contact');
+        console.log("🚀 Meta Pixel: Evento 'Contact' enviado con éxito.");
+    }
+
     let msg = "¡Hola Marilyn! Mi pedido es:\n\n";
     cart.forEach(i => msg += `✨ ${i.qty}x ${i.name} - Gs. ${(i.price * i.qty).toLocaleString()}\n`);
     msg += `\n*Total: Gs. ${cart.reduce((acc, i) => acc + (i.price * i.qty), 0).toLocaleString()}*`;
     window.open(`https://wa.me/595991391542?text=${encodeURIComponent(msg)}`, '_blank');
 }
+
 document.addEventListener('DOMContentLoaded', loadStore);
