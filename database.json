@@ -2134,6 +2134,94 @@
         "img/pict2503151346260000.jpg"
       ],
       "destacado": false
+    },
+    {
+      "id": 1770669389854,
+      "name": "Combo bolígrafos: 4 pompones, dos hilos, un pegamento, cinco tipos de perlitas, dos paquetes de gomitas, 10 boligrados",
+      "price": 100000,
+      "collection": "Combos",
+      "status": "oferta",
+      "destacado": true,
+      "images": [
+        "img/combo-boligrafos-4-pompones-dos-hilos-un-pegamento-cinco-tipos-de-perlitas-dos-paquetes-de-gomitas-10-boligrados.jpeg"
+      ]
+    },
+    {
+      "id": 1770669488693,
+      "name": "Combo completo para decorar bombillas",
+      "price": 165000,
+      "collection": "Combos",
+      "status": "oferta",
+      "destacado": true,
+      "images": [
+        "img/combo-para-decorar-bombillas-165.000-gs.jpeg"
+      ]
+    },
+    {
+      "id": 1770669537101,
+      "name": "Combo para decorar zapatillas ",
+      "price": 120000,
+      "collection": "Combos",
+      "status": "anuncio",
+      "destacado": true,
+      "images": [
+        "img/combo-para-zapatillas-120.000-gs.jpeg"
+      ]
+    },
+    {
+      "id": 1770669582905,
+      "name": "Combo para zapatillas + tira y flores",
+      "price": 150000,
+      "collection": "Combos",
+      "status": "oferta",
+      "destacado": true,
+      "images": [
+        "img/combo-para-zapatillas-150.000-gs.jpeg"
+      ]
+    },
+    {
+      "id": 1770669624476,
+      "name": "Combo para zapatillas -160.000 Gs",
+      "price": 160000,
+      "collection": "Combos",
+      "status": "oferta",
+      "destacado": false,
+      "images": [
+        "img/combo-para-zapatillas-boradadas-160.000-gs.jpeg"
+      ]
+    },
+    {
+      "id": 1770669672262,
+      "name": "Combo para zapatillas con tira de girasol ",
+      "price": 120000,
+      "collection": "Combos",
+      "status": "oferta",
+      "destacado": true,
+      "images": [
+        "img/combo-para-zapatillas-con-girasol-120.000-gs.jpeg"
+      ]
+    },
+    {
+      "id": 1770669722118,
+      "name": "Combo para zapatillas - 230.000 Gs",
+      "price": 230000,
+      "collection": "Combos",
+      "status": "oferta",
+      "destacado": false,
+      "images": [
+        "img/combo-para-zapatillas-230.000-gs..jpeg"
+      ]
+    },
+    {
+      "id": 1770669883736,
+      "name": "Combo para pulseras + cajita",
+      "price": 135000,
+      "collection": "Combos",
+      "status": "oferta",
+      "destacado": false,
+      "images": [
+        "img/combo-para-pulseras-135.000-gs-.jpeg"
+      ]
     }
   ]
 }
