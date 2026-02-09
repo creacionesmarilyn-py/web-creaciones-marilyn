@@ -2141,7 +2141,7 @@
       "price": 100000,
       "collection": "Combos",
       "status": "oferta",
-      "destacado": false,
+      "destacado": true,
       "images": [
         "img/combo-boligrafos-4-pompones-dos-hilos-un-pegamento-cinco-tipos-de-perlitas-dos-paquetes-de-gomitas-10-boligrados.jpeg"
       ]
