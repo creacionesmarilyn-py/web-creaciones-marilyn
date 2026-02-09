@@ -2178,6 +2178,17 @@
       "images": [
         "img/combo-para-zapatillas-150.000-gs.jpeg"
       ]
+    },
+    {
+      "id": 1770669624476,
+      "name": "Combo para zapatillas -160.000 Gs",
+      "price": 160000,
+      "collection": "Combos",
+      "status": "oferta",
+      "destacado": false,
+      "images": [
+        "img/combo-para-zapatillas-boradadas-160.000-gs.jpeg"
+      ]
     }
   ]
 }
