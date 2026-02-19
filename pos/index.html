@@ -363,8 +363,12 @@
             
             const filtrados = productosCache.filter(p => {
                 if (!p.activo) return false;
+                // Búsqueda inteligente: Real o Generado
+                const codReal = (p.codigo_barras || '').toLowerCase();
+                const codGenerado = ('id-' + p.id).toLowerCase();
                 return p.nombre.toLowerCase().includes(termino) || 
-                       (p.codigo_barras && p.codigo_barras.toLowerCase().includes(termino));
+                       codReal.includes(termino) ||
+                       codGenerado.includes(termino);
             });
 
             filtrados.forEach(p => {
@@ -406,8 +410,13 @@
             isScanningPaused = true; 
             const feedbackEl = document.getElementById('scannerFeedback');
             
-            // 3. Buscar el producto escaneado
-            const prod = productosCache.find(p => p.codigo_barras === decodedText.trim().toUpperCase());
+            // 3. Buscar el producto escaneado (LA MAGIA QUIRÚRGICA)
+            const codigoBuscado = decodedText.trim().toUpperCase();
+            const prod = productosCache.find(p => {
+                const codReal = (p.codigo_barras || '').toUpperCase();
+                const codGenerado = 'ID-' + p.id;
+                return codReal === codigoBuscado || codGenerado === codigoBuscado;
+            });
 
             if (prod) {
                 // ÉXITO: BEEP ALTO
@@ -473,7 +482,14 @@
         
         function intentarAgregarPorCodigo(codigo) {
             if (!codigo) return;
-            const prod = productosCache.find(p => p.codigo_barras === codigo.trim().toUpperCase());
+            
+            // LA MAGIA QUIRÚRGICA: Aplicada también al buscador manual/lector físico
+            const codigoBuscado = codigo.trim().toUpperCase();
+            const prod = productosCache.find(p => {
+                const codReal = (p.codigo_barras || '').toUpperCase();
+                const codGenerado = 'ID-' + p.id;
+                return codReal === codigoBuscado || codGenerado === codigoBuscado;
+            });
             
             if (prod) {
                 agregarAlCarrito(prod);
