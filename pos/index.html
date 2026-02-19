@@ -360,15 +360,18 @@
             grid.innerHTML = '';
             
             const termino = texto.toLowerCase().trim();
+            // LA MAGIA BLINDADA (BUSCADOR EN TIEMPO REAL)
+            const terminoLimpio = texto.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
             
             const filtrados = productosCache.filter(p => {
                 if (!p.activo) return false;
-                // Búsqueda inteligente: Real o Generado
-                const codReal = (p.codigo_barras || '').toLowerCase();
-                const codGenerado = ('id-' + p.id).toLowerCase();
+                
+                const codRealLimpio = (p.codigo_barras || '').replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+                const codGenLimpio = 'ID' + p.id;
+                
                 return p.nombre.toLowerCase().includes(termino) || 
-                       codReal.includes(termino) ||
-                       codGenerado.includes(termino);
+                       codRealLimpio.includes(terminoLimpio) ||
+                       codGenLimpio.includes(terminoLimpio);
             });
 
             filtrados.forEach(p => {
@@ -410,11 +413,12 @@
             isScanningPaused = true; 
             const feedbackEl = document.getElementById('scannerFeedback');
             
-            // 3. Buscar el producto escaneado (LA MAGIA QUIRÚRGICA)
-            const codigoBuscado = decodedText.trim().toUpperCase();
+            // 3. Buscar el producto escaneado (LA MAGIA BLINDADA DE CÁMARA)
+            const codigoBuscado = decodedText.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+            
             const prod = productosCache.find(p => {
-                const codReal = (p.codigo_barras || '').toUpperCase();
-                const codGenerado = 'ID-' + p.id;
+                const codReal = (p.codigo_barras || '').replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+                const codGenerado = 'ID' + p.id;
                 return codReal === codigoBuscado || codGenerado === codigoBuscado;
             });
 
@@ -446,7 +450,7 @@
                     setTimeout(() => oscillator.stop(), 300);
                 } catch(e) {}
 
-                feedbackEl.innerText = `❌ Código no existe: ${decodedText}`;
+                feedbackEl.innerText = `❌ Código no existe: [${decodedText}]`;
                 feedbackEl.style.color = "var(--color-danger)";
             }
 
@@ -483,11 +487,12 @@
         function intentarAgregarPorCodigo(codigo) {
             if (!codigo) return;
             
-            // LA MAGIA QUIRÚRGICA: Aplicada también al buscador manual/lector físico
-            const codigoBuscado = codigo.trim().toUpperCase();
+            // LA MAGIA BLINDADA (TECLADO O PISTOLA FÍSICA)
+            const codigoBuscado = codigo.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+            
             const prod = productosCache.find(p => {
-                const codReal = (p.codigo_barras || '').toUpperCase();
-                const codGenerado = 'ID-' + p.id;
+                const codReal = (p.codigo_barras || '').replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+                const codGenerado = 'ID' + p.id;
                 return codReal === codigoBuscado || codGenerado === codigoBuscado;
             });
             
@@ -496,7 +501,7 @@
                 document.getElementById('inputBusqueda').value = ''; 
                 buscarProductos(''); 
             } else {
-                alert("❌ Código no encontrado: " + codigo);
+                alert(`❌ Código no encontrado: [${codigo}]`);
             }
         }
 
