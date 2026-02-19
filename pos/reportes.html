@@ -1,0 +1,483 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reportes - Creaciones Marilyn</title>
+    <link rel="stylesheet" href="css/marilyn.css">
+    <style>
+        /* --- ESTILOS DEL DASHBOARD --- */
+        body {
+            padding-bottom: 50px;
+        }
+
+        /* Cabecera de Filtros */
+        .filtros-bar {
+            background-color: #222;
+            padding: 15px;
+            border-bottom: 1px solid var(--color-gold);
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .input-date {
+            background: #fff;
+            color: #000;
+            border: 1px solid #555;
+            padding: 8px;
+            border-radius: 4px;
+        }
+
+        /* Tarjetas de Resumen (KPIs) */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .kpi-card {
+            background: linear-gradient(145deg, #2a2a2a, #1f1f1f);
+            border-left: 5px solid var(--color-gold);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        .kpi-label { font-size: 0.9rem; color: #aaa; text-transform: uppercase; }
+        .kpi-value { font-size: 2rem; font-weight: bold; color: #fff; margin: 10px 0; }
+        .kpi-sub { font-size: 0.8rem; color: var(--color-gold); }
+
+        /* Gráfico Canvas */
+        .chart-container {
+            background: #1a1a1a;
+            margin: 0 20px 20px 20px;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #333;
+        }
+        canvas {
+            width: 100%;
+            height: 300px;
+        }
+
+        /* Tablas de Detalles */
+        .tablas-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr; /* 2/3 para ventas, 1/3 para top productos */
+            gap: 20px;
+            padding: 0 20px;
+        }
+
+        @media (max-width: 900px) {
+            .tablas-grid { grid-template-columns: 1fr; }
+        }
+
+        /* Sección Contador / IVA */
+        .contador-section {
+            margin: 40px 20px;
+            background: #fff;
+            color: #000;
+            padding: 40px;
+            border-radius: 4px;
+            display: none; /* Se muestra al activar */
+        }
+        
+        .contador-visible { display: block; }
+
+        /* --- ESTILOS DE IMPRESIÓN --- */
+        @media print {
+            /* Ocultar navegación y filtros */
+            header, .filtros-bar, .no-print { display: none !important; }
+            body { background: #fff; color: #000; }
+            
+            /* Ajustar contenedores */
+            .container, .tablas-grid, .kpi-grid { display: block; width: 100%; padding: 0; margin: 0; }
+            
+            /* Si estamos imprimiendo el reporte de IVA, ocultar el resto del dashboard */
+            body.printing-iva > *:not(.contador-section) { display: none; }
+            body.printing-iva .contador-section { 
+                display: block !important; 
+                position: absolute; 
+                top: 0; 
+                left: 0; 
+                width: 100%; 
+                margin: 0; 
+                border: none;
+            }
+
+            /* Estilos básicos de tabla para impresión */
+            table { width: 100%; border-collapse: collapse; }
+            th, td { border: 1px solid #ddd; color: #000; }
+            .kpi-card { border: 1px solid #000; background: none; color: #000; margin-bottom: 20px; page-break-inside: avoid; }
+            .kpi-value, .kpi-label, .kpi-sub { color: #000; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="no-print">
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <a href="admin.html" class="btn" style="background:transparent; border:1px solid var(--color-gold); color:var(--color-gold);">⬅ Volver</a>
+            <h1>📊 Reportes & Estadísticas</h1>
+        </div>
+    </header>
+
+    <div class="filtros-bar no-print">
+        <div>
+            <label>Desde:</label>
+            <input type="date" id="fechaDesde" class="input-date">
+        </div>
+        <div>
+            <label>Hasta:</label>
+            <input type="date" id="fechaHasta" class="input-date">
+        </div>
+        <button class="btn btn-primary" onclick="generarReporte()">🔄 Actualizar Datos</button>
+        <button class="btn" onclick="window.print()">🖨️ Imprimir Reporte</button>
+        <button class="btn" style="background: #444;" onclick="mostrarSeccionContador()">📑 Para el Contador</button>
+    </div>
+
+    <section class="kpi-grid">
+        <div class="kpi-card">
+            <div class="kpi-label">Ventas Totales</div>
+            <div class="kpi-value" id="kpiTotal">0 Gs</div>
+            <div class="kpi-sub" id="kpiPeriodo">Hoy</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-label">Cantidad Tickets</div>
+            <div class="kpi-value" id="kpiCantidad">0</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-label">IVA (Débito Fiscal)</div>
+            <div class="kpi-value" id="kpiIva" style="color: #ff9800;">0 Gs</div>
+            <div class="kpi-sub">Incluido en total</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-label">Ticket Promedio</div>
+            <div class="kpi-value" id="kpiPromedio">0 Gs</div>
+        </div>
+    </section>
+
+    <section class="chart-container no-print">
+        <h3 style="color: var(--color-gold); margin-bottom: 15px;">Tendencia de Ventas (Período Seleccionado)</h3>
+        <canvas id="ventasChart"></canvas>
+    </section>
+
+    <section class="tablas-grid">
+        <div class="card">
+            <h2>📜 Detalle de Ventas</h2>
+            <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+                <table id="tablaVentas">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Nro</th>
+                            <th>Pago</th>
+                            <th>Total Gs</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🏆 Top Productos</h2>
+            <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+                <table id="tablaTop">
+                    <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th>Cant</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <section id="seccionContador" class="contador-section">
+        <div style="text-align: center; border-bottom: 2px solid #000; padding-bottom: 20px; margin-bottom: 20px;">
+            <h2>CREACIONES MARILYN EAS</h2>
+            <h3>Resumen de Ventas - Liquidación de IVA</h3>
+        </div>
+        
+        <p><strong>Período:</strong> <span id="contaPeriodo">-</span></p>
+        <p><strong>Fecha Emisión:</strong> <span id="contaEmision">-</span></p>
+
+        <table style="width: 100%; border: 1px solid #000; margin-top: 20px;">
+            <tr style="background: #eee;">
+                <th style="padding: 10px; text-align: left;">Concepto</th>
+                <th style="padding: 10px; text-align: right;">Monto (Gs)</th>
+            </tr>
+            <tr>
+                <td style="padding: 10px;">Total Ventas (IVA Incluido)</td>
+                <td style="padding: 10px; text-align: right; font-weight: bold;" id="contaTotal">0</td>
+            </tr>
+            <tr>
+                <td style="padding: 10px;">Ventas Exentas</td>
+                <td style="padding: 10px; text-align: right;">0</td>
+            </tr>
+            <tr>
+                <td style="padding: 10px;">Ventas Gravadas 10%</td>
+                <td style="padding: 10px; text-align: right;" id="contaGravada">0</td>
+            </tr>
+            <tr style="border-top: 2px solid #000;">
+                <td style="padding: 10px; font-weight: bold;">TOTAL IVA DÉBITO FISCAL (10%)</td>
+                <td style="padding: 10px; text-align: right; font-weight: bold; font-size: 1.2em;" id="contaIva">0</td>
+            </tr>
+        </table>
+
+        <div style="margin-top: 50px; display: flex; justify-content: space-between;">
+            <div style="border-top: 1px solid #000; width: 40%; text-align: center; padding-top: 5px;">Firma Responsable</div>
+            <div style="border-top: 1px solid #000; width: 40%; text-align: center; padding-top: 5px;">Recibido (Contabilidad)</div>
+        </div>
+
+        <button class="btn btn-primary no-print" style="margin-top: 30px;" onclick="imprimirContador()">🖨️ Imprimir Documento</button>
+        <button class="btn no-print" style="margin-top: 30px; background: #666;" onclick="cerrarContador()">Cerrar</button>
+    </section>
+
+    <script src="js/db.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            await dbSystem.init();
+            
+            // Configurar fechas por defecto (Hoy)
+            const hoy = new Date().toISOString().split('T')[0];
+            document.getElementById('fechaDesde').value = hoy;
+            document.getElementById('fechaHasta').value = hoy;
+
+            generarReporte();
+        });
+
+        async function generarReporte() {
+            const desde = document.getElementById('fechaDesde').value;
+            const hasta = document.getElementById('fechaHasta').value;
+            
+            if(!desde || !hasta) return;
+
+            // 1. Obtener Ventas en Rango
+            const ventas = await obtenerVentasRango(desde, hasta);
+            const productosMap = await obtenerMapaProductos();
+
+            // 2. Calcular Totales
+            let total = 0;
+            let cantidad = 0;
+            let tickets = ventas.length;
+            let datosGrafico = {}; // { "2023-10-01": 50000, ... }
+
+            ventas.forEach(v => {
+                if(v.estado === 'PAGADO') {
+                    total += v.total_gs;
+                    
+                    // Agrupar para gráfico
+                    const fechaStr = new Date(v.fecha_hora).toLocaleDateString('es-PY');
+                    datosGrafico[fechaStr] = (datosGrafico[fechaStr] || 0) + v.total_gs;
+                }
+            });
+
+            const iva = Math.round(total / 11);
+            const promedio = tickets > 0 ? Math.round(total / tickets) : 0;
+
+            // 3. Renderizar KPIs
+            document.getElementById('kpiTotal').innerText = total.toLocaleString('es-PY') + ' Gs';
+            document.getElementById('kpiCantidad').innerText = tickets;
+            document.getElementById('kpiIva').innerText = iva.toLocaleString('es-PY') + ' Gs';
+            document.getElementById('kpiPromedio').innerText = promedio.toLocaleString('es-PY') + ' Gs';
+            document.getElementById('kpiPeriodo').innerText = `${desde} al ${hasta}`;
+
+            // 4. Renderizar Tabla Ventas
+            const tbodyVentas = document.querySelector('#tablaVentas tbody');
+            tbodyVentas.innerHTML = '';
+            
+            // Ordenar: más recientes primero
+            ventas.sort((a,b) => new Date(b.fecha_hora) - new Date(a.fecha_hora));
+
+            ventas.forEach(v => {
+                const tr = document.createElement('tr');
+                const fechaFmt = new Date(v.fecha_hora).toLocaleString('es-PY');
+                tr.innerHTML = `
+                    <td>${fechaFmt}</td>
+                    <td>#${v.numero_comprobante}</td>
+                    <td>${v.forma_pago}</td>
+                    <td style="text-align:right;">${v.total_gs.toLocaleString()}</td>
+                `;
+                tbodyVentas.appendChild(tr);
+            });
+
+            // 5. Renderizar Top Productos
+            // Necesitamos los detalles de venta. Como DB es simple, traemos todo y filtramos (optimizable)
+            const detalles = await obtenerDetallesFiltrados(ventas.map(v => v.id));
+            const ranking = {};
+
+            detalles.forEach(d => {
+                if(!ranking[d.producto_id]) ranking[d.producto_id] = { cant: 0, total: 0 };
+                ranking[d.producto_id].cant += d.cantidad;
+                ranking[d.producto_id].total += (d.cantidad * d.precio_unitario);
+            });
+
+            // Convertir a array y ordenar
+            const rankingArr = Object.keys(ranking).map(id => {
+                return {
+                    id: id,
+                    nombre: productosMap[id] || 'Producto Eliminado',
+                    cant: ranking[id].cant,
+                    total: ranking[id].total
+                };
+            }).sort((a,b) => b.cant - a.cant).slice(0, 10); // Top 10
+
+            const tbodyTop = document.querySelector('#tablaTop tbody');
+            tbodyTop.innerHTML = '';
+            
+            rankingArr.forEach(r => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${r.nombre}</td>
+                    <td style="text-align:center;">${r.cant}</td>
+                    <td style="text-align:right;">${r.total.toLocaleString()}</td>
+                `;
+                tbodyTop.appendChild(tr);
+            });
+
+            // 6. Dibujar Gráfico Canvas
+            dibujarGrafico(datosGrafico);
+
+            // 7. Preparar datos contador
+            document.getElementById('contaPeriodo').innerText = `${desde} al ${hasta}`;
+            document.getElementById('contaEmision').innerText = new Date().toLocaleDateString('es-PY');
+            document.getElementById('contaTotal').innerText = total.toLocaleString('es-PY');
+            document.getElementById('contaGravada').innerText = total.toLocaleString('es-PY'); // En Marilyn todo es IVA 10%
+            document.getElementById('contaIva').innerText = iva.toLocaleString('es-PY');
+        }
+
+        // --- AYUDANTES BASE DE DATOS ---
+
+        function obtenerVentasRango(desde, hasta) {
+            return new Promise((resolve) => {
+                const tx = dbSystem.db.transaction(['ventas'], 'readonly');
+                const store = tx.objectStore('ventas');
+                const req = store.getAll();
+
+                req.onsuccess = () => {
+                    const res = req.result.filter(v => {
+                        const fechaVenta = new Date(v.fecha_hora).toLocaleDateString('en-CA'); // YYYY-MM-DD
+                        return fechaVenta >= desde && fechaVenta <= hasta;
+                    });
+                    resolve(res);
+                };
+            });
+        }
+
+        async function obtenerDetallesFiltrados(idsVentas) {
+            return new Promise((resolve) => {
+                const tx = dbSystem.db.transaction(['detalle_ventas'], 'readonly');
+                const store = tx.objectStore('detalle_ventas');
+                const req = store.getAll();
+                
+                req.onsuccess = () => {
+                    // Solo detalles que pertenezcan a las ventas filtradas
+                    const res = req.result.filter(d => idsVentas.includes(d.venta_id));
+                    resolve(res);
+                };
+            });
+        }
+
+        async function obtenerMapaProductos() {
+            return new Promise((resolve) => {
+                const tx = dbSystem.db.transaction(['productos'], 'readonly');
+                const store = tx.objectStore('productos');
+                const req = store.getAll();
+                req.onsuccess = () => {
+                    const mapa = {};
+                    req.result.forEach(p => mapa[p.id] = p.nombre);
+                    resolve(mapa);
+                };
+            });
+        }
+
+        // --- GRÁFICO CANVAS SIN LIBRERÍAS ---
+        function dibujarGrafico(datos) {
+            const canvas = document.getElementById('ventasChart');
+            const ctx = canvas.getContext('2d');
+            
+            // Ajustar resolución retina
+            const dpr = window.devicePixelRatio || 1;
+            const rect = canvas.getBoundingClientRect();
+            canvas.width = rect.width * dpr;
+            canvas.height = 300 * dpr;
+            ctx.scale(dpr, dpr);
+
+            // Limpiar
+            ctx.clearRect(0, 0, rect.width, 300);
+
+            const fechas = Object.keys(datos).sort(); // Ordenar fechas
+            if(fechas.length === 0) {
+                ctx.fillStyle = "#fff";
+                ctx.fillText("Sin datos para graficar", 10, 20);
+                return;
+            }
+
+            const valores = fechas.map(f => datos[f]);
+            const maxVal = Math.max(...valores);
+            const margen = 40;
+            const anchoBarra = (rect.width - margen * 2) / fechas.length;
+            const espacio = 10;
+            const anchoReal = Math.min(anchoBarra - espacio, 50); // Máximo 50px de ancho
+
+            ctx.fillStyle = '#D4AF37'; // Dorado Marilyn
+            ctx.strokeStyle = '#fff';
+            ctx.font = '12px Arial';
+            ctx.textAlign = 'center';
+
+            fechas.forEach((fecha, i) => {
+                const valor = datos[fecha];
+                const altura = (valor / maxVal) * (200); // 200px altura máxima gráfica
+                const x = margen + (i * anchoBarra) + espacio/2;
+                const y = 250 - altura;
+
+                // Barra
+                ctx.fillRect(x, y, anchoReal, altura);
+                
+                // Texto Valor
+                ctx.fillStyle = '#fff';
+                ctx.fillText(Number(valor).toLocaleString('es-PY', { notation: "compact" }), x + anchoReal/2, y - 5);
+                
+                // Texto Fecha (solo día si hay muchos)
+                ctx.fillStyle = '#aaa';
+                const textoFecha = fechas.length > 7 ? fecha.split('/')[0] : fecha;
+                ctx.fillText(textoFecha, x + anchoReal/2, 270);
+                
+                ctx.fillStyle = '#D4AF37'; // Restaurar color barra
+            });
+            
+            // Línea base
+            ctx.beginPath();
+            ctx.moveTo(margen, 250);
+            ctx.lineTo(rect.width - margen, 250);
+            ctx.stroke();
+        }
+
+        // --- LÓGICA IMPRESIÓN CONTADOR ---
+        function mostrarSeccionContador() {
+            document.getElementById('seccionContador').classList.add('contador-visible');
+            document.body.classList.add('printing-iva');
+            // Scroll hacia abajo
+            document.getElementById('seccionContador').scrollIntoView({behavior: "smooth"});
+        }
+
+        function cerrarContador() {
+            document.getElementById('seccionContador').classList.remove('contador-visible');
+            document.body.classList.remove('printing-iva');
+        }
+
+        function imprimirContador() {
+            window.print();
+        }
+
+    </script>
+</body>
+</html>

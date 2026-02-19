@@ -1,0 +1,858 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Caja - Creaciones Marilyn</title>
+    <link rel="stylesheet" href="css/marilyn.css">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+
+    <style>
+        /* ESTILOS ESPECÍFICOS PARA LA CAJA (POS) */
+        
+        html, body {
+            height: 100%; 
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            overflow: hidden; 
+            background-color: #000;
+        }
+
+        /* Barra Superior */
+        header {
+            flex: 0 0 auto; 
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            margin-bottom: 0;
+            border-bottom: 2px solid var(--color-gold);
+        }
+
+        .cajera-info { font-size: 0.9rem; color: #aaa; }
+        .hora-actual { font-size: 1.2rem; font-weight: bold; color: var(--color-gold); }
+
+        /* Contenedor Principal Dividido */
+        .main-layout {
+            display: flex;
+            flex: 1;
+            height: 100%;
+            overflow: hidden;
+            min-height: 0; 
+        }
+
+        /* --- PANEL IZQUIERDO: BUSCADOR Y PRODUCTOS (60%) --- */
+        .panel-izquierdo {
+            flex: 6;
+            display: flex;
+            flex-direction: column;
+            padding: 15px;
+            border-right: 1px solid #333;
+            background-color: #1a1a1a;
+        }
+
+        .buscador-container {
+            flex: 0 0 auto;
+            margin-bottom: 15px;
+            display: flex; 
+            gap: 10px;
+        }
+
+        #inputBusqueda {
+            font-size: 24px; 
+            height: 60px;
+            border: 2px solid var(--color-gold);
+            background-color: #fff;
+            color: #000;
+            flex: 1; 
+        }
+
+        .btn-scan {
+            background-color: var(--color-gold);
+            border: none;
+            border-radius: 8px;
+            font-size: 1.8rem;
+            padding: 0 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Grid de Resultados */
+        .resultados-grid {
+            flex: 1;
+            overflow-y: auto; 
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 15px;
+            align-content: start;
+            padding-right: 5px;
+        }
+
+        /* Tarjeta de Producto */
+        .producto-card {
+            background-color: var(--color-dark-grey);
+            border: 1px solid #444;
+            border-radius: 8px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 160px;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+        
+        .producto-card:active { transform: scale(0.95); background-color: #333; }
+        
+        .prod-nombre { font-weight: bold; font-size: 1rem; color: #fff; line-height: 1.2; overflow: hidden; }
+        .prod-variante { font-size: 0.85rem; color: #aaa; margin-top: 5px; }
+        .prod-precio { font-size: 1.3rem; color: var(--color-gold); font-weight: bold; margin-top: auto; }
+
+        /* --- PANEL DERECHO: CARRITO (40%) --- */
+        .panel-derecho {
+            flex: 4;
+            display: flex;
+            flex-direction: column;
+            background-color: #000;
+            border-left: 2px solid var(--color-gold);
+            min-height: 0; 
+        }
+
+        /* Lista de items */
+        .carrito-lista {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
+            min-height: 0; 
+        }
+
+        .carrito-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #222;
+            padding: 12px;
+            margin-bottom: 8px;
+            border-radius: 6px;
+            border-left: 4px solid var(--color-gold);
+        }
+
+        .item-info { flex: 1; }
+        .item-nombre { font-weight: bold; display: block; }
+        .item-precio { color: #888; font-size: 0.9rem; }
+        
+        .item-controles { display: flex; align-items: center; gap: 10px; }
+        .btn-qty { width: 36px; height: 36px; border-radius: 50%; border: 1px solid #555; background: #333; color: white; font-size: 18px; font-weight: bold; display: flex; align-items: center; justify-content: center; }
+        .item-cantidad { font-size: 1.2rem; font-weight: bold; min-width: 25px; text-align: center; }
+
+        /* Sección de Totales Fija abajo */
+        .totales-section {
+            flex: 0 0 auto;
+            background-color: #1a1a1a;
+            padding: 15px 20px; 
+            border-top: 1px solid #333;
+        }
+
+        .fila-total { display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 1rem; color: #aaa; }
+        .gran-total { font-size: 2rem; color: var(--color-gold); font-weight: bold; text-align: right; margin: 5px 0 15px 0; }
+        
+        .btn-cobrar {
+            width: 100%;
+            height: 60px; 
+            font-size: 1.8rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            background-color: var(--color-success);
+            color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            border: none;
+            cursor: pointer;
+        }
+
+        /* --- MODALES --- */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85);
+            display: flex; justify-content: center; align-items: center;
+            z-index: 1000;
+            visibility: hidden; opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .modal-overlay.active { visibility: visible; opacity: 1; }
+
+        .modal-content {
+            background: var(--color-dark-grey);
+            border: 2px solid var(--color-gold);
+            width: 500px;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 30px rgba(212, 175, 55, 0.2);
+        }
+
+        .metodos-pago { display: flex; gap: 10px; margin-bottom: 20px; }
+        .btn-pago { flex: 1; height: 60px; font-size: 1.2rem; border: 2px solid #555; background: transparent; color: #fff; }
+        .btn-pago.active { border-color: var(--color-gold); background-color: rgba(212, 175, 55, 0.2); color: var(--color-gold); }
+
+        .input-pago { 
+            font-size: 2rem; text-align: right; height: 70px; margin-bottom: 10px; 
+            background: #fff; color: #000; font-weight: bold;
+        }
+        
+        .vuelto-display { 
+            font-size: 1.5rem; text-align: right; margin-bottom: 20px; color: var(--color-text-main); 
+        }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">💎 CREACIONES MARILYN</div>
+        <div class="cajera-info">Cajera: <strong>Dueña</strong></div>
+        <div class="hora-actual" id="reloj">00:00</div>
+    </header>
+
+    <div class="main-layout">
+        
+        <div class="panel-izquierdo">
+            <div class="buscador-container">
+                <input type="text" id="inputBusqueda" placeholder="Buscar o escanear manual..." autocomplete="off" autofocus>
+                <button class="btn-scan" onclick="abrirEscanerCamara()" title="Escanear con Cámara">📷</button>
+            </div>
+            <div id="gridResultados" class="resultados-grid">
+                </div>
+        </div>
+
+        <div class="panel-derecho">
+            <div class="carrito-lista" id="listaCarrito">
+                <div style="text-align: center; color: #555; margin-top: 50px;">
+                    Carrito vacío
+                </div>
+            </div>
+
+            <div class="totales-section">
+                <div class="fila-total">
+                    <span>Subtotal:</span>
+                    <span id="txtSubtotal">0 Gs</span>
+                </div>
+                <div class="fila-total">
+                    <span>IVA (10%):</span>
+                    <span id="txtIva">0 Gs</span>
+                </div>
+                <div class="gran-total" id="txtTotal">0 Gs</div>
+                <button class="btn btn-cobrar" onclick="abrirModalCobro()">COBRAR</button>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="modal-overlay" id="modalScanner">
+        <div class="modal-content" style="text-align: center; width: 90%; max-width: 450px; padding: 20px;">
+            <h2 style="color: white; margin-bottom: 5px; font-size: 1.5rem;">Modo Ráfaga Activo 📷</h2>
+            <p id="scannerFeedback" style="color: var(--color-gold); height: 20px; font-weight: bold; margin-bottom: 15px; font-size: 1.1rem;">Apunta al código de barras...</p>
+            
+            <div id="reader" style="width: 100%; min-height: 250px; background: #000; border-radius: 8px; overflow: hidden; border: 2px solid #333;"></div>
+            
+            <button class="btn btn-danger" style="margin-top: 20px; width: 100%; padding: 15px; font-size: 1.2rem; font-weight: bold;" onclick="cerrarEscanerCamara()">🛑 Terminar Escaneo</button>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modalCobro">
+        <div class="modal-content">
+            <h2 style="text-align: center; color: white; margin-bottom: 20px;">Confirmar Venta</h2>
+            
+            <div class="metodos-pago">
+                <button class="btn btn-pago active" onclick="setMetodo('EFECTIVO')">💵 Efectivo</button>
+                <button class="btn btn-pago" onclick="setMetodo('TRANSFERENCIA')">🏦 Transferencia</button>
+            </div>
+
+            <label>Monto Recibido (Gs):</label>
+            <input type="number" id="inputRecibido" class="input-pago" placeholder="0" onkeyup="calcularVuelto()">
+            
+            <div class="vuelto-display">
+                Vuelto: <span id="txtVuelto" style="color: var(--color-success); font-weight: bold;">0 Gs</span>
+            </div>
+
+            <div style="display: flex; gap: 10px;">
+                <button class="btn btn-danger" onclick="cerrarModalCobro()">Cancelar</button>
+                <button class="btn btn-success" style="flex: 2;" onclick="finalizarVenta()">✅ CONFIRMAR</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modalExito">
+        <div class="modal-content" style="text-align: center;">
+            <h1 style="color: var(--color-success); font-size: 3rem; margin-bottom: 10px;">✅</h1>
+            <h2 style="color: white; margin-bottom: 5px;">¡Venta Exitosa!</h2>
+            <p style="color: #aaa; margin-bottom: 25px;">Comprobante N° <span id="exitoNro" style="color: var(--color-gold); font-weight: bold;"></span></p>
+            
+            <div style="display: flex; flex-direction: column; gap: 15px;">
+                <button class="btn btn-primary" onclick="descargarTicketPDF()">📥 1. Descargar Ticket (PDF)</button>
+                <button class="btn" style="background-color: #25D366; color: white;" onclick="enviarPorWhatsApp()">📲 2. Enviar por WhatsApp</button>
+                <button class="btn btn-outline" style="margin-top: 15px; border-color: #555; background: transparent; color: white;" onclick="prepararNuevaVenta()">🛒 Nueva Venta</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="qrOculto" style="display: none;"></div>
+
+    <script src="js/db.js"></script>
+    <script>
+        // --- ESTADO DE LA APLICACIÓN ---
+        let carrito = [];
+        let productosCache = []; 
+        let metodoPago = 'EFECTIVO';
+        let totalGlobal = 0;
+        let ultimaVentaDatos = null; 
+        
+        // Variables para la cámara
+        let html5QrcodeScanner = null; 
+        let isScanningPaused = false; // Flag de enfriamiento de memoria RAM
+
+        // --- INICIALIZACIÓN ---
+        document.addEventListener('DOMContentLoaded', async () => {
+            await dbSystem.init();
+            actualizarReloj();
+            cargarProductos();
+            
+            const input = document.getElementById('inputBusqueda');
+            input.focus();
+            
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('input') && !e.target.closest('button') && !document.querySelector('.modal-overlay.active')) {
+                    input.focus();
+                }
+            });
+
+            input.addEventListener('input', (e) => buscarProductos(e.target.value));
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    intentarAgregarPorCodigo(e.target.value);
+                }
+            });
+
+            setInterval(actualizarReloj, 1000);
+        });
+
+        function actualizarReloj() {
+            const ahora = new Date();
+            document.getElementById('reloj').innerText = ahora.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        }
+
+        async function cargarProductos() {
+            productosCache = await dbSystem.obtenerProductos();
+            buscarProductos(''); 
+        }
+
+        function buscarProductos(texto) {
+            const grid = document.getElementById('gridResultados');
+            grid.innerHTML = '';
+            
+            const termino = texto.toLowerCase().trim();
+            
+            const filtrados = productosCache.filter(p => {
+                if (!p.activo) return false;
+                return p.nombre.toLowerCase().includes(termino) || 
+                       (p.codigo_barras && p.codigo_barras.toLowerCase().includes(termino));
+            });
+
+            filtrados.forEach(p => {
+                const card = document.createElement('div');
+                card.className = 'producto-card';
+                card.onclick = () => agregarAlCarrito(p);
+                card.innerHTML = `
+                    <div class="prod-nombre">${p.nombre}</div>
+                    <div class="prod-variante">${p.variante || ''}</div>
+                    <div class="prod-precio">${Number(p.precio_gs).toLocaleString('es-PY')} Gs</div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // --- LÓGICA DE ESCÁNER DE CÁMARA (MODO RÁFAGA) ---
+        function abrirEscanerCamara() {
+            document.getElementById('modalScanner').classList.add('active');
+            
+            const feedbackEl = document.getElementById('scannerFeedback');
+            feedbackEl.innerText = "Iniciando cámara...";
+            feedbackEl.style.color = "var(--color-gold)";
+            isScanningPaused = false;
+            
+            // Limitamos a 10 fps para cuidar la RAM. Enfoque automático.
+            html5QrcodeScanner = new Html5QrcodeScanner(
+                "reader",
+                { fps: 10, qrbox: {width: 250, height: 100} },
+                /* verbose= */ false);
+                
+            html5QrcodeScanner.render(onScanSuccess, onScanFailure);
+        }
+
+        function onScanSuccess(decodedText, decodedResult) {
+            // 1. Si está en periodo de enfriamiento, ignorar lectura para proteger la RAM
+            if (isScanningPaused) return; 
+
+            // 2. Bloquear lectura (iniciar enfriamiento)
+            isScanningPaused = true; 
+            const feedbackEl = document.getElementById('scannerFeedback');
+            
+            // 3. Buscar el producto escaneado
+            const prod = productosCache.find(p => p.codigo_barras === decodedText.trim().toUpperCase());
+
+            if (prod) {
+                // ÉXITO: BEEP ALTO
+                try {
+                    const context = new (window.AudioContext || window.webkitAudioContext)();
+                    const oscillator = context.createOscillator();
+                    oscillator.type = 'sine';
+                    oscillator.frequency.value = 1000;
+                    oscillator.connect(context.destination);
+                    oscillator.start();
+                    setTimeout(() => oscillator.stop(), 100);
+                } catch(e) {}
+
+                agregarAlCarrito(prod);
+                
+                feedbackEl.innerText = `✅ ¡Agregado! ${prod.nombre}`;
+                feedbackEl.style.color = "var(--color-success)";
+            } else {
+                // ERROR: BEEP GRAVE
+                try {
+                    const context = new (window.AudioContext || window.webkitAudioContext)();
+                    const oscillator = context.createOscillator();
+                    oscillator.type = 'square';
+                    oscillator.frequency.value = 300; 
+                    oscillator.connect(context.destination);
+                    oscillator.start();
+                    setTimeout(() => oscillator.stop(), 300);
+                } catch(e) {}
+
+                feedbackEl.innerText = `❌ Código no existe: ${decodedText}`;
+                feedbackEl.style.color = "var(--color-danger)";
+            }
+
+            // 4. Temporizador de enfriamiento: Desbloquear después de 1.5 segundos
+            setTimeout(() => {
+                if (html5QrcodeScanner) { // Solo si la cámara sigue abierta
+                    feedbackEl.innerText = "Apunta al siguiente código...";
+                    feedbackEl.style.color = "var(--color-gold)";
+                    isScanningPaused = false; // Libre para leer el siguiente
+                }
+            }, 1500);
+        }
+
+        function onScanFailure(error) {
+            // Fallo silencioso normal cuando busca enfocar
+        }
+
+        function cerrarEscanerCamara() {
+            document.getElementById('modalScanner').classList.remove('active');
+            isScanningPaused = true; // Forzar bloqueo por si acaso
+            
+            if (html5QrcodeScanner) {
+                // Destruir el proceso para liberar el 100% de la memoria de video
+                html5QrcodeScanner.clear().catch(error => {
+                    console.error("Fallo al detener la cámara.", error);
+                });
+                html5QrcodeScanner = null;
+            }
+            document.getElementById('inputBusqueda').focus();
+        }
+
+        // --- LÓGICA DEL CARRITO ---
+        
+        function intentarAgregarPorCodigo(codigo) {
+            if (!codigo) return;
+            const prod = productosCache.find(p => p.codigo_barras === codigo.trim().toUpperCase());
+            
+            if (prod) {
+                agregarAlCarrito(prod);
+                document.getElementById('inputBusqueda').value = ''; 
+                buscarProductos(''); 
+            } else {
+                alert("❌ Código no encontrado: " + codigo);
+            }
+        }
+
+        function agregarAlCarrito(producto) {
+            const itemEnCarrito = carrito.find(item => item.producto.id === producto.id);
+            const cantidadEnCarrito = itemEnCarrito ? itemEnCarrito.cantidad : 0;
+            
+            if (producto.stock_actual - cantidadEnCarrito <= 0) {
+                alert(`⛔ ¡PRODUCTO AGOTADO!\nNo queda stock de: ${producto.nombre}`);
+                return; 
+            }
+
+            if (producto.stock_actual - cantidadEnCarrito <= producto.stock_minimo) {
+                if (cantidadEnCarrito === 0) {
+                    alert(`⚠️ ATENCIÓN: Poco stock de ${producto.nombre}\nQuedan: ${producto.stock_actual}`);
+                }
+            }
+
+            if (itemEnCarrito) {
+                itemEnCarrito.cantidad++;
+            } else {
+                carrito.push({
+                    producto: producto,
+                    cantidad: 1,
+                    precio: producto.precio_gs 
+                });
+            }
+            renderizarCarrito();
+            
+            document.getElementById('inputBusqueda').value = ''; 
+            document.getElementById('inputBusqueda').focus();
+        }
+
+        function cambiarCantidad(index, delta) {
+            carrito[index].cantidad += delta;
+            if (carrito[index].cantidad <= 0) {
+                carrito.splice(index, 1);
+            }
+            renderizarCarrito();
+        }
+
+        function renderizarCarrito() {
+            const lista = document.getElementById('listaCarrito');
+            lista.innerHTML = '';
+
+            let subtotal = 0;
+
+            if (carrito.length === 0) {
+                lista.innerHTML = '<div style="text-align: center; color: #555; margin-top: 50px;">Carrito vacío</div>';
+            } else {
+                carrito.forEach((item, index) => {
+                    const totalItem = item.cantidad * item.precio;
+                    subtotal += totalItem;
+
+                    const div = document.createElement('div');
+                    div.className = 'carrito-item';
+                    div.innerHTML = `
+                        <div class="item-info">
+                            <span class="item-nombre">${item.producto.nombre}</span>
+                            <span class="item-precio">${item.cantidad} x ${item.precio.toLocaleString()} = ${totalItem.toLocaleString()}</span>
+                        </div>
+                        <div class="item-controles">
+                            <button class="btn-qty" onclick="cambiarCantidad(${index}, -1)">-</button>
+                            <span class="item-cantidad">${item.cantidad}</span>
+                            <button class="btn-qty" onclick="cambiarCantidad(${index}, 1)">+</button>
+                        </div>
+                    `;
+                    lista.appendChild(div);
+                });
+            }
+
+            const ivaTotal = Math.round(subtotal / 11);
+            const baseImponible = subtotal - ivaTotal;
+
+            document.getElementById('txtSubtotal').innerText = baseImponible.toLocaleString('es-PY') + ' Gs';
+            document.getElementById('txtIva').innerText = ivaTotal.toLocaleString('es-PY') + ' Gs';
+            document.getElementById('txtTotal').innerText = subtotal.toLocaleString('es-PY') + ' Gs';
+            
+            totalGlobal = subtotal;
+        }
+
+        // --- COBRO Y FINALIZACIÓN ---
+
+        function abrirModalCobro() {
+            if (carrito.length === 0) {
+                alert("El carrito está vacío.");
+                return;
+            }
+            document.getElementById('modalCobro').classList.add('active');
+            document.getElementById('inputRecibido').value = '';
+            document.getElementById('txtVuelto').innerText = '0 Gs';
+            
+            if (metodoPago === 'EFECTIVO') {
+                setTimeout(() => document.getElementById('inputRecibido').focus(), 100);
+            }
+        }
+
+        function cerrarModalCobro() {
+            document.getElementById('modalCobro').classList.remove('active');
+            document.getElementById('inputBusqueda').focus();
+        }
+
+        function setMetodo(metodo) {
+            metodoPago = metodo;
+            document.querySelectorAll('.btn-pago').forEach(b => b.classList.remove('active'));
+            const botones = document.querySelectorAll('.btn-pago');
+            if(metodo === 'EFECTIVO') botones[0].classList.add('active');
+            else botones[1].classList.add('active');
+
+            const input = document.getElementById('inputRecibido');
+            if (metodo === 'TRANSFERENCIA') {
+                input.value = totalGlobal;
+                input.disabled = true;
+                calcularVuelto();
+            } else {
+                input.value = '';
+                input.disabled = false;
+                input.focus();
+            }
+        }
+
+        function calcularVuelto() {
+            const recibido = parseInt(document.getElementById('inputRecibido').value) || 0;
+            const vuelto = recibido - totalGlobal;
+            
+            const el = document.getElementById('txtVuelto');
+            if (vuelto >= 0) {
+                el.innerText = vuelto.toLocaleString('es-PY') + ' Gs';
+                el.style.color = 'var(--color-success)';
+            } else {
+                el.innerText = 'Falta: ' + Math.abs(vuelto).toLocaleString('es-PY') + ' Gs';
+                el.style.color = 'var(--color-danger)';
+            }
+        }
+
+        async function finalizarVenta() {
+            const recibido = parseInt(document.getElementById('inputRecibido').value) || 0;
+            
+            if (metodoPago === 'EFECTIVO' && recibido < totalGlobal) {
+                alert("El monto recibido es menor al total.");
+                return;
+            }
+
+            try {
+                const siguienteNum = await generarNumeroComprobante();
+
+                const venta = {
+                    numero_comprobante: siguienteNum,
+                    fecha_hora: new Date(),
+                    total_gs: totalGlobal,
+                    iva_total: Math.round(totalGlobal / 11),
+                    forma_pago: metodoPago,
+                    estado: 'PAGADO'
+                };
+
+                const db = dbSystem.db;
+                const tx = db.transaction(['ventas', 'detalle_ventas', 'productos'], 'readwrite');
+                
+                const ventaStore = tx.objectStore('ventas');
+                const ventaRequest = ventaStore.add(venta);
+
+                ventaRequest.onsuccess = (e) => {
+                    const ventaId = e.target.result;
+                    const detalleStore = tx.objectStore('detalle_ventas');
+                    const prodStore = tx.objectStore('productos');
+
+                    carrito.forEach(item => {
+                        detalleStore.add({
+                            venta_id: ventaId,
+                            producto_id: item.producto.id,
+                            cantidad: item.cantidad,
+                            precio_unitario: item.precio,
+                            iva_unitario: Math.round(item.precio / 11)
+                        });
+
+                        const prod = item.producto;
+                        prod.stock_actual -= item.cantidad;
+                        prodStore.put(prod);
+                    });
+                };
+
+                tx.oncomplete = () => {
+                    ultimaVentaDatos = {
+                        numero: siguienteNum,
+                        fecha: venta.fecha_hora,
+                        total: venta.total_gs,
+                        iva: venta.iva_total,
+                        metodo: venta.forma_pago,
+                        items: [...carrito] 
+                    };
+
+                    cerrarModalCobro();
+                    document.getElementById('exitoNro').innerText = siguienteNum;
+                    document.getElementById('modalExito').classList.add('active');
+                };
+
+                tx.onerror = (e) => {
+                    alert("Error al procesar la venta: " + e.target.error);
+                };
+
+            } catch (error) {
+                console.error(error);
+                alert("Error crítico al procesar.");
+            }
+        }
+
+        function prepararNuevaVenta() {
+            carrito = [];
+            renderizarCarrito();
+            ultimaVentaDatos = null;
+            document.getElementById('modalExito').classList.remove('active');
+            cargarProductos(); 
+            document.getElementById('inputBusqueda').focus();
+        }
+
+        // --- GENERACIÓN DE TICKET PDF (80mm) ---
+        function descargarTicketPDF() {
+            if (!ultimaVentaDatos) return;
+
+            const config = JSON.parse(localStorage.getItem('marilynConfig')) || {
+                nombre: 'Creaciones Marilyn E.A.S.',
+                ruc: '80167718-1',
+                direccion: 'Luque, Paraguay',
+                telefono: ''
+            };
+
+            const { jsPDF } = window.jspdf;
+            
+            const alturaBase = 120; 
+            const alturaItems = ultimaVentaDatos.items.length * 6;
+            const alturaTotal = alturaBase + alturaItems + 40; 
+
+            const doc = new jsPDF({
+                orientation: 'portrait',
+                unit: 'mm',
+                format: [80, alturaTotal] 
+            });
+
+            const centro = 40;
+            let y = 10;
+            doc.setFont("helvetica");
+
+            doc.setFontSize(14);
+            doc.setFont("helvetica", "bold");
+            doc.text(config.nombre, centro, y, { align: "center" });
+            
+            y += 5;
+            doc.setFontSize(10);
+            doc.setFont("helvetica", "normal");
+            doc.text(`RUC: ${config.ruc}`, centro, y, { align: "center" });
+            
+            y += 5;
+            doc.text(config.direccion, centro, y, { align: "center" });
+
+            if(config.telefono) {
+                y += 5;
+                doc.text(`Tel: ${config.telefono}`, centro, y, { align: "center" });
+            }
+
+            y += 8;
+            doc.setLineDashPattern([1, 1], 0);
+            doc.line(5, y, 75, y); 
+
+            y += 6;
+            doc.setFontSize(9);
+            doc.text(`Ticket Nro: ${ultimaVentaDatos.numero}`, 5, y);
+            y += 5;
+            const fechaStr = ultimaVentaDatos.fecha.toLocaleDateString('es-PY') + ' ' + ultimaVentaDatos.fecha.toLocaleTimeString('es-PY', {hour: '2-digit', minute:'2-digit'});
+            doc.text(`Fecha: ${fechaStr}`, 5, y);
+
+            y += 4;
+            doc.line(5, y, 75, y); 
+            doc.setLineDashPattern([], 0); 
+
+            y += 5;
+            doc.setFont("helvetica", "bold");
+            doc.text("CANT", 5, y);
+            doc.text("PRODUCTO", 18, y);
+            doc.text("TOTAL", 75, y, { align: "right" });
+            
+            y += 2;
+            doc.line(5, y, 75, y);
+
+            y += 5;
+            doc.setFont("helvetica", "normal");
+            ultimaVentaDatos.items.forEach(item => {
+                const subtotal = item.cantidad * item.precio;
+                
+                doc.text(item.cantidad.toString(), 5, y);
+                
+                let nombreProd = item.producto.nombre;
+                if (nombreProd.length > 20) nombreProd = nombreProd.substring(0, 20) + '...';
+                doc.text(nombreProd, 18, y);
+                
+                doc.text(subtotal.toLocaleString('es-PY'), 75, y, { align: "right" });
+                y += 5;
+            });
+
+            y += 2;
+            doc.line(5, y, 75, y);
+
+            y += 6;
+            const subtotalSinIva = ultimaVentaDatos.total - ultimaVentaDatos.iva;
+            doc.text("Subtotal:", 35, y);
+            doc.text(subtotalSinIva.toLocaleString('es-PY'), 75, y, { align: "right" });
+            
+            y += 5;
+            doc.text("IVA (10% incl.):", 35, y);
+            doc.text(ultimaVentaDatos.iva.toLocaleString('es-PY'), 75, y, { align: "right" });
+
+            y += 7;
+            doc.setFontSize(12);
+            doc.setFont("helvetica", "bold");
+            doc.text("TOTAL Gs:", 30, y);
+            doc.text(ultimaVentaDatos.total.toLocaleString('es-PY'), 75, y, { align: "right" });
+
+            y += 6;
+            doc.setFontSize(9);
+            doc.setFont("helvetica", "normal");
+            doc.text(`Forma de pago: ${ultimaVentaDatos.metodo}`, 5, y);
+
+            y += 4;
+            doc.line(5, y, 75, y);
+
+            y += 5;
+            
+            const qrDiv = document.getElementById('qrOculto');
+            qrDiv.innerHTML = '';
+            new QRCode(qrDiv, {
+                text: `Comprobante Nro: ${ultimaVentaDatos.numero} | Total: ${ultimaVentaDatos.total} Gs`,
+                width: 128,
+                height: 128,
+                correctLevel : QRCode.CorrectLevel.L
+            });
+
+            setTimeout(() => {
+                const qrCanvas = qrDiv.querySelector('canvas');
+                if (qrCanvas) {
+                    const qrDataUrl = qrCanvas.toDataURL('image/jpeg');
+                    doc.addImage(qrDataUrl, 'JPEG', 25, y, 30, 30);
+                    y += 35;
+                }
+
+                doc.setFont("helvetica", "italic");
+                doc.text("¡Gracias por su compra!", centro, y, { align: "center" });
+
+                doc.save(`Ticket_${ultimaVentaDatos.numero}.pdf`);
+            }, 100); 
+        }
+
+        function enviarPorWhatsApp() {
+            if (!ultimaVentaDatos) return;
+            
+            const texto = `¡Hola! 👋 Gracias por tu compra en Creaciones Marilyn.\n\n*Comprobante N°:* ${ultimaVentaDatos.numero}\n*Total:* ${ultimaVentaDatos.total.toLocaleString('es-PY')} Gs.\n\n_Te adjunto tu ticket de compra en formato PDF._`;
+            const url = `https://wa.me/?text=${encodeURIComponent(texto)}`;
+            
+            window.open(url, '_blank');
+        }
+
+        function generarNumeroComprobante() {
+            return new Promise((resolve) => {
+                const tx = dbSystem.db.transaction(['ventas'], 'readonly');
+                const store = tx.objectStore('ventas');
+                const countReq = store.count();
+
+                countReq.onsuccess = () => {
+                    const numero = countReq.result + 1;
+                    resolve(numero.toString().padStart(3, '0'));
+                };
+            });
+        }
+
+    </script>
+</body>
+</html>

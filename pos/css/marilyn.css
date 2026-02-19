@@ -1,0 +1,197 @@
+/* pos/css/marilyn.css */
+
+:root {
+    /* Paleta de Colores - Creaciones Marilyn */
+    --color-gold: #D4AF37;       /* Dorado elegante */
+    --color-gold-dark: #B4941F;  /* Dorado más oscuro para hover */
+    --color-black: #121212;      /* Negro profundo (fondo principal) */
+    --color-dark-grey: #2C2C2C;  /* Gris oscuro (tarjetas/paneles) */
+    --color-text-main: #FFFFFF;  /* Texto blanco sobre fondo oscuro */
+    --color-text-dark: #000000;  /* Texto negro sobre botones dorados */
+    --color-danger: #FF5252;     /* Rojo para stock bajo/errores */
+    --color-success: #4CAF50;    /* Verde para acciones positivas */
+    --color-input-bg: #FFFFFF;   /* Fondo blanco para inputs (máxima legibilidad) */
+    
+    /* Dimensiones Táctiles */
+    --touch-target: 48px;        /* Mínimo recomendado para dedos */
+    --border-radius: 8px;
+}
+
+/* Reset básico */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    outline: none;
+}
+
+body {
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background-color: var(--color-black);
+    color: var(--color-text-main);
+    font-size: 18px; /* Texto base grande para legibilidad */
+    line-height: 1.5;
+    padding-bottom: 50px; /* Espacio para scroll en tablet */
+}
+
+/* Encabezado */
+header {
+    background-color: var(--color-gold);
+    color: var(--color-text-dark);
+    padding: 15px 20px;
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+    margin-bottom: 20px;
+}
+
+header h1 {
+    font-size: 1.8rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Contenedor Principal */
+.container {
+    max-width: 1000px; /* Ancho cómodo para tablet horizontal */
+    margin: 0 auto;
+    padding: 0 15px;
+}
+
+/* Tarjetas y Secciones */
+.card {
+    background-color: var(--color-dark-grey);
+    border: 1px solid var(--color-gold);
+    border-radius: var(--border-radius);
+    padding: 20px;
+    margin-bottom: 25px;
+}
+
+h2 {
+    color: var(--color-gold);
+    border-bottom: 1px solid var(--color-gold);
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+    font-size: 1.5rem;
+}
+
+/* Formularios e Inputs (Optimizados para toque) */
+.form-group {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #DDD;
+}
+
+input, select, textarea {
+    width: 100%;
+    height: var(--touch-target); /* 48px altura mínima */
+    padding: 10px;
+    font-size: 18px; /* Texto grande dentro del input */
+    border: 2px solid #555;
+    border-radius: var(--border-radius);
+    background-color: var(--color-input-bg);
+    color: #000; /* Texto negro sobre blanco siempre en inputs */
+}
+
+input:focus, select:focus {
+    border-color: var(--color-gold);
+    box-shadow: 0 0 5px var(--color-gold);
+}
+
+/* Botones Grandes */
+.btn {
+    display: inline-block;
+    height: 50px; /* Botón grande */
+    padding: 0 30px;
+    font-size: 18px;
+    font-weight: bold;
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: background 0.2s;
+    text-align: center;
+    line-height: 50px;
+    width: 100%; /* En móviles/tablets verticales ocupan todo el ancho */
+}
+
+@media (min-width: 600px) {
+    .btn { width: auto; } /* En horizontal, ancho natural */
+}
+
+.btn-primary {
+    background-color: var(--color-gold);
+    color: var(--color-text-dark);
+}
+
+.btn-primary:active {
+    background-color: var(--color-gold-dark);
+    transform: scale(0.98);
+}
+
+.btn-danger {
+    background-color: var(--color-danger);
+    color: white;
+}
+
+.btn-success {
+    background-color: var(--color-success);
+    color: white;
+}
+
+/* Tablas */
+.table-responsive {
+    overflow-x: auto;
+    border-radius: var(--border-radius);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #FFFFFF; /* Fondo blanco para la tabla para máximo contraste */
+    color: #000;
+}
+
+th, td {
+    padding: 15px; /* Celda grande para dedos */
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+    font-size: 18px;
+}
+
+th {
+    background-color: var(--color-dark-grey);
+    color: var(--color-gold);
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+/* Indicador de Stock Bajo */
+tr.stock-bajo {
+    background-color: #ffcccc; /* Fondo rojizo suave */
+}
+
+tr.stock-bajo td {
+    color: #b71c1c;
+    font-weight: bold;
+}
+
+/* Utilidades */
+.row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.col {
+    flex: 1;
+    min-width: 250px; /* Evita que las columnas sean muy angostas */
+}
+
+.text-right { text-align: right; }
+.mt-2 { margin-top: 20px; }
+.hidden { display: none; }

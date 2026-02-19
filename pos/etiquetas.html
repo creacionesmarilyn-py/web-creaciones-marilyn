@@ -1,0 +1,384 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de Etiquetas - Creaciones Marilyn</title>
+    <link rel="stylesheet" href="css/marilyn.css">
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+    
+    <style>
+        /* --- ESTILOS DE PANTALLA (NO IMPRESIÓN) --- */
+        body {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+            background-color: #000;
+        }
+
+        /* Panel de Control Superior */
+        .control-panel {
+            background-color: #1a1a1a;
+            border-bottom: 2px solid var(--color-gold);
+            padding: 15px;
+            flex: 0 0 auto;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+
+        .panel-grupo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Layout Principal */
+        .main-container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        /* Lista de Productos (Izquierda) */
+        .lista-seleccion {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background-color: #111;
+            border-right: 1px solid #333;
+            min-width: 300px;
+        }
+
+        .producto-row {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #333;
+            gap: 10px;
+        }
+        .producto-row:hover { background-color: #222; }
+        
+        .check-grande { transform: scale(1.5); margin-right: 10px; cursor: pointer; }
+
+        /* Área de Previsualización (Derecha) */
+        .preview-container {
+            flex: 2;
+            background-color: #333; 
+            padding: 40px;
+            overflow-y: auto;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        /* La Hoja Visual (En Pantalla siempre se ve tipo A4) */
+        #hojaImpresion {
+            background-color: white;
+            width: 210mm;
+            min-height: 297mm;
+            padding: 10mm; 
+            box-shadow: 0 0 20px rgba(0,0,0,0.8);
+            
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2mm; 
+            align-content: flex-start;
+            justify-content: flex-start;
+        }
+
+        /* Estilo de la Etiqueta Individual 3x2 cm */
+        .etiqueta {
+            border: 1px dashed #aaa; 
+            box-sizing: border-box;
+            width: 35mm;  
+            height: 25mm; 
+            padding: 1.5mm;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            background: white;
+            color: black;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            page-break-inside: avoid;
+            break-inside: avoid;
+        }
+
+        .etiqueta-nombre {
+            font-size: 6pt; 
+            font-weight: bold;
+            line-height: 1;
+            max-height: 2em; 
+            overflow: hidden;
+            margin-bottom: 1mm;
+            text-transform: uppercase;
+        }
+
+        .etiqueta-precio {
+            font-size: 7pt;
+            font-weight: bold;
+            margin-bottom: 1mm;
+        }
+
+        .etiqueta svg {
+            width: 100%;
+            height: 10mm; 
+            max-width: 100%;
+        }
+
+        /* Botones personalizados */
+        .btn-gold {
+            background-color: var(--color-gold);
+            color: #000;
+            border: none;
+            padding: 10px 15px;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+        .btn-gold:hover { background-color: #e5c156; }
+
+        .btn-outline {
+            border: 1px solid var(--color-gold);
+            color: var(--color-gold);
+            background: transparent;
+            padding: 8px 15px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        /* --- ESTILOS DE IMPRESIÓN BASE --- */
+        @media print {
+            html, body, .main-container, .preview-container {
+                height: auto !important;
+                overflow: visible !important;
+                display: block !important;
+                background-color: white !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            .control-panel, .lista-seleccion {
+                display: none !important;
+            }
+            #hojaImpresion {
+                width: 100% !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                box-shadow: none !important;
+                position: relative !important; 
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="control-panel no-print">
+        <div class="panel-grupo">
+            <a href="admin.html" class="btn-outline">⬅ Volver al Admin</a>
+            <h2 style="margin: 0; color: white; font-size: 1.2rem;">🖨️ Etiquetas</h2>
+        </div>
+        
+        <div class="panel-grupo">
+            <label style="color: #aaa; font-size: 0.9rem;">Copias:</label>
+            <input type="number" id="inputCopias" value="1" min="1" style="width: 50px; height: 35px; text-align: center;">
+            <button class="btn-gold" onclick="generarVistaPrevia()">🔄 Generar</button>
+            
+            <span style="border-left: 1px solid #555; height: 30px; margin: 0 5px;"></span>
+            
+            <button class="btn-gold" style="background-color: #2196F3; color: white;" onclick="imprimirEtiquetas('A4')">📄 Imprimir A4</button>
+            <button class="btn-gold" style="background-color: var(--color-success); color: white;" onclick="imprimirEtiquetas('TERMICA')">🎟️ Rollo Térmico</button>
+        </div>
+    </div>
+
+    <div class="main-container no-print">
+        
+        <div class="lista-seleccion">
+            <div style="margin-bottom: 15px; border-bottom: 1px solid #444; padding-bottom: 10px;">
+                <input type="text" id="filtroProd" placeholder="🔍 Buscar producto..." style="margin-bottom: 10px; width: 100%;" onkeyup="filtrarLista()">
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn-outline" style="font-size: 12px; flex:1;" onclick="checkTodos(true)">Todos</button>
+                    <button class="btn-outline" style="font-size: 12px; flex:1;" onclick="checkTodos(false)">Ninguno</button>
+                </div>
+            </div>
+            
+            <div id="contenedorLista">
+                <p style="color: #666;">Cargando productos...</p>
+            </div>
+        </div>
+
+        <div class="preview-container">
+            <div id="hojaImpresion">
+                <div style="grid-column: 1 / -1; text-align: center; color: #aaa; margin-top: 50px;">
+                    Selecciona productos a la izquierda y dale a "Generar"
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="js/db.js"></script>
+    <script>
+        let productosCache = [];
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            await dbSystem.init();
+            cargarListaProductos();
+        });
+
+        // 1. Cargar lista para seleccionar
+        async function cargarListaProductos() {
+            productosCache = await dbSystem.obtenerProductos();
+            productosCache.sort((a, b) => a.nombre.localeCompare(b.nombre));
+            renderizarLista(productosCache);
+        }
+
+        function renderizarLista(productos) {
+            const container = document.getElementById('contenedorLista');
+            container.innerHTML = '';
+
+            productos.forEach(p => {
+                if (!p.activo) return;
+
+                const div = document.createElement('div');
+                div.className = 'producto-row';
+                div.innerHTML = `
+                    <input type="checkbox" class="prod-check check-grande" value="${p.id}">
+                    <div style="flex: 1;">
+                        <div style="color: white; font-weight: bold; font-size: 0.9em;">${p.nombre}</div>
+                        <div style="color: #aaa; font-size: 0.8em;">${p.codigo_barras || 'Sin código'} - ${Number(p.precio_gs).toLocaleString('es-PY')} Gs</div>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        // 2. Filtrar lista
+        function filtrarLista() {
+            const texto = document.getElementById('filtroProd').value.toLowerCase();
+            const filas = document.querySelectorAll('.producto-row');
+            
+            filas.forEach(fila => {
+                const contenido = fila.innerText.toLowerCase();
+                fila.style.display = contenido.includes(texto) ? 'flex' : 'none';
+            });
+        }
+
+        // 3. Check All / None
+        function checkTodos(estado) {
+            document.querySelectorAll('.prod-check').forEach(c => {
+                if (c.closest('.producto-row').style.display !== 'none') {
+                    c.checked = estado;
+                }
+            });
+        }
+
+        // 4. GENERAR VISTA PREVIA
+        function generarVistaPrevia() {
+            const hoja = document.getElementById('hojaImpresion');
+            hoja.innerHTML = ''; 
+
+            const checkboxes = document.querySelectorAll('.prod-check:checked');
+            const copiasPorProducto = parseInt(document.getElementById('inputCopias').value) || 1;
+
+            if (checkboxes.length === 0) {
+                alert("Selecciona al menos un producto.");
+                return;
+            }
+
+            checkboxes.forEach(chk => {
+                const id = parseInt(chk.value);
+                const prod = productosCache.find(p => p.id === id);
+                
+                if (prod) {
+                    for (let i = 0; i < copiasPorProducto; i++) {
+                        const etiqueta = document.createElement('div');
+                        etiqueta.className = 'etiqueta';
+                        
+                        const codigoParaBarras = prod.codigo_barras || ('ID-' + prod.id);
+                        const precioFormateado = Number(prod.precio_gs).toLocaleString('es-PY');
+
+                        etiqueta.innerHTML = `
+                            <div class="etiqueta-nombre">${prod.nombre}</div>
+                            <div class="etiqueta-precio">Gs. ${precioFormateado}</div>
+                            <svg class="barcode"
+                                jsbarcode-format="CODE128"
+                                jsbarcode-value="${codigoParaBarras}"
+                                jsbarcode-textmargin="0"
+                                jsbarcode-fontoptions="bold"
+                                jsbarcode-height="25"
+                                jsbarcode-width="1"
+                                jsbarcode-displayValue="true"
+                                jsbarcode-fontSize="10"
+                                jsbarcode-margin="0"
+                            ></svg>
+                        `;
+                        hoja.appendChild(etiqueta);
+                    }
+                }
+            });
+
+            try {
+                JsBarcode(".barcode").init();
+            } catch (e) {
+                console.error("Error generando barras", e);
+            }
+        }
+
+        // 5. MOTOR DE IMPRESIÓN DUAL (LA MAGIA QUIRÚRGICA)
+        function imprimirEtiquetas(modo) {
+            const hoja = document.getElementById('hojaImpresion');
+            if (hoja.innerHTML.trim() === '' || hoja.innerText.includes('Selecciona productos')) {
+                alert("Primero debes generar la vista previa de las etiquetas.");
+                return;
+            }
+
+            // Crear o buscar el bloque de estilos dinámicos
+            let styleEl = document.getElementById('print-override');
+            if (!styleEl) {
+                styleEl = document.createElement('style');
+                styleEl.id = 'print-override';
+                document.head.appendChild(styleEl);
+            }
+
+            // Inyectar las reglas según el botón presionado
+            if (modo === 'TERMICA') {
+                // Modo Rollo Térmico: Cada etiqueta es una página nueva, sin márgenes, tamaño 35x25mm
+                styleEl.innerHTML = `
+                    @media print {
+                        @page { size: 35mm 25mm !important; margin: 0 !important; }
+                        #hojaImpresion { display: block !important; padding: 0 !important; gap: 0 !important; }
+                        .etiqueta { 
+                            width: 35mm !important; 
+                            height: 25mm !important; 
+                            border: none !important; /* Quitamos linea punteada */
+                            page-break-after: always !important; 
+                            margin: 0 !important;
+                        }
+                    }
+                `;
+            } else {
+                // Modo A4 Normal: Todo fluye en una hoja grande
+                styleEl.innerHTML = `
+                    @media print {
+                        @page { size: A4 !important; margin: 10mm !important; }
+                        .etiqueta { border: 0.5px dashed #ccc !important; }
+                    }
+                `;
+            }
+
+            // Darle un pequeño respiro al navegador para aplicar el CSS antes de abrir la ventana de impresión
+            setTimeout(() => { 
+                window.print(); 
+            }, 100);
+        }
+
+    </script>
+</body>
+</html>

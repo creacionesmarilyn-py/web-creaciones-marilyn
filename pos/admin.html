@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Admin - Creaciones Marilyn</title>
+    <link rel="stylesheet" href="css/marilyn.css">
+    <style>
+        /* Semáforo de Stock */
+        .stock-ok { background-color: rgba(76, 175, 80, 0.1); color: #4CAF50; font-weight: bold; }
+        .stock-warning { background-color: rgba(255, 193, 7, 0.1); color: #FFC107; font-weight: bold; }
+        .stock-danger { background-color: rgba(244, 67, 54, 0.1); color: #F44336; font-weight: bold; }
+
+        /* Botón pequeño para sumar stock */
+        .btn-mini { padding: 5px 10px; font-size: 14px; height: auto; margin-left: 5px; }
+
+        /* Estilos del Modal */
+        .modal-overlay {
+            display: none; 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            background: rgba(0,0,0,0.8); 
+            z-index: 2000; 
+            align-items: center; 
+            justify-content: center;
+        }
+
+        /* Estilos Backup */
+        .btn-danger-outline {
+            background: transparent;
+            border: 1px solid #F44336;
+            color: #F44336;
+        }
+        .btn-danger-outline:hover {
+            background: #F44336;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+    <header style="display: flex; justify-content: space-between; align-items: center;">
+        <h1>💎 Creaciones Marilyn POS</h1>
+        <div>
+            <a href="index.html" class="btn" style="background: transparent; border: 1px solid var(--color-gold); color: var(--color-gold);">Ir a Caja ➡</a>
+        </div>
+    </header>
+
+    <div class="container">
+        
+        <section class="card">
+            <h2 id="formTitle">Nuevo Producto</h2>
+            <form id="productForm">
+                <input type="hidden" id="prodId">
+                
+                <div class="row">
+                    <div class="col">
+                        <label for="codigo">Código de Barras / Ref:</label>
+                        <input type="text" id="codigo" placeholder="Ej: A001" required>
+                    </div>
+                    <div class="col">
+                        <label for="categoria">Categoría:</label>
+                        <select id="categoria">
+                            <option value="Collares">Collares</option>
+                            <option value="Pulseras">Pulseras</option>
+                            <option value="Aros">Aros</option>
+                            <option value="Anillos">Anillos</option>
+                            <option value="Rosarios">Rosarios</option>
+                            <option value="Varios">Varios</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col">
+                        <label for="nombre">Nombre del Producto:</label>
+                        <input type="text" id="nombre" placeholder="Ej: Collar de Perlas" required>
+                    </div>
+                    <div class="col">
+                        <label for="variante">Variante (Color/Talle):</label>
+                        <input type="text" id="variante" placeholder="Ej: Dorado / 45cm">
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col">
+                        <label for="precio">Precio (Gs):</label>
+                        <input type="number" id="precio" placeholder="0" required>
+                    </div>
+                    <div class="col">
+                        <label for="iva">IVA (%):</label>
+                        <select id="iva">
+                            <option value="10">10%</option>
+                            <option value="5">5%</option>
+                            <option value="0">Exento</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col">
+                        <label for="stock">Stock Actual:</label>
+                        <input type="number" id="stock" placeholder="0" required>
+                    </div>
+                    <div class="col">
+                        <label for="minimo">Stock Mínimo (Alerta):</label>
+                        <input type="number" id="minimo" value="2">
+                    </div>
+                </div>
+
+                <div class="mt-2 text-right">
+                    <button type="button" class="btn" onclick="limpiarFormulario()" style="background:#555; color:white;">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">💾 Guardar Producto</button>
+                </div>
+            </form>
+        </section>
+
+        <details class="card">
+            <summary style="font-size: 1.2rem; font-weight: bold; cursor: pointer; color: var(--color-gold);">📥 Importar Desde Excel / CSV</summary>
+            <div class="mt-2">
+                <p><strong>Instrucciones:</strong> Copia el contenido de tu CSV y pégalo aquí.</p>
+                <textarea id="importInput" rows="5" placeholder="Pega aquí los datos..." style="height: 150px; font-family: monospace; font-size: 14px; white-space: pre; overflow: auto;"></textarea>
+                
+                <div class="row mt-2">
+                    <div class="col">
+                        <button onclick="procesarImportacion('CSV')" class="btn btn-primary">📂 Importar como CSV</button>
+                    </div>
+                    <div class="col">
+                        <button onclick="procesarImportacion('JSON')" class="btn" style="background: #333; color: #aaa;">Importar como JSON</button>
+                    </div>
+                </div>
+                <p id="importStatus" style="margin-top: 10px; font-weight: bold;"></p>
+            </div>
+        </details>
+
+        <details class="card" style="margin-bottom: 25px;">
+            <summary style="font-size: 1.2rem; font-weight: bold; cursor: pointer; color: var(--color-gold);">⚙️ Configuración del Ticket (PDF)</summary>
+            <div class="mt-2 row">
+                <div class="col">
+                    <label>Nombre del Negocio:</label>
+                    <input type="text" id="confNombre" value="Creaciones Marilyn E.A.S.">
+                </div>
+                <div class="col">
+                    <label>RUC:</label>
+                    <input type="text" id="confRuc" value="80167718-1">
+                </div>
+            </div>
+            <div class="row mt-2">
+                <div class="col">
+                    <label>Dirección:</label>
+                    <input type="text" id="confDir" value="Luque, Paraguay">
+                </div>
+                <div class="col">
+                    <label>Teléfono (WhatsApp):</label>
+                    <input type="text" id="confTel" placeholder="Ej: 0981123456">
+                </div>
+            </div>
+            <div class="mt-2 text-right">
+                <button class="btn btn-primary" onclick="guardarConfiguracion()">💾 Guardar Configuración</button>
+            </div>
+        </details>
+
+        <details class="card" style="margin-bottom: 25px; border-color: #555;">
+            <summary style="font-size: 1.2rem; font-weight: bold; cursor: pointer; color: #fff;">🛡️ Copias de Seguridad (Backup)</summary>
+            <div class="mt-2">
+                <p style="color: #aaa; font-size: 0.9rem; margin-bottom: 15px;">Guarda una copia completa de tus productos, stock y ventas. Si cambias de dispositivo, usa el archivo descargado para restaurar todo.</p>
+                
+                <div class="row">
+                    <div class="col" style="border-right: 1px solid #333; padding-right: 15px;">
+                        <h4 style="color: var(--color-gold); margin-bottom: 10px;">1. Exportar Datos</h4>
+                        <button onclick="descargarBackup()" class="btn btn-primary" style="width: 100%;">📥 Descargar Backup Total</button>
+                    </div>
+                    <div class="col" style="padding-left: 15px;">
+                        <h4 style="color: #F44336; margin-bottom: 10px;">2. Restaurar Datos</h4>
+                        <input type="file" id="fileRestaurar" accept=".json" style="margin-bottom: 10px; color: white;">
+                        <button onclick="procesarRestauracion()" class="btn btn-danger-outline" style="width: 100%;">⚠️ Restaurar desde Archivo</button>
+                        <small style="color: #F44336; display: block; margin-top: 5px;">Atención: Esto borrará los datos actuales y los reemplazará por los del archivo.</small>
+                    </div>
+                </div>
+            </div>
+        </details>
+
+        <section class="card">
+            <h2>Inventario Actual</h2>
+            
+            <div class="form-group">
+                <input type="text" id="searchInput" placeholder="🔍 Buscar por nombre o código..." onkeyup="cargarTabla()">
+            </div>
+
+            <div class="table-responsive">
+                <table id="tablaProductos">
+                    <thead>
+                        <tr>
+                            <th>Código</th>
+                            <th>Producto</th>
+                            <th>Precio Gs</th>
+                            <th>Stock / Estado</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        </tbody>
+                </table>
+            </div>
+        </section>
+
+    </div>
+
+    <div id="modalStock" class="modal-overlay">
+        <div class="card" style="width: 400px; background: #222; border: 2px solid var(--color-gold);">
+            <h3 style="color: var(--color-gold); text-align: center;">📦 Reponer Stock</h3>
+            <h4 id="stockTitleProd" style="text-align: center; color: white; margin: 10px 0;">Producto...</h4>
+            
+            <input type="hidden" id="stockIdProd">
+            
+            <label>Cantidad a Ingresar:</label>
+            <input type="number" id="stockCantidad" placeholder="Ej: 10" style="width: 100%; padding: 10px; margin-bottom: 10px; font-size: 18px;">
+            
+            <label>Motivo:</label>
+            <select id="stockMotivo" style="width: 100%; padding: 10px; margin-bottom: 20px;">
+                <option value="Compra Proveedor">Compra a Proveedor</option>
+                <option value="Devolución">Devolución de Cliente</option>
+                <option value="Ajuste Inventario">Ajuste / Conteo</option>
+                <option value="Producción Propia">Producción Terminada</option>
+            </select>
+
+            <div style="display: flex; gap: 10px;">
+                <button class="btn btn-danger" onclick="document.getElementById('modalStock').style.display='none'">Cancelar</button>
+                <button class="btn btn-success" onclick="confirmarCargaStock()">✅ Guardar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/db.js"></script>
+    <script>
+        // --- LÓGICA DE LA PÁGINA ---
+        
+        document.addEventListener('DOMContentLoaded', async () => {
+            await dbSystem.init();
+            cargarTabla();
+        });
+
+        const form = document.getElementById('productForm');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const producto = {
+                codigo_barras: document.getElementById('codigo').value.toUpperCase(),
+                categoria: document.getElementById('categoria').value,
+                nombre: document.getElementById('nombre').value,
+                variante: document.getElementById('variante').value,
+                precio_gs: document.getElementById('precio').value,
+                iva_pct: document.getElementById('iva').value,
+                stock_actual: document.getElementById('stock').value,
+                stock_minimo: document.getElementById('minimo').value,
+                activo: true
+            };
+
+            const id = document.getElementById('prodId').value;
+            if (id) {
+                producto.id = parseInt(id);
+            }
+
+            try {
+                await dbSystem.guardarProducto(producto);
+                alert('Producto guardado con éxito');
+                limpiarFormulario();
+                cargarTabla();
+            } catch (error) {
+                alert('Error al guardar: ' + error.message);
+            }
+        });
+
+        async function cargarTabla() {
+            let productos = await dbSystem.obtenerProductos();
+            const tbody = document.querySelector('#tablaProductos tbody');
+            tbody.innerHTML = '';
+            
+            const filtro = document.getElementById('searchInput').value.toLowerCase();
+            
+            productos.sort((a, b) => a.nombre.localeCompare(b.nombre));
+
+            productos.forEach(p => {
+                if (filtro && !p.nombre.toLowerCase().includes(filtro) && !p.codigo_barras.toLowerCase().includes(filtro)) return;
+
+                const tr = document.createElement('tr');
+                
+                let claseEstado = 'stock-ok';
+                let textoEstado = 'OK';
+                
+                if (parseInt(p.stock_actual) <= 0) {
+                    claseEstado = 'stock-danger';
+                    textoEstado = 'AGOTADO';
+                } else if (parseInt(p.stock_actual) <= parseInt(p.stock_minimo)) {
+                    claseEstado = 'stock-warning';
+                    textoEstado = 'BAJO';
+                }
+
+                tr.innerHTML = `
+                    <td>${p.codigo_barras || '-'}</td>
+                    <td>
+                        <strong>${p.nombre}</strong><br>
+                        <small>${p.variante || ''} (${p.categoria})</small>
+                    </td>
+                    <td>${Number(p.precio_gs).toLocaleString('es-PY')}</td>
+                    <td class="${claseEstado}">
+                        ${p.stock_actual} un.
+                        <br><span style="font-size:0.8em">(${textoEstado})</span>
+                    </td>
+                    <td>
+                        <button class="btn btn-primary btn-mini" onclick='editar(${JSON.stringify(p)})'>✏️</button>
+                        <button class="btn btn-success btn-mini" onclick="abrirModalStock(${p.id}, '${p.nombre}')">➕ Stock</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        window.editar = function(p) {
+            document.getElementById('prodId').value = p.id;
+            document.getElementById('codigo').value = p.codigo_barras;
+            document.getElementById('categoria').value = p.categoria;
+            document.getElementById('nombre').value = p.nombre;
+            document.getElementById('variante').value = p.variante;
+            document.getElementById('precio').value = p.precio_gs;
+            document.getElementById('iva').value = p.iva_pct;
+            document.getElementById('stock').value = p.stock_actual;
+            document.getElementById('minimo').value = p.stock_minimo;
+
+            document.getElementById('formTitle').innerText = "Editar Producto";
+            window.scrollTo(0, 0); 
+        };
+
+        window.limpiarFormulario = function() {
+            form.reset();
+            document.getElementById('prodId').value = '';
+            document.getElementById('formTitle').innerText = "Nuevo Producto";
+        };
+
+        window.abrirModalStock = function(id, nombre) {
+            document.getElementById('stockIdProd').value = id;
+            document.getElementById('stockTitleProd').innerText = nombre;
+            document.getElementById('stockCantidad').value = '';
+            document.getElementById('modalStock').style.display = 'flex';
+            document.getElementById('stockCantidad').focus();
+        }
+
+        window.confirmarCargaStock = async function() {
+            const id = parseInt(document.getElementById('stockIdProd').value);
+            const cant = parseInt(document.getElementById('stockCantidad').value);
+            const motivo = document.getElementById('stockMotivo').value;
+
+            if (!cant || cant <= 0) {
+                alert("Ingresa una cantidad válida.");
+                return;
+            }
+
+            try {
+                await dbSystem.registrarMovimientoStock(id, cant, 'ENTRADA', motivo);
+                alert("Stock actualizado correctamente.");
+                document.getElementById('modalStock').style.display = 'none';
+                cargarTabla(); 
+            } catch (e) {
+                alert("Error al actualizar: " + e);
+            }
+        }
+
+        // --- IMPORTACIÓN CSV/JSON ---
+        window.procesarImportacion = async function(formato) {
+            const texto = document.getElementById('importInput').value.trim();
+            const status = document.getElementById('importStatus');
+            
+            if (!texto) {
+                alert("Por favor pega los datos primero.");
+                return;
+            }
+
+            let productosAImportar = [];
+
+            try {
+                if (formato === 'JSON') {
+                    productosAImportar = JSON.parse(texto);
+                } else {
+                    productosAImportar = convertirCSV(texto);
+                }
+
+                if (productosAImportar.length > 0) {
+                    const confirmacion = confirm(`Se detectaron ${productosAImportar.length} productos. ¿Deseas importarlos?`);
+                    if (confirmacion) {
+                        status.innerText = "⏳ Guardando...";
+                        await dbSystem.importarMasivo(productosAImportar);
+                        status.innerText = `✅ ¡Éxito! ${productosAImportar.length} importados.`;
+                        cargarTabla();
+                        document.getElementById('importInput').value = '';
+                    }
+                } else {
+                    alert("No se pudieron leer los datos. Revisa el formato.");
+                }
+            } catch (e) {
+                console.error(e);
+                alert("Error al procesar: " + e.message);
+                status.innerText = "❌ Error: " + e.message;
+            }
+        }
+
+        function convertirCSV(csvText) {
+            const lineas = csvText.split('\n').filter(l => l.trim() !== '');
+            if (lineas.length < 2) throw new Error("Falta cabecera en los datos");
+            
+            const primeraLinea = lineas[0];
+            let separador = ',';
+            if (primeraLinea.includes('\t')) separador = '\t';
+            else if (primeraLinea.includes(';')) separador = ';';
+
+            const cabeceras = primeraLinea.split(separador).map(h => h.trim().toLowerCase().replace(/"/g, ''));
+            const resultados = [];
+            
+            for (let i = 1; i < lineas.length; i++) {
+                const valores = lineas[i].split(separador).map(v => v.trim().replace(/"/g, ''));
+                if (valores.length > 1) {
+                    let prod = { activo: true, stock_minimo: 2, iva_pct: 10 };
+                    
+                    cabeceras.forEach((header, index) => {
+                        const valor = valores[index];
+                        if (!valor) return;
+                        
+                        if (header.includes('nombre') || header.includes('producto')) prod.nombre = valor;
+                        else if (header.includes('cod') || header.includes('ref')) prod.codigo_barras = valor;
+                        else if (header.includes('precio') && !header.includes('iva')) prod.precio_gs = parseInt(valor.replace(/\D/g,'')) || 0;
+                        else if (header.includes('stock inicial') || header === 'stock') prod.stock_actual = parseInt(valor) || 0;
+                        else if (header.includes('stock mín') || header.includes('stock min')) prod.stock_minimo = parseInt(valor) || 0;
+                        else if (header.includes('cat')) prod.categoria = valor;
+                        else if (header.includes('var')) prod.variante = valor;
+                    });
+                    
+                    if (prod.nombre && prod.precio_gs > 0) resultados.push(prod);
+                }
+            }
+            return resultados;
+        }
+
+        // --- LÓGICA DE CONFIGURACIÓN ---
+        window.onload = () => {
+            const config = JSON.parse(localStorage.getItem('marilynConfig'));
+            if (config) {
+                document.getElementById('confNombre').value = config.nombre;
+                document.getElementById('confRuc').value = config.ruc;
+                document.getElementById('confDir').value = config.direccion;
+                document.getElementById('confTel').value = config.telefono;
+            }
+        };
+
+        window.guardarConfiguracion = function() {
+            const config = {
+                nombre: document.getElementById('confNombre').value,
+                ruc: document.getElementById('confRuc').value,
+                direccion: document.getElementById('confDir').value,
+                telefono: document.getElementById('confTel').value
+            };
+            localStorage.setItem('marilynConfig', JSON.stringify(config));
+            alert("Configuración de ticket guardada correctamente.");
+        };
+
+        // --- LÓGICA DE BACKUP ---
+        window.descargarBackup = async function() {
+            try {
+                const datos = await dbSystem.exportarBaseDatos();
+                
+                // Crear archivo JSON descargable
+                const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(datos));
+                const btnDescarga = document.createElement('a');
+                btnDescarga.setAttribute("href", dataStr);
+                
+                // Nombre del archivo con fecha
+                const fecha = new Date().toISOString().split('T')[0];
+                btnDescarga.setAttribute("download", `MarilynPOS_Backup_${fecha}.json`);
+                
+                document.body.appendChild(btnDescarga);
+                btnDescarga.click();
+                btnDescarga.remove();
+                
+            } catch (e) {
+                alert("Error al exportar: " + e.message);
+            }
+        };
+
+        window.procesarRestauracion = function() {
+            const fileInput = document.getElementById('fileRestaurar');
+            if (fileInput.files.length === 0) {
+                alert("Por favor selecciona un archivo JSON de backup primero.");
+                return;
+            }
+
+            const confirmacion = confirm("⚠️ ADVERTENCIA CRÍTICA ⚠️\n\nAl restaurar este archivo, SE BORRARÁN todas las ventas y productos actuales de este dispositivo, y serán reemplazados por los del archivo.\n\n¿Estás absolutamente seguro de continuar?");
+            
+            if (confirmacion) {
+                const file = fileInput.files[0];
+                const reader = new FileReader();
+                
+                reader.onload = async function(e) {
+                    try {
+                        const importData = JSON.parse(e.target.result);
+                        await dbSystem.restaurarBaseDatos(importData);
+                        alert("✅ Restauración completada con éxito. La página se recargará.");
+                        location.reload(); // Recargar para mostrar nuevos datos
+                    } catch (error) {
+                        alert("❌ Error al restaurar. Asegúrate de que el archivo sea un Backup válido.\nDetalle: " + error.message);
+                    }
+                };
+                
+                reader.readAsText(file);
+            }
+        };
+
+    </script>
+</body>
+</html>
