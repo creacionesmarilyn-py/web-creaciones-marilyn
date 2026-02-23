@@ -213,11 +213,12 @@
             font-size: 1.5rem; text-align: right; margin-bottom: 20px; color: var(--color-text-main); 
         }
 
-        /* Fix para el video del scanner directo */
+        /* Fix para el video del scanner directo ESPECTRO COMPLETO */
         #reader video {
             border-radius: 8px;
             object-fit: cover;
             width: 100% !important;
+            height: 300px !important; /* Damos más altura para que sea cómodo apuntar */
         }
 
     </style>
@@ -367,7 +368,6 @@
             grid.innerHTML = '';
             
             const termino = texto.toLowerCase().trim();
-            // LA MAGIA BLINDADA (BUSCADOR EN TIEMPO REAL)
             const terminoLimpio = texto.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
             
             const filtrados = productosCache.filter(p => {
@@ -394,7 +394,7 @@
             });
         }
 
-        // --- LÓGICA DE ESCÁNER DE CÁMARA (MOTOR DIRECTO LOW-LEVEL) ---
+        // --- LÓGICA DE ESCÁNER DE CÁMARA (ESPECTRO COMPLETO) ---
         function abrirEscanerCamara() {
             document.getElementById('modalScanner').classList.add('active');
             
@@ -403,15 +403,17 @@
             feedbackEl.style.color = "var(--color-gold)";
             isScanningPaused = false;
             
-            // Instanciamos el motor puro, sin la UI automática
             motorCamara = new Html5Qrcode("reader");
             
-            // Forzamos el encendido directo de la cámara trasera ("environment")
+            // Forzamos lente trasero y pedimos autoenfoque continuo al hardware
             motorCamara.start(
-                { facingMode: "environment" }, 
+                { 
+                    facingMode: "environment",
+                    advanced: [{ focusMode: "continuous" }] 
+                }, 
                 {
-                    fps: 10,
-                    qrbox: { width: 250, height: 100 }
+                    fps: 10
+                    // ¡AQUÍ ESTÁ LA MAGIA! Eliminamos el qrbox. Ahora analiza todo el recuadro.
                 },
                 onScanSuccess,
                 onScanFailure
@@ -425,14 +427,11 @@
         }
 
         function onScanSuccess(decodedText, decodedResult) {
-            // 1. Si está en periodo de enfriamiento, ignorar lectura para proteger la RAM
             if (isScanningPaused) return; 
 
-            // 2. Bloquear lectura (iniciar enfriamiento)
             isScanningPaused = true; 
             const feedbackEl = document.getElementById('scannerFeedback');
             
-            // 3. Buscar el producto escaneado (LA MAGIA BLINDADA DE CÁMARA)
             const codigoBuscado = decodedText.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
             
             const prod = productosCache.find(p => {
@@ -442,7 +441,6 @@
             });
 
             if (prod) {
-                // ÉXITO: BEEP ALTO
                 try {
                     const context = new (window.AudioContext || window.webkitAudioContext)();
                     const oscillator = context.createOscillator();
@@ -458,7 +456,6 @@
                 feedbackEl.innerText = `✅ ¡Agregado! ${prod.nombre}`;
                 feedbackEl.style.color = "var(--color-success)";
             } else {
-                // ERROR: BEEP GRAVE
                 try {
                     const context = new (window.AudioContext || window.webkitAudioContext)();
                     const oscillator = context.createOscillator();
@@ -473,26 +470,24 @@
                 feedbackEl.style.color = "var(--color-danger)";
             }
 
-            // 4. Temporizador de enfriamiento: Desbloquear después de 1.5 segundos
             setTimeout(() => {
-                if (motorCamara) { // Solo si la cámara sigue abierta
+                if (motorCamara) { 
                     feedbackEl.innerText = "Apunta al siguiente código...";
                     feedbackEl.style.color = "var(--color-gold)";
-                    isScanningPaused = false; // Libre para leer el siguiente
+                    isScanningPaused = false; 
                 }
             }, 1500);
         }
 
         function onScanFailure(error) {
-            // Fallo silencioso normal cuando busca enfocar
+            // Silencioso
         }
 
         function cerrarEscanerCamara() {
             document.getElementById('modalScanner').classList.remove('active');
-            isScanningPaused = true; // Forzar bloqueo por si acaso
+            isScanningPaused = true; 
             
             if (motorCamara) {
-                // Detenemos el hardware primero, y luego limpiamos la instancia
                 motorCamara.stop().then(() => {
                     motorCamara.clear();
                     motorCamara = null;
@@ -510,7 +505,6 @@
         function intentarAgregarPorCodigo(codigo) {
             if (!codigo) return;
             
-            // LA MAGIA BLINDADA (TECLADO O PISTOLA FÍSICA)
             const codigoBuscado = codigo.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
             
             const prod = productosCache.find(p => {
