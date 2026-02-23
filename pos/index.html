@@ -213,6 +213,13 @@
             font-size: 1.5rem; text-align: right; margin-bottom: 20px; color: var(--color-text-main); 
         }
 
+        /* Fix para el video del scanner directo */
+        #reader video {
+            border-radius: 8px;
+            object-fit: cover;
+            width: 100% !important;
+        }
+
     </style>
 </head>
 <body>
@@ -260,9 +267,9 @@
     <div class="modal-overlay" id="modalScanner">
         <div class="modal-content" style="text-align: center; width: 90%; max-width: 450px; padding: 20px;">
             <h2 style="color: white; margin-bottom: 5px; font-size: 1.5rem;">Modo Ráfaga Activo 📷</h2>
-            <p id="scannerFeedback" style="color: var(--color-gold); height: 20px; font-weight: bold; margin-bottom: 15px; font-size: 1.1rem;">Apunta al código de barras...</p>
+            <p id="scannerFeedback" style="color: var(--color-gold); height: 20px; font-weight: bold; margin-bottom: 15px; font-size: 1.1rem;">Iniciando lente principal...</p>
             
-            <div id="reader" style="width: 100%; min-height: 250px; background: #000; border-radius: 8px; overflow: hidden; border: 2px solid #333;"></div>
+            <div id="reader" style="width: 100%; min-height: 250px; background: #000; border-radius: 8px; overflow: hidden; border: 2px solid #333; display: flex; align-items: center; justify-content: center;"></div>
             
             <button class="btn btn-danger" style="margin-top: 20px; width: 100%; padding: 15px; font-size: 1.2rem; font-weight: bold;" onclick="cerrarEscanerCamara()">🛑 Terminar Escaneo</button>
         </div>
@@ -316,9 +323,9 @@
         let totalGlobal = 0;
         let ultimaVentaDatos = null; 
         
-        // Variables para la cámara
-        let html5QrcodeScanner = null; 
-        let isScanningPaused = false; // Flag de enfriamiento de memoria RAM
+        // Variables para la cámara (MOTOR DIRECTO)
+        let motorCamara = null; 
+        let isScanningPaused = false; 
 
         // --- INICIALIZACIÓN ---
         document.addEventListener('DOMContentLoaded', async () => {
@@ -387,22 +394,34 @@
             });
         }
 
-        // --- LÓGICA DE ESCÁNER DE CÁMARA (MODO RÁFAGA) ---
+        // --- LÓGICA DE ESCÁNER DE CÁMARA (MOTOR DIRECTO LOW-LEVEL) ---
         function abrirEscanerCamara() {
             document.getElementById('modalScanner').classList.add('active');
             
             const feedbackEl = document.getElementById('scannerFeedback');
-            feedbackEl.innerText = "Iniciando cámara...";
+            feedbackEl.innerText = "Conectando al lente...";
             feedbackEl.style.color = "var(--color-gold)";
             isScanningPaused = false;
             
-            // Limitamos a 10 fps para cuidar la RAM. Enfoque automático.
-            html5QrcodeScanner = new Html5QrcodeScanner(
-                "reader",
-                { fps: 10, qrbox: {width: 250, height: 100} },
-                /* verbose= */ false);
-                
-            html5QrcodeScanner.render(onScanSuccess, onScanFailure);
+            // Instanciamos el motor puro, sin la UI automática
+            motorCamara = new Html5Qrcode("reader");
+            
+            // Forzamos el encendido directo de la cámara trasera ("environment")
+            motorCamara.start(
+                { facingMode: "environment" }, 
+                {
+                    fps: 10,
+                    qrbox: { width: 250, height: 100 }
+                },
+                onScanSuccess,
+                onScanFailure
+            ).then(() => {
+                feedbackEl.innerText = "Apunta al código de barras";
+            }).catch((err) => {
+                console.error("Error forzando lente trasero:", err);
+                feedbackEl.innerText = "Error: Permiso denegado o cámara en uso.";
+                feedbackEl.style.color = "var(--color-danger)";
+            });
         }
 
         function onScanSuccess(decodedText, decodedResult) {
@@ -456,7 +475,7 @@
 
             // 4. Temporizador de enfriamiento: Desbloquear después de 1.5 segundos
             setTimeout(() => {
-                if (html5QrcodeScanner) { // Solo si la cámara sigue abierta
+                if (motorCamara) { // Solo si la cámara sigue abierta
                     feedbackEl.innerText = "Apunta al siguiente código...";
                     feedbackEl.style.color = "var(--color-gold)";
                     isScanningPaused = false; // Libre para leer el siguiente
@@ -472,12 +491,16 @@
             document.getElementById('modalScanner').classList.remove('active');
             isScanningPaused = true; // Forzar bloqueo por si acaso
             
-            if (html5QrcodeScanner) {
-                // Destruir el proceso para liberar el 100% de la memoria de video
-                html5QrcodeScanner.clear().catch(error => {
-                    console.error("Fallo al detener la cámara.", error);
+            if (motorCamara) {
+                // Detenemos el hardware primero, y luego limpiamos la instancia
+                motorCamara.stop().then(() => {
+                    motorCamara.clear();
+                    motorCamara = null;
+                }).catch((err) => {
+                    console.error("Fallo al detener la cámara:", err);
+                    motorCamara.clear();
+                    motorCamara = null;
                 });
-                html5QrcodeScanner = null;
             }
             document.getElementById('inputBusqueda').focus();
         }
