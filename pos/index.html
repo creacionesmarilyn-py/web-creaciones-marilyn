@@ -268,7 +268,7 @@
     <div class="modal-overlay" id="modalScanner">
         <div class="modal-content" style="text-align: center; width: 90%; max-width: 450px; padding: 20px;">
             <h2 style="color: white; margin-bottom: 5px; font-size: 1.5rem;">Modo Ráfaga Activo 📷</h2>
-            <p id="scannerFeedback" style="color: var(--color-gold); height: 20px; font-weight: bold; margin-bottom: 15px; font-size: 1.1rem;">Iniciando lente principal...</p>
+            <p id="scannerFeedback" style="color: var(--color-gold); height: 40px; font-weight: bold; margin-bottom: 5px; font-size: 1.1rem;">Iniciando lente principal...</p>
             
             <div id="reader" style="width: 100%; min-height: 250px; background: #000; border-radius: 8px; overflow: hidden; border: 2px solid #333; display: flex; align-items: center; justify-content: center;"></div>
             
@@ -394,7 +394,7 @@
             });
         }
 
-        // --- LÓGICA DE ESCÁNER DE CÁMARA (ESPECTRO COMPLETO) ---
+        // --- LÓGICA DE ESCÁNER DE CÁMARA ---
         function abrirEscanerCamara() {
             document.getElementById('modalScanner').classList.add('active');
             
@@ -405,23 +405,17 @@
             
             motorCamara = new Html5Qrcode("reader");
             
-            // Forzamos lente trasero y pedimos autoenfoque continuo al hardware
+            // LA CIRUGÍA QUIRÚRGICA: Llamada limpia al hardware, sin restricciones de enfoque que lo asusten.
             motorCamara.start(
-                { 
-                    facingMode: "environment",
-                    advanced: [{ focusMode: "continuous" }] 
-                }, 
-                {
-                    fps: 10
-                    // ¡AQUÍ ESTÁ LA MAGIA! Eliminamos el qrbox. Ahora analiza todo el recuadro.
-                },
+                { facingMode: "environment" }, 
+                { fps: 10 },
                 onScanSuccess,
                 onScanFailure
             ).then(() => {
                 feedbackEl.innerText = "Apunta al código de barras";
             }).catch((err) => {
-                console.error("Error forzando lente trasero:", err);
-                feedbackEl.innerText = "Error: Permiso denegado o cámara en uso.";
+                console.error("Error iniciando cámara:", err);
+                feedbackEl.innerText = "Error: " + (err.message || err);
                 feedbackEl.style.color = "var(--color-danger)";
             });
         }
@@ -492,7 +486,7 @@
                     motorCamara.clear();
                     motorCamara = null;
                 }).catch((err) => {
-                    console.error("Fallo al detener la cámara:", err);
+                    console.error("Fallo al detener:", err);
                     motorCamara.clear();
                     motorCamara = null;
                 });
