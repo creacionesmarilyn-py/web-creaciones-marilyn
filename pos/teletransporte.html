@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Teletransporte a Firebase</title>
+</head>
+<body style="background: #111; color: #D4AF37; text-align: center; padding-top: 50px; font-family: sans-serif;">
+    
+    <h1>🚀 Subiendo inventario local a la Nube...</h1>
+    <h2 id="status" style="color: white;">Por favor espera...</h2>
+
+    <script type="module">
+        import dbSystem from './js/db.js';
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBmPvAk_lSJ1TlBVtMqKAC1HaPM5eVeZxo",
+            authDomain: "creaciones-marilyn.firebaseapp.com",
+            databaseURL: "https://creaciones-marilyn-default-rtdb.firebaseio.com",
+            projectId: "creaciones-marilyn",
+            storageBucket: "creaciones-marilyn.firebasestorage.app",
+            messagingSenderId: "565099684746",
+            appId: "1:565099684746:web:a99ccfb9796aea22725e73"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const rtdb = getDatabase(app);
+
+        async function migrar() {
+            try {
+                // 1. Lee tu memoria local secreta
+                await dbSystem.init();
+                const productosLocales = await dbSystem.obtenerProductos();
+                
+                if(productosLocales.length === 0) {
+                    document.getElementById('status').innerText = "⚠️ Tu base local está vacía.";
+                    return;
+                }
+
+                // 2. Prepara el paquete
+                const firebaseData = {};
+                productosLocales.forEach(p => {
+                    firebaseData[p.id] = p; // Copia exacta con el ID-146 incluido
+                });
+
+                // 3. Dispara a Firebase
+                await set(ref(rtdb, 'productos'), firebaseData);
+                
+                document.getElementById('status').innerText = `✅ ¡ÉXITO! ${productosLocales.length} productos teletransportados a Firebase.`;
+                document.getElementById('status').style.color = "#4CAF50";
+            } catch(e) {
+                document.getElementById('status').innerText = "❌ Error: " + e.message;
+                document.getElementById('status').style.color = "#F44336";
+            }
+        }
+        
+        migrar();
+    </script>
+</body>
+</html>
