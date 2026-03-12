@@ -43,7 +43,7 @@
 <body>
 
     <header style="display: flex; justify-content: space-between; align-items: center;">
-        <h1>💎 Creaciones Marilyn POS</h1>
+        <h1>💎 Creaciones Marilyn POS (Sincronizado a la Nube)</h1>
         <div>
             <a href="index.html" class="btn" style="background: transparent; border: 1px solid var(--color-gold); color: var(--color-gold);">Ir a Caja ➡</a>
         </div>
@@ -113,7 +113,7 @@
 
                 <div class="mt-2 text-right">
                     <button type="button" class="btn" onclick="limpiarFormulario()" style="background:#555; color:white;">Cancelar</button>
-                    <button type="submit" class="btn btn-primary">💾 Guardar Producto</button>
+                    <button type="submit" class="btn btn-primary">💾 Guardar Producto en la Nube</button>
                 </div>
             </form>
         </section>
@@ -187,7 +187,7 @@
             <h2>Inventario Actual</h2>
             
             <div class="form-group">
-                <input type="text" id="searchInput" placeholder="🔍 Buscar por nombre o código..." onkeyup="cargarTabla()">
+                <input type="text" id="searchInput" placeholder="🔍 Buscar por nombre o código..." onkeyup="window.cargarTabla()">
             </div>
 
             <div class="table-responsive">
@@ -229,18 +229,20 @@
 
             <div style="display: flex; gap: 10px;">
                 <button class="btn btn-danger" onclick="document.getElementById('modalStock').style.display='none'">Cancelar</button>
-                <button class="btn btn-success" onclick="confirmarCargaStock()">✅ Guardar</button>
+                <button class="btn btn-success" onclick="window.confirmarCargaStock()">✅ Guardar</button>
             </div>
         </div>
     </div>
 
-    <script src="js/db.js"></script>
-    <script>
-        // --- LÓGICA DE LA PÁGINA ---
-        
+    <script type="module">
+        import dbSystem from './js/db.js';
+
+        // Hacer dbSystem global para que los botones HTML lo encuentren
+        window.dbSystem = dbSystem;
+
         document.addEventListener('DOMContentLoaded', async () => {
             await dbSystem.init();
-            cargarTabla();
+            window.cargarTabla();
         });
 
         const form = document.getElementById('productForm');
@@ -262,20 +264,22 @@
 
             const id = document.getElementById('prodId').value;
             if (id) {
-                producto.id = parseInt(id);
+                producto.id = parseInt(id); // Actualizar producto existente
+            } else {
+                producto.id = Date.now(); // Crear ID único nuevo para Firebase
             }
 
             try {
                 await dbSystem.guardarProducto(producto);
-                alert('Producto guardado con éxito');
-                limpiarFormulario();
-                cargarTabla();
+                alert('Producto guardado y sincronizado a la nube con éxito');
+                window.limpiarFormulario();
+                window.cargarTabla();
             } catch (error) {
                 alert('Error al guardar: ' + error.message);
             }
         });
 
-        async function cargarTabla() {
+        window.cargarTabla = async function() {
             let productos = await dbSystem.obtenerProductos();
             const tbody = document.querySelector('#tablaProductos tbody');
             tbody.innerHTML = '';
@@ -285,7 +289,7 @@
             productos.sort((a, b) => a.nombre.localeCompare(b.nombre));
 
             productos.forEach(p => {
-                if (filtro && !p.nombre.toLowerCase().includes(filtro) && !p.codigo_barras.toLowerCase().includes(filtro)) return;
+                if (filtro && !p.nombre.toLowerCase().includes(filtro) && !(p.codigo_barras || '').toLowerCase().includes(filtro)) return;
 
                 const tr = document.createElement('tr');
                 
@@ -312,13 +316,13 @@
                         <br><span style="font-size:0.8em">(${textoEstado})</span>
                     </td>
                     <td>
-                        <button class="btn btn-primary btn-mini" onclick='editar(${JSON.stringify(p)})'>✏️</button>
-                        <button class="btn btn-success btn-mini" onclick="abrirModalStock(${p.id}, '${p.nombre}')">➕ Stock</button>
+                        <button class="btn btn-primary btn-mini" onclick='window.editar(${JSON.stringify(p)})'>✏️</button>
+                        <button class="btn btn-success btn-mini" onclick="window.abrirModalStock(${p.id}, '${p.nombre.replace(/'/g, "\\'")}')">➕ Stock</button>
                     </td>
                 `;
                 tbody.appendChild(tr);
             });
-        }
+        };
 
         window.editar = function(p) {
             document.getElementById('prodId').value = p.id;
@@ -347,7 +351,7 @@
             document.getElementById('stockCantidad').value = '';
             document.getElementById('modalStock').style.display = 'flex';
             document.getElementById('stockCantidad').focus();
-        }
+        };
 
         window.confirmarCargaStock = async function() {
             const id = parseInt(document.getElementById('stockIdProd').value);
@@ -360,14 +364,15 @@
             }
 
             try {
+                // Asume que esta función también se conectó a la nube en el db.js
                 await dbSystem.registrarMovimientoStock(id, cant, 'ENTRADA', motivo);
                 alert("Stock actualizado correctamente.");
                 document.getElementById('modalStock').style.display = 'none';
-                cargarTabla(); 
+                window.cargarTabla(); 
             } catch (e) {
                 alert("Error al actualizar: " + e);
             }
-        }
+        };
 
         // --- IMPORTACIÓN CSV/JSON ---
         window.procesarImportacion = async function(formato) {
@@ -389,12 +394,12 @@
                 }
 
                 if (productosAImportar.length > 0) {
-                    const confirmacion = confirm(`Se detectaron ${productosAImportar.length} productos. ¿Deseas importarlos?`);
+                    const confirmacion = confirm(`Se detectaron ${productosAImportar.length} productos. ¿Deseas importarlos a la nube y al sistema local?`);
                     if (confirmacion) {
                         status.innerText = "⏳ Guardando...";
                         await dbSystem.importarMasivo(productosAImportar);
                         status.innerText = `✅ ¡Éxito! ${productosAImportar.length} importados.`;
-                        cargarTabla();
+                        window.cargarTabla();
                         document.getElementById('importInput').value = '';
                     }
                 } else {
@@ -405,7 +410,7 @@
                 alert("Error al procesar: " + e.message);
                 status.innerText = "❌ Error: " + e.message;
             }
-        }
+        };
 
         function convertirCSV(csvText) {
             const lineas = csvText.split('\n').filter(l => l.trim() !== '');
@@ -422,7 +427,7 @@
             for (let i = 1; i < lineas.length; i++) {
                 const valores = lineas[i].split(separador).map(v => v.trim().replace(/"/g, ''));
                 if (valores.length > 1) {
-                    let prod = { activo: true, stock_minimo: 2, iva_pct: 10 };
+                    let prod = { id: Date.now() + i, activo: true, stock_minimo: 2, iva_pct: 10 };
                     
                     cabeceras.forEach((header, index) => {
                         const valor = valores[index];
@@ -469,20 +474,14 @@
         window.descargarBackup = async function() {
             try {
                 const datos = await dbSystem.exportarBaseDatos();
-                
-                // Crear archivo JSON descargable
                 const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(datos));
                 const btnDescarga = document.createElement('a');
                 btnDescarga.setAttribute("href", dataStr);
-                
-                // Nombre del archivo con fecha
                 const fecha = new Date().toISOString().split('T')[0];
                 btnDescarga.setAttribute("download", `MarilynPOS_Backup_${fecha}.json`);
-                
                 document.body.appendChild(btnDescarga);
                 btnDescarga.click();
                 btnDescarga.remove();
-                
             } catch (e) {
                 alert("Error al exportar: " + e.message);
             }
@@ -506,7 +505,7 @@
                         const importData = JSON.parse(e.target.result);
                         await dbSystem.restaurarBaseDatos(importData);
                         alert("✅ Restauración completada con éxito. La página se recargará.");
-                        location.reload(); // Recargar para mostrar nuevos datos
+                        location.reload(); 
                     } catch (error) {
                         alert("❌ Error al restaurar. Asegúrate de que el archivo sea un Backup válido.\nDetalle: " + error.message);
                     }
@@ -515,7 +514,6 @@
                 reader.readAsText(file);
             }
         };
-
     </script>
 </body>
 </html>

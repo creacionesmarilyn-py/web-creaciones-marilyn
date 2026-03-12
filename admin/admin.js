@@ -1,229 +1,170 @@
-// admin.js - FASE 2: ORGANIZACIÓN POR COLECCIONES Y CONTROL DE DESTACADOS
-let itoken = localStorage.getItem('itoken') || "";
-const repo = "creacionesmarilyn-py/web-creaciones-marilyn";
-const url = `https://api.github.com/repos/${repo}/contents/database.json`;
-const RAW_BASE_URL = "https://raw.githubusercontent.com/creacionesmarilyn-py/web-creaciones-marilyn/main/";
+/* admin.js - GESTOR DE VITRINA CONECTADO A FIREBASE REALTIME */
 
-let sha = "";
-let products = [];
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getDatabase, ref, set, onValue, remove, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-const sanitize = (n) => n.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, '-').replace(/[()]/g, '').replace(/[^a-z0-9.-]/g, '');
+const firebaseConfig = {
+    apiKey: "AIzaSyBmPvAk_lSJ1TlBVtMqKAC1HaPM5eVeZxo",
+    authDomain: "creaciones-marilyn.firebaseapp.com",
+    databaseURL: "https://creaciones-marilyn-default-rtdb.firebaseio.com",
+    projectId: "creaciones-marilyn",
+    storageBucket: "creaciones-marilyn.firebasestorage.app",
+    messagingSenderId: "565099684746",
+    appId: "1:565099684746:web:a99ccfb9796aea22725e73"
+};
 
-const fileToBase64 = (file) => new Promise((res, rej) => {
-    const reader = new FileReader();
-    reader.onload = () => res(reader.result.split(',')[1]);
-    reader.onerror = e => rej(e);
-    reader.readAsDataURL(file);
-});
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
 
-function checkAccess() {
-    const overlay = document.getElementById('login-overlay');
-    if (itoken) {
-        overlay.classList.add('hidden');
-        loadProductsAdmin();
-    } else {
-        overlay.classList.remove('hidden');
-    }
-}
+// Asegurar que el código se ejecute cuando el HTML esté listo
+document.addEventListener('DOMContentLoaded', () => {
 
-function saveToken() {
-    const input = document.getElementById('gh-token');
-    itoken = input.value.trim();
-    if (itoken) {
-        localStorage.setItem('itoken', itoken);
-        checkAccess();
-    }
-}
-
-function logout() {
-    localStorage.removeItem('itoken');
-    location.reload();
-}
-
-async function loadProductsAdmin() {
-    try {
-        const response = await fetch(`${url}?v=${Date.now()}`, {
-            headers: { 'Authorization': `token ${itoken}`, 'Accept': 'application/vnd.github.v3+json' }
+    // --- 1. SISTEMA DE LOGIN ---
+    const loginBtn = document.getElementById('login-btn');
+    if (loginBtn) {
+        loginBtn.addEventListener('click', () => {
+            const token = document.getElementById('gh-token').value;
+            if (token === "marilyn2026") {
+                document.getElementById('login-overlay').classList.add('hidden');
+                iniciarEscuchaNube(); // Arranca Firebase
+            } else {
+                alert("❌ Clave incorrecta. Intenta de nuevo.");
+            }
         });
-        if (response.status === 401) { logout(); return; }
-
-        const data = await response.json();
-        sha = data.sha;
-        const content = JSON.parse(decodeURIComponent(escape(atob(data.content))));
-        products = content.products;
-        
-        renderAdminProducts();
-        updateProductCount();
-    } catch (e) { console.error("Error en Auditoría Admin:", e); }
-}
-
-function updateProductCount() {
-    const counter = document.getElementById('product-count');
-    if (counter) counter.textContent = `${products.length} productos en base`;
-}
-
-// --- 3. RENDERIZADO CON ACORDEÓN POR COLECCIONES ---
-function renderAdminProducts() {
-    const container = document.getElementById('admin-product-list');
-    if (!container) return;
-    
-    // Agrupamos quirúrgicamente por colección
-    const groups = products.reduce((acc, p) => {
-        const col = p.collection || "Sin Categoría";
-        if (!acc[col]) acc[col] = [];
-        acc[col].push(p);
-        return acc;
-    }, {});
-
-    container.innerHTML = Object.keys(groups).sort().map(colName => {
-        const productList = groups[colName];
-        return `
-            <div class="mb-4 border border-gray-100 rounded-2xl overflow-hidden bg-white shadow-sm">
-                <button onclick="toggleAccordion('${sanitize(colName)}')" class="w-full flex justify-between items-center p-4 bg-gray-50/50 hover:bg-pink-50 transition-colors">
-                    <span class="font-black text-xs uppercase tracking-widest text-gray-600">${colName} (${productList.length})</span>
-                    <i id="icon-${sanitize(colName)}" class="fas fa-chevron-down text-gray-400 transition-transform"></i>
-                </button>
-                <div id="group-${sanitize(colName)}" class="hidden p-2">
-                    ${productList.map(p => renderSingleAdminItem(p)).join('')}
-                </div>
-            </div>
-        `;
-    }).join('');
-}
-
-function renderSingleAdminItem(p) {
-    let img = (p.images && p.images.length > 0 ? p.images[0] : p.image).replace(/^\//, '');
-    const fullImgUrl = img.startsWith('http') ? img : `${RAW_BASE_URL}${img}?v=${Date.now()}`;
-    
-    return `
-        <div class="flex justify-between items-center py-3 px-2 border-b border-gray-50 last:border-0 group">
-            <div class="flex items-center gap-3">
-                <div class="relative">
-                    <img src="${fullImgUrl}" class="w-10 h-10 rounded-lg object-cover border border-gray-100">
-                    ${p.destacado ? '<span class="absolute -top-1 -left-1 text-[8px] bg-yellow-400 text-white px-1 rounded-full shadow-sm"><i class="fas fa-star"></i></span>' : ''}
-                </div>
-                <div>
-                    <p class="font-bold text-[10px] uppercase text-gray-700 leading-tight">${p.name}</p>
-                    <p class="text-pink-600 font-black text-[10px]">Gs. ${p.price.toLocaleString('es-PY')} | <span class="text-gray-400 font-normal capitalize">${p.status}</span></p>
-                </div>
-            </div>
-            <div class="flex gap-1">
-                <button onclick="openEditModal(${p.id}, ${p.price}, '${p.status}', ${p.destacado})" class="text-gray-300 hover:text-blue-500 p-2 transition-colors"><i class="fas fa-edit text-xs"></i></button>
-                <button onclick="deleteProduct(${p.id})" class="text-gray-300 hover:text-red-500 p-2 transition-colors"><i class="fas fa-trash-alt text-xs"></i></button>
-            </div>
-        </div>
-    `;
-}
-
-function toggleAccordion(id) {
-    const el = document.getElementById(`group-${id}`);
-    const icon = document.getElementById(`icon-${id}`);
-    el.classList.toggle('hidden');
-    icon.classList.toggle('rotate-180');
-}
-
-// --- 4. MOTOR DE SUBIDA ---
-async function uploadImage(file) {
-    const fileName = sanitize(file.name);
-    const content = await fileToBase64(file);
-    const uploadUrl = `https://api.github.com/repos/${repo}/contents/img/${fileName}`;
-    await fetch(uploadUrl, {
-        method: 'PUT',
-        headers: { 'Authorization': `token ${itoken}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: `Upload: ${fileName}`, content: content })
-    });
-    return `img/${fileName}`;
-}
-
-document.getElementById('product-form').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const btn = document.getElementById('submit-btn');
-    btn.disabled = true; 
-    btn.innerHTML = '<i class="fas fa-spinner animate-spin"></i> Procesando...';
-
-    try {
-        const fileInput = document.getElementById('p-image-file');
-        const files = Array.from(fileInput.files);
-        if (files.length === 0) throw new Error("Seleccioná al menos una imagen");
-        
-        const uploadedPaths = [];
-        for (const file of files) {
-            const path = await uploadImage(file);
-            uploadedPaths.push(path);
-        }
-        
-        const newProduct = {
-            id: Date.now(),
-            name: document.getElementById('p-name').value,
-            price: parseInt(document.getElementById('p-price').value),
-            collection: document.getElementById('p-collection').value,
-            status: document.getElementById('p-status').value,
-            destacado: false, // Por defecto al crear
-            images: uploadedPaths
-        };
-
-        await saveToGitHub([...products, newProduct], `Nuevo producto en: ${newProduct.collection}`);
-    } catch (err) { 
-        alert("❌ Error: " + err.message); 
-        btn.disabled = false; 
-        btn.innerText = "Subir a la Nube"; 
     }
-});
 
-// --- 5. EDICIÓN AVANZADA (DESTACADOS Y POP-UP) ---
-function openEditModal(id, price, status, destacado) {
-    document.getElementById('edit-id').value = id;
-    document.getElementById('edit-price').value = price;
-    document.getElementById('edit-status').value = status;
-    document.getElementById('edit-destacado').checked = destacado; // Agregado para Fase 2
-    document.getElementById('edit-modal').classList.remove('hidden');
-}
+    // Botón Cerrar Sesión
+    const logoutBtn = document.getElementById('logout-btn');
+    if(logoutBtn) {
+        logoutBtn.addEventListener('click', () => location.reload());
+    }
 
-function closeEditModal() {
-    document.getElementById('edit-modal').classList.add('hidden');
-}
+    // --- 2. GUARDAR NUEVO PRODUCTO ---
+    const productForm = document.getElementById('product-form');
+    if (productForm) {
+        productForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('submit-btn');
+            btn.disabled = true; 
+            btn.innerHTML = '<i class="fas fa-spinner animate-spin"></i> Subiendo...';
 
-async function saveProductEdit() {
-    const id = parseInt(document.getElementById('edit-id').value);
-    const newPrice = parseInt(document.getElementById('edit-price').value);
-    const newStatus = document.getElementById('edit-status').value;
-    const isDestacado = document.getElementById('edit-destacado').checked;
+            try {
+                const id = Date.now(); 
+                const nuevoProducto = {
+                    id: id,
+                    nombre: document.getElementById('p-name').value,
+                    precio_gs: parseInt(document.getElementById('p-price').value),
+                    categoria: document.getElementById('p-collection').value,
+                    estado: document.getElementById('p-status').value,
+                    imagen: document.getElementById('p-image-url').value, 
+                    destacado: false,
+                    fecha_registro: new Date().toISOString()
+                };
 
-    const newProducts = products.map(p => 
-        p.id === id ? { ...p, price: newPrice, status: newStatus, destacado: isDestacado } : p
-    );
-
-    const btn = document.querySelector('#edit-modal button[onclick="saveProductEdit()"]');
-    if(btn) { btn.disabled = true; btn.innerText = "Sincronizando..."; }
-    
-    await saveToGitHub(newProducts, `Edición Chick: ID ${id} | Destacado: ${isDestacado}`);
-}
-
-async function saveToGitHub(newProducts, msg) {
-    const newContent = btoa(unescape(encodeURIComponent(JSON.stringify({ products: newProducts }, null, 2))));
-    try {
-        const res = await fetch(url, {
-            method: 'PUT',
-            headers: { 'Authorization': `token ${itoken}`, 'Content-Type': 'application/json' },
-            body: JSON.stringify({ message: msg, content: newContent, sha: sha })
+                await set(ref(db, 'productos/' + id), nuevoProducto);
+                
+                alert("✅ ¡Producto guardado en la Nube!");
+                productForm.reset();
+            } catch (err) { 
+                alert("❌ Error al guardar: " + err.message); 
+            } finally {
+                btn.disabled = false; 
+                btn.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> <span class="text-xs uppercase tracking-[0.2em]">Guardar en la Nube</span>';
+            }
         });
-
-        if (res.ok) {
-            alert("✅ ¡Éxito! Tienda actualizada y organizada.");
-            location.reload();
-        } else {
-            throw new Error("Error de sincronización con GitHub");
-        }
-    } catch (e) {
-        alert("❌ Error de conexión. Verificá tu token.");
-        console.error(e);
     }
-}
 
-async function deleteProduct(id) {
-    if(!confirm("¿Eliminar este diseño de la vitrina?")) return;
-    const newProducts = products.filter(p => p.id !== id);
-    await saveToGitHub(newProducts, "Producto eliminado");
-}
+    // --- 3. FUNCIONES DE EDICIÓN Y ELIMINACIÓN (Globales para la tabla dinámica) ---
+    // Como la tabla se crea dinámicamente, pegamos las funciones al window
+    window.abrirModalEdicion = function(id, precio, estado, destacado) {
+        document.getElementById('edit-id').value = id;
+        document.getElementById('edit-price').value = precio;
+        document.getElementById('edit-status').value = estado;
+        document.getElementById('edit-destacado').checked = destacado;
+        document.getElementById('edit-modal').classList.remove('hidden');
+    };
 
-document.addEventListener('DOMContentLoaded', checkAccess);
+    window.eliminarProductoNube = async function(id) {
+        if(confirm("¿Seguro que deseas eliminar este producto de la nube?")) {
+            try {
+                await remove(ref(db, 'productos/' + id));
+            } catch(e) {
+                alert("Error al eliminar: " + e.message);
+            }
+        }
+    };
+
+    // Botones del Modal de Edición
+    const closeModalBtn = document.getElementById('close-modal-btn');
+    if(closeModalBtn) {
+        closeModalBtn.addEventListener('click', () => {
+            document.getElementById('edit-modal').classList.add('hidden');
+        });
+    }
+
+    const saveEditBtn = document.getElementById('save-edit-btn');
+    if (saveEditBtn) {
+        saveEditBtn.addEventListener('click', async () => {
+            const id = document.getElementById('edit-id').value;
+            
+            try {
+                saveEditBtn.innerText = "Actualizando...";
+                saveEditBtn.disabled = true;
+
+                await update(ref(db, 'productos/' + id), {
+                    precio_gs: parseInt(document.getElementById('edit-price').value),
+                    estado: document.getElementById('edit-status').value,
+                    destacado: document.getElementById('edit-destacado').checked
+                });
+
+                document.getElementById('edit-modal').classList.add('hidden');
+                alert("✅ Producto actualizado correctamente");
+            } catch (e) {
+                alert("Error al actualizar: " + e.message);
+            } finally {
+                saveEditBtn.innerHTML = '<i class="fas fa-save"></i> Actualizar Inventario';
+                saveEditBtn.disabled = false;
+            }
+        });
+    }
+
+    // --- 4. ESCUCHAR INVENTARIO EN TIEMPO REAL ---
+    function iniciarEscuchaNube() {
+        const productosRef = ref(db, 'productos');
+        
+        onValue(productosRef, (snapshot) => {
+            const data = snapshot.val();
+            const container = document.getElementById('admin-product-list');
+            const counter = document.getElementById('product-count');
+            
+            if (!data) {
+                container.innerHTML = '<p class="text-gray-400 py-10 text-center text-xs uppercase tracking-widest">Base de datos vacía.</p>';
+                counter.textContent = "0 productos";
+                return;
+            }
+
+            const productosArray = Object.keys(data).map(key => data[key]);
+            counter.textContent = `${productosArray.length} productos en base`;
+
+            container.innerHTML = productosArray.reverse().map(p => `
+                <div class="flex justify-between items-center py-3 px-2 border-b border-gray-50 last:border-0 group">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden border border-gray-200 relative">
+                            ${p.imagen ? `<img src="${p.imagen}" class="w-full h-full object-cover">` : `<i class="fas fa-image text-gray-300"></i>`}
+                            ${p.destacado ? '<span class="absolute -top-1 -left-1 text-[8px] bg-yellow-400 text-white px-1 rounded-full shadow-sm"><i class="fas fa-star"></i></span>' : ''}
+                        </div>
+                        <div>
+                            <p class="font-bold text-[10px] uppercase text-gray-700 leading-tight">${p.nombre}</p>
+                            <p class="text-pink-600 font-black text-[10px]">Gs. ${p.precio_gs ? p.precio_gs.toLocaleString('es-PY') : '0'} | <span class="text-gray-400 font-normal capitalize">${p.estado}</span></p>
+                        </div>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="window.abrirModalEdicion(${p.id}, ${p.precio_gs || 0}, '${p.estado || 'normal'}', ${p.destacado || false})" class="text-gray-300 hover:text-blue-500 transition-colors p-2"><i class="fas fa-edit"></i></button>
+                        <button onclick="window.eliminarProductoNube(${p.id})" class="text-gray-300 hover:text-red-500 transition-colors p-2"><i class="fas fa-trash-alt"></i></button>
+                    </div>
+                </div>
+            `).join('');
+        });
+    }
+
+});

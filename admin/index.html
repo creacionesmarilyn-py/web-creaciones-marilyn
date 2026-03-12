@@ -5,26 +5,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin | Creaciones Marilyn</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="/admin/admin.css">
+    <link rel="stylesheet" href="admin.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body class="bg-gray-100 font-sans">
     
     <div id="login-overlay" class="fixed inset-0 bg-gray-900 z-50 flex items-center justify-center px-4">
         <div class="bg-white p-8 rounded-lg shadow-2xl max-w-sm w-full">
-            <h2 class="text-2xl font-bold mb-2 text-gray-800">Acceso Privado</h2>
-            <p class="text-gray-500 text-sm mb-6">Ingresa tu Token de GitHub para gestionar la tienda.</p>
-            <input type="password" id="gh-token" placeholder="ghp_xxxxxxxxxxxx" class="w-full border p-3 rounded mb-4 focus:ring-2 focus:ring-pink-500 outline-none">
-            <button onclick="saveToken()" class="w-full bg-gray-900 text-white py-3 rounded font-bold hover:bg-black transition text-sm uppercase tracking-widest">Entrar al Panel</button>
+            <div class="text-center mb-6">
+                <div class="w-16 h-16 bg-pink-100 text-pink-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-cloud text-2xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-800">Panel en la Nube</h2>
+                <p class="text-gray-500 text-sm">Ingresa la clave de acceso para gestionar Marilyn.</p>
+            </div>
+            <input type="password" id="gh-token" placeholder="Clave de seguridad" class="w-full border p-3 rounded-xl mb-4 focus:ring-2 focus:ring-pink-500 outline-none text-center font-bold tracking-widest">
+            <button id="login-btn" class="w-full bg-gray-900 text-white py-4 rounded-xl font-bold hover:bg-black transition text-sm uppercase tracking-widest shadow-lg">
+                Conectar Sistema
+            </button>
         </div>
     </div>
 
     <nav class="bg-gray-900 text-white p-4 shadow-md sticky top-0 z-40">
         <div class="max-w-4xl mx-auto flex justify-between items-center">
-            <h1 class="font-bold tracking-tighter uppercase text-sm">Gestor de Inventario</h1>
+            <h1 class="font-bold tracking-tighter uppercase text-sm flex items-center gap-2">
+                <i class="fas fa-circle text-[8px] text-green-500 animate-pulse"></i> Gestor Real-Time
+            </h1>
             <div class="flex gap-4 items-center">
-                <button onclick="logout()" class="text-[10px] text-gray-400 hover:text-white uppercase font-bold transition">Cerrar Sesión</button>
-                <a href="/" class="text-[10px] font-bold uppercase bg-pink-600 px-4 py-2 rounded-full hover:bg-pink-700 transition shadow-lg shadow-pink-900/20">Ver Tienda</a>
+                <button id="logout-btn" class="text-[10px] text-gray-400 hover:text-white uppercase font-bold transition">Cerrar Sesión</button>
+                <a href="/" class="text-[10px] font-bold uppercase bg-pink-600 px-4 py-2 rounded-full hover:bg-pink-700 transition shadow-lg">Ver Tienda</a>
             </div>
         </div>
     </nav>
@@ -57,13 +66,13 @@
                 </div>
 
                 <div class="flex flex-col gap-2">
-                    <label class="text-[9px] font-black text-gray-400 uppercase ml-1 tracking-widest">Imágenes del Producto (Selección Múltiple)</label>
-                    <input type="file" id="p-image-file" accept="image/*" multiple class="border p-3 rounded-xl bg-gray-50 cursor-pointer file:mr-4 file:py-1 file:px-4 file:rounded-full file:border-0 file:text-[10px] file:font-bold file:bg-pink-100 file:text-pink-700 hover:file:bg-pink-200" required>
+                    <label class="text-[9px] font-black text-gray-400 uppercase ml-1 tracking-widest">Imágenes (URL o Nombre de archivo)</label>
+                    <input type="text" id="p-image-url" placeholder="ej. img/producto1.jpg" class="border p-3 rounded-xl bg-gray-50 focus:bg-white transition outline-none focus:ring-2 focus:ring-pink-500 text-sm" required>
                 </div>
                 
-                <button type="submit" id="submit-btn" class="w-full bg-gray-900 text-white font-bold py-4 rounded-xl hover:bg-black transition-all flex justify-center items-center gap-3 shadow-xl active:scale-95">
+                <button type="submit" id="submit-btn" class="w-full bg-gray-900 text-white font-bold py-4 rounded-xl hover:bg-pink-600 transition-all flex justify-center items-center gap-3 shadow-xl active:scale-95">
                     <i class="fas fa-cloud-upload-alt"></i>
-                    <span class="text-xs uppercase tracking-[0.2em]">Subir a la Nube</span>
+                    <span class="text-xs uppercase tracking-[0.2em]">Guardar en la Nube</span>
                 </button>
             </form>
         </section>
@@ -80,7 +89,7 @@
             </div>
             
             <div id="admin-product-list" class="divide-y divide-gray-50">
-                <p class="text-gray-400 py-10 text-center animate-pulse text-xs uppercase tracking-widest">Sincronizando con la nube...</p>
+                <p class="text-gray-400 py-10 text-center animate-pulse text-xs uppercase tracking-widest">Esperando conexión...</p>
             </div>
         </section>
     </main>
@@ -92,7 +101,7 @@
                     <i class="fas fa-pen-nib text-pink-600"></i>
                     <h3 class="font-bold uppercase text-[10px] tracking-widest text-gray-500">Ajuste de Stock</h3>
                 </div>
-                <button onclick="closeEditModal()" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-200 text-gray-400 transition">
+                <button id="close-modal-btn" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-200 text-gray-400 transition">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
@@ -121,13 +130,13 @@
                     <input type="number" id="edit-price" class="w-full p-4 rounded-2xl border-none bg-gray-100 text-xs font-bold text-gray-700 outline-none focus:ring-2 focus:ring-pink-500 transition-all">
                 </div>
 
-                <button onclick="saveProductEdit()" id="save-edit-btn" class="w-full bg-gray-900 text-white py-4 rounded-2xl font-bold uppercase text-[10px] tracking-[0.2em] hover:bg-pink-600 transition-all shadow-xl active:scale-95 flex justify-center items-center gap-2">
+                <button id="save-edit-btn" class="w-full bg-gray-900 text-white py-4 rounded-2xl font-bold uppercase text-[10px] tracking-[0.2em] hover:bg-pink-600 transition-all shadow-xl active:scale-95 flex justify-center items-center gap-2">
                     <i class="fas fa-save"></i> Actualizar Inventario
                 </button>
             </div>
         </div>
     </div>
 
-    <script src="/admin/admin.js"></script>
+    <script type="module" src="admin.js"></script>
 </body>
 </html>

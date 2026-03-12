@@ -1,214 +1,130 @@
-/* pos/js/db.js */
+/* pos/js/db.js - MOTOR HÍBRIDO (LOCAL + FIREBASE REALTIME) */
+
+// 1. Conexión a tu Nube
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getDatabase, ref, set, get, push } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBmPvAk_lSJ1TlBVtMqKAC1HaPM5eVeZxo",
+  authDomain: "creaciones-marilyn.firebaseapp.com",
+  databaseURL: "https://creaciones-marilyn-default-rtdb.firebaseio.com",
+  projectId: "creaciones-marilyn",
+  storageBucket: "creaciones-marilyn.firebasestorage.app",
+  messagingSenderId: "565099684746",
+  appId: "1:565099684746:web:a99ccfb9796aea22725e73"
+};
+
+const app = initializeApp(firebaseConfig);
+const rtdb = getDatabase(app);
 
 const DB_NAME = 'CreacionesMarilynPOS';
-const DB_VERSION = 2; // ACTUALIZADO A VERSIÓN 2
+const DB_VERSION = 2;
 
 const dbSystem = {
     db: null,
 
-    // Inicializar la base de datos
+    // Inicializar ambas bases de datos
     init: function() {
         return new Promise((resolve, reject) => {
             const request = indexedDB.open(DB_NAME, DB_VERSION);
-
+            
             request.onupgradeneeded = (event) => {
                 const db = event.target.result;
-
-                // Tabla: Productos
-                if (!db.objectStoreNames.contains('productos')) {
-                    const store = db.createObjectStore('productos', { keyPath: 'id', autoIncrement: true });
-                    store.createIndex('nombre', 'nombre', { unique: false });
-                    store.createIndex('codigo_barras', 'codigo_barras', { unique: true });
-                    store.createIndex('categoria', 'categoria', { unique: false });
-                }
-
-                // Tabla: Ventas
-                if (!db.objectStoreNames.contains('ventas')) {
-                    const store = db.createObjectStore('ventas', { keyPath: 'id', autoIncrement: true });
-                    store.createIndex('fecha_hora', 'fecha_hora', { unique: false });
-                }
-
-                // Tabla: Detalle Ventas
-                if (!db.objectStoreNames.contains('detalle_ventas')) {
-                    const store = db.createObjectStore('detalle_ventas', { keyPath: 'id', autoIncrement: true });
-                    store.createIndex('venta_id', 'venta_id', { unique: false });
-                }
-
-                // --- NUEVO: Tabla Movimientos de Stock ---
-                if (!db.objectStoreNames.contains('movimientos_stock')) {
-                    const store = db.createObjectStore('movimientos_stock', { keyPath: 'id', autoIncrement: true });
-                    store.createIndex('producto_id', 'producto_id', { unique: false });
-                    store.createIndex('fecha', 'fecha', { unique: false });
-                }
+                if (!db.objectStoreNames.contains('productos')) db.createObjectStore('productos', { keyPath: 'id' });
+                if (!db.objectStoreNames.contains('ventas')) db.createObjectStore('ventas', { keyPath: 'id', autoIncrement: true });
+                if (!db.objectStoreNames.contains('movimientos_stock')) db.createObjectStore('movimientos_stock', { keyPath: 'id', autoIncrement: true });
             };
 
             request.onsuccess = (event) => {
                 this.db = event.target.result;
-                console.log("Base de datos MarilynPOS inicializada correctamente (v2).");
+                console.log("✅ Motor Híbrido Listo: Local y Nube conectados.");
                 resolve(this.db);
             };
 
-            request.onerror = (event) => {
-                console.error("Error al abrir la BD:", event.target.error);
-                reject(event.target.error);
-            };
-        });
-    },
-
-    // --- FUNCIONES DE PRODUCTOS ---
-
-    // Agregar o Actualizar Producto
-    guardarProducto: function(producto) {
-        return new Promise((resolve, reject) => {
-            const transaction = this.db.transaction(['productos'], 'readwrite');
-            const store = transaction.objectStore('productos');
-            
-            // Asegurar tipos de datos numéricos
-            producto.precio_gs = parseInt(producto.precio_gs) || 0;
-            producto.stock_actual = parseInt(producto.stock_actual) || 0;
-            producto.stock_minimo = parseInt(producto.stock_minimo) || 0;
-            producto.iva_pct = parseInt(producto.iva_pct) || 10;
-            
-            const request = store.put(producto); // .put inserta o actualiza si existe ID
-
-            request.onsuccess = () => resolve(request.result);
             request.onerror = (e) => reject(e.target.error);
         });
     },
 
-    // Obtener todos los productos
+    // Guardar (Local + Nube simultáneo)
+    guardarProducto: async function(producto) {
+        return new Promise(async (resolve, reject) => {
+            try {
+                // 1. Guardar localmente para que la PC responda rápido
+                const tx = this.db.transaction(['productos'], 'readwrite');
+                tx.objectStore('productos').put(producto);
+
+                // 2. Disparar copia a Firebase en la nube
+                await set(ref(rtdb, 'productos/' + producto.id), producto);
+                resolve(producto.id);
+            } catch (error) {
+                console.error("Error al sincronizar con la nube:", error);
+                reject(error);
+            }
+        });
+    },
+
+    // Leer productos (Para cargar la tabla rápido, leemos del local)
     obtenerProductos: function() {
         return new Promise((resolve, reject) => {
-            const transaction = this.db.transaction(['productos'], 'readonly');
-            const store = transaction.objectStore('productos');
-            const request = store.getAll();
-
-            request.onsuccess = () => resolve(request.result);
-            request.onerror = (e) => reject(e.target.error);
+            const tx = this.db.transaction(['productos'], 'readonly');
+            const store = tx.objectStore('productos');
+            const req = store.getAll();
+            req.onsuccess = () => resolve(req.result);
+            req.onerror = (e) => reject(e.target.error);
         });
     },
 
-    // Eliminar producto
-    eliminarProducto: function(id) {
-        return new Promise((resolve, reject) => {
-            const transaction = this.db.transaction(['productos'], 'readwrite');
-            const store = transaction.objectStore('productos');
-            const request = store.delete(id);
-
-            request.onsuccess = () => resolve();
-            request.onerror = (e) => reject(e.target.error);
+    // Importar CSV/JSON (Guarda en ambos lados)
+    importarMasivo: async function(listaProductos) {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const tx = this.db.transaction(['productos'], 'readwrite');
+                const store = tx.objectStore('productos');
+                
+                for (let prod of listaProductos) {
+                    if (!prod.id) prod.id = Date.now() + Math.floor(Math.random() * 1000); // Asegurar ID único
+                    
+                    store.put(prod); // Local
+                    await set(ref(rtdb, 'productos/' + prod.id), prod); // Nube
+                }
+                resolve(listaProductos.length);
+            } catch (e) {
+                reject(e);
+            }
         });
     },
 
-    // Importación Masiva (Recibe array de objetos)
-    importarMasivo: function(listaProductos) {
-        return new Promise((resolve, reject) => {
-            const transaction = this.db.transaction(['productos'], 'readwrite');
-            const store = transaction.objectStore('productos');
-            
-            let total = listaProductos.length;
-            let procesados = 0;
-
-            transaction.oncomplete = () => resolve(procesados);
-            transaction.onerror = (e) => reject(e);
-
-            listaProductos.forEach(prod => {
-                if(!prod.id) delete prod.id; 
-                store.put(prod);
-                procesados++;
-            });
-        });
-    },
-
-    // --- NUEVA FUNCIÓN: REGISTRAR MOVIMIENTO ---
-    registrarMovimientoStock: function(prodId, cantidad, tipo, motivo) {
+    // Actualizar Stock (Botón "+" en la tabla)
+    registrarMovimientoStock: async function(prodId, cantidad, tipo, motivo) {
         return new Promise((resolve, reject) => {
             const tx = this.db.transaction(['movimientos_stock', 'productos'], 'readwrite');
             
-            // 1. Guardar el historial
-            const storeMov = tx.objectStore('movimientos_stock');
-            storeMov.add({
-                producto_id: prodId,
-                tipo: tipo, // 'ENTRADA' o 'SALIDA' o 'AJUSTE'
-                cantidad: cantidad,
-                fecha: new Date(),
-                motivo: motivo
+            // Guardar historial del movimiento en local
+            tx.objectStore('movimientos_stock').add({
+                producto_id: prodId, tipo, cantidad, fecha: new Date().toISOString(), motivo
             });
 
-            // 2. Actualizar el producto (Solo si es ENTRADA manual desde Admin)
+            // Sumar stock
             if (tipo === 'ENTRADA') {
                 const storeProd = tx.objectStore('productos');
                 const reqProd = storeProd.get(prodId);
                 
-                reqProd.onsuccess = () => {
+                reqProd.onsuccess = async () => {
                     const data = reqProd.result;
                     if (data) {
                         data.stock_actual = parseInt(data.stock_actual) + parseInt(cantidad);
-                        storeProd.put(data);
-                    }
-                };
-            }
-
-            tx.oncomplete = () => resolve();
-            tx.onerror = (e) => reject(e);
-        });
-    },
-
-    // --- FUNCIONES DE BACKUP (RESCATE Y RESTAURACIÓN) ---
-
-    // 1. Exportar TODO (Productos, Ventas, Detalles, Movimientos)
-    exportarBaseDatos: function() {
-        return new Promise((resolve, reject) => {
-            const tablas = ['productos', 'ventas', 'detalle_ventas', 'movimientos_stock'];
-            const exportData = {};
-            const tx = this.db.transaction(tablas, 'readonly');
-            
-            let completadas = 0;
-
-            tablas.forEach(tabla => {
-                const store = tx.objectStore(tabla);
-                const req = store.getAll();
-                
-                req.onsuccess = (e) => {
-                    exportData[tabla] = e.target.result;
-                    completadas++;
-                    if (completadas === tablas.length) {
-                        resolve(exportData);
-                    }
-                };
-                req.onerror = (e) => reject(e.target.error);
-            });
-        });
-    },
-
-    // 2. Restaurar TODO (Peligro: Borra lo actual y reemplaza)
-    restaurarBaseDatos: function(importData) {
-        return new Promise((resolve, reject) => {
-            const tablas = ['productos', 'ventas', 'detalle_ventas', 'movimientos_stock'];
-            // Validar que el archivo tenga las tablas necesarias
-            if (!importData || !importData.productos) {
-                return reject(new Error("El archivo no es un Backup válido de MarilynPOS."));
-            }
-
-            const tx = this.db.transaction(tablas, 'readwrite');
-            
-            tx.oncomplete = () => resolve();
-            tx.onerror = (e) => reject(e.target.error);
-
-            tablas.forEach(tabla => {
-                const store = tx.objectStore(tabla);
-                store.clear(); // Limpiar tabla actual
-
-                if (importData[tabla] && Array.isArray(importData[tabla])) {
-                    importData[tabla].forEach(item => {
-                        // Si trae fechas en string (por el JSON), volver a convertirlas a Date objects
-                        if (item.fecha_hora) item.fecha_hora = new Date(item.fecha_hora);
-                        if (item.fecha) item.fecha = new Date(item.fecha);
+                        storeProd.put(data); // Actualiza local
                         
-                        store.put(item); // Insertar con su ID original
-                    });
-                }
-            });
+                        // Actualiza Nube
+                        await set(ref(rtdb, 'productos/' + prodId), data);
+                        resolve();
+                    }
+                };
+            } else {
+                resolve();
+            }
         });
     }
 };
+
+export default dbSystem;
