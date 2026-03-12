@@ -63,7 +63,7 @@ const dbSystem = {
         });
     },
 
-    // Leer productos (Sincroniza la Nube oficial con el Local)
+    // Leer productos (Sincroniza la Nube oficial con el Local asegurando el ID)
     obtenerProductos: async function() {
         return new Promise(async (resolve, reject) => {
             try {
@@ -76,10 +76,20 @@ const dbSystem = {
                     const tx = this.db.transaction(['productos'], 'readwrite');
                     const store = tx.objectStore('productos');
 
-                    // 2. Guardarlos en el local para que el POS sea rápido
+                    // 2. Guardarlos en el local asegurando que cumplan la regla del 'id'
                     for (let key in data) {
-                        productosActualizados.push(data[key]);
-                        store.put(data[key]); // Sincroniza local con nube
+                        let producto = data[key];
+                        
+                        // Filtro de seguridad: ignorar datos nulos o vacíos
+                        if (producto) {
+                            // EL FIX: Si el producto no tiene 'id', le inyectamos la llave de Firebase
+                            if (!producto.id) {
+                                producto.id = key; 
+                            }
+                            
+                            productosActualizados.push(producto);
+                            store.put(producto); // Ahora el local lo aceptará sin romper la caja
+                        }
                     }
                 }
                 
