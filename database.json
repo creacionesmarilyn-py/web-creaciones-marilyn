@@ -2233,6 +2233,17 @@
       "images": [
         "img/combo-135000-gs.jpeg"
       ]
+    },
+    {
+      "id": 1773319535542,
+      "name": "Perla prueba",
+      "price": 5000,
+      "collection": "perla numero 6",
+      "status": "nuevo",
+      "destacado": false,
+      "images": [
+        "img/whatsapp-image-2023-06-30-at-09.48.28-1.jpeg"
+      ]
     }
   ]
 }
