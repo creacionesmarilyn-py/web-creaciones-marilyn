@@ -202,6 +202,7 @@
             buscarProductos(''); 
         }
 
+        // --- EL FIX QUIRÚRGICO DEL BUSCADOR ---
         function buscarProductos(texto) {
             const grid = document.getElementById('gridResultados');
             grid.innerHTML = '';
@@ -210,20 +211,31 @@
             const terminoLimpio = texto.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
             
             const filtrados = productosCache.filter(p => {
-                if (!p.activo) return false;
+                // FIX 1: Ignora si no tiene la propiedad 'activo', solo oculta los 'inactivos'
+                const estadoStr = (p.estado || p.status || 'activo').toLowerCase();
+                if (estadoStr === 'inactivo') return false;
+                
+                // FIX 2: Prevenir crasheos si un producto de Firebase no tiene nombre
+                const nombreProd = (p.nombre || p.name || 'Sin nombre').toLowerCase();
                 const codRealLimpio = (p.codigo_barras || '').replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
                 const codGenLimpio = 'ID' + p.id;
-                return p.nombre.toLowerCase().includes(termino) || codRealLimpio.includes(terminoLimpio) || codGenLimpio.includes(terminoLimpio);
+                
+                return nombreProd.includes(termino) || codRealLimpio.includes(terminoLimpio) || codGenLimpio.includes(terminoLimpio);
             });
 
             filtrados.forEach(p => {
                 const card = document.createElement('div');
                 card.className = 'producto-card';
                 card.onclick = () => window.agregarAlCarrito(p);
+                
+                // FIX 3: Adaptar los nombres de variables (POS vs Firebase)
+                const nombreMostrar = p.nombre || p.name || 'Producto sin nombre';
+                const precioMostrar = parseFloat(p.precio_gs || p.price || 0);
+
                 card.innerHTML = `
-                    <div class="prod-nombre">${p.nombre}</div>
+                    <div class="prod-nombre">${nombreMostrar}</div>
                     <div class="prod-variante">${p.variante || ''}</div>
-                    <div class="prod-precio">${Number(p.precio_gs).toLocaleString('es-PY')} Gs</div>
+                    <div class="prod-precio">${precioMostrar.toLocaleString('es-PY')} Gs</div>
                 `;
                 grid.appendChild(card);
             });
@@ -272,7 +284,7 @@
                 } catch(e) {}
 
                 window.agregarAlCarrito(prod);
-                feedbackEl.innerText = `✅ ¡Agregado! ${prod.nombre}`;
+                feedbackEl.innerText = `✅ ¡Agregado! ${prod.nombre || prod.name || 'Producto'}`;
                 feedbackEl.style.color = "var(--color-success)";
             } else {
                 try {
@@ -325,20 +337,23 @@
         window.agregarAlCarrito = function(producto) {
             const itemEnCarrito = carrito.find(item => item.producto.id === producto.id);
             const cantidadEnCarrito = itemEnCarrito ? itemEnCarrito.cantidad : 0;
+            const stockActual = parseFloat(producto.stock_actual) || 99; // Fallback si no hay stock_actual
+            const nombreMostrar = producto.nombre || producto.name || 'Producto sin nombre';
+            const precioMostrar = parseFloat(producto.precio_gs || producto.price || 0);
             
-            if (producto.stock_actual - cantidadEnCarrito <= 0) {
-                alert(`⛔ ¡PRODUCTO AGOTADO!\nNo queda stock de: ${producto.nombre}`);
+            if (stockActual - cantidadEnCarrito <= 0) {
+                alert(`⛔ ¡PRODUCTO AGOTADO!\nNo queda stock de: ${nombreMostrar}`);
                 return; 
             }
 
-            if (producto.stock_actual - cantidadEnCarrito <= producto.stock_minimo && cantidadEnCarrito === 0) {
-                alert(`⚠️ ATENCIÓN: Poco stock de ${producto.nombre}\nQuedan: ${producto.stock_actual}`);
+            if (stockActual - cantidadEnCarrito <= (producto.stock_minimo || 5) && cantidadEnCarrito === 0) {
+                alert(`⚠️ ATENCIÓN: Poco stock de ${nombreMostrar}\nQuedan: ${stockActual}`);
             }
 
             if (itemEnCarrito) {
                 itemEnCarrito.cantidad++;
             } else {
-                carrito.push({ producto: producto, cantidad: 1, precio: producto.precio_gs });
+                carrito.push({ producto: producto, cantidad: 1, precio: precioMostrar, nombreMostrado: nombreMostrar });
             }
             renderizarCarrito();
             document.getElementById('inputBusqueda').value = ''; 
@@ -365,7 +380,7 @@
                     lista.innerHTML += `
                         <div class="carrito-item">
                             <div class="item-info">
-                                <span class="item-nombre">${item.producto.nombre}</span>
+                                <span class="item-nombre">${item.nombreMostrado}</span>
                                 <span class="item-precio">${item.cantidad} x ${item.precio.toLocaleString()} = ${totalItem.toLocaleString()}</span>
                             </div>
                             <div class="item-controles">
@@ -469,7 +484,7 @@
                         });
                         // Restar stock local
                         const prod = item.producto;
-                        prod.stock_actual -= item.cantidad;
+                        prod.stock_actual = (parseFloat(prod.stock_actual) || 99) - item.cantidad;
                         prodStore.put(prod);
                     });
                 };
@@ -491,7 +506,7 @@
                             metodo: venta.forma_pago,
                             cajera: "Dueña",
                             items: carrito.map(item => ({
-                                id: item.producto.id, nombre: item.producto.nombre,
+                                id: item.producto.id, nombre: item.nombreMostrado,
                                 cantidad: item.cantidad, precio: item.precio
                             }))
                         });
@@ -550,7 +565,7 @@
             
             ultimaVentaDatos.items.forEach(item => {
                 doc.text(item.cantidad.toString(), 5, y);
-                doc.text(item.producto.nombre.substring(0, 20), 18, y);
+                doc.text(item.nombreMostrado.substring(0, 20), 18, y);
                 doc.text((item.cantidad * item.precio).toLocaleString('es-PY'), 75, y, { align: "right" });
                 y += 5;
             });
