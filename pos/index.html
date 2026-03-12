@@ -211,14 +211,12 @@
             const terminoLimpio = texto.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
             
             const filtrados = productosCache.filter(p => {
-                // FIX 1: Ignora si no tiene la propiedad 'activo', solo oculta los 'inactivos'
                 const estadoStr = (p.estado || p.status || 'activo').toLowerCase();
                 if (estadoStr === 'inactivo') return false;
                 
-                // FIX 2: Prevenir crasheos si un producto de Firebase no tiene nombre
                 const nombreProd = (p.nombre || p.name || 'Sin nombre').toLowerCase();
                 const codRealLimpio = (p.codigo_barras || '').replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
-                const codGenLimpio = 'ID' + p.id;
+                const codGenLimpio = 'ID' + String(p.id || '').replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
                 
                 return nombreProd.includes(termino) || codRealLimpio.includes(terminoLimpio) || codGenLimpio.includes(terminoLimpio);
             });
@@ -228,7 +226,6 @@
                 card.className = 'producto-card';
                 card.onclick = () => window.agregarAlCarrito(p);
                 
-                // FIX 3: Adaptar los nombres de variables (POS vs Firebase)
                 const nombreMostrar = p.nombre || p.name || 'Producto sin nombre';
                 const precioMostrar = parseFloat(p.precio_gs || p.price || 0);
 
@@ -263,16 +260,22 @@
             });
         };
 
+        // --- FIX DEL ESCÁNER PARA FIREBASE ---
         function onScanSuccess(decodedText, decodedResult) {
             if (isScanningPaused) return; 
             isScanningPaused = true; 
             const feedbackEl = document.getElementById('scannerFeedback');
+            
+            // Limpiamos lo que lee la cámara
             const codigoBuscado = decodedText.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
             
             const prod = productosCache.find(p => {
                 const codReal = (p.codigo_barras || '').replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
-                const codGen = 'ID' + p.id;
-                return codReal === codigoBuscado || codGen === codigoBuscado;
+                const idLimpio = String(p.id || '').replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+                const codGen = 'ID' + idLimpio; 
+                
+                // Buscar por código de barras, por ID limpio, o por ID+número
+                return codReal === codigoBuscado || idLimpio === codigoBuscado || codGen === codigoBuscado;
             });
 
             if (prod) {
@@ -317,12 +320,18 @@
             document.getElementById('inputBusqueda').focus();
         };
 
+        // --- FIX DEL BUSCADOR MANUAL PARA FIREBASE ---
         function intentarAgregarPorCodigo(codigo) {
             if (!codigo) return;
             const codigoBuscado = codigo.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+            
             const prod = productosCache.find(p => {
                 const codReal = (p.codigo_barras || '').replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
-                return codReal === codigoBuscado || 'ID'+p.id === codigoBuscado;
+                const idLimpio = String(p.id || '').replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+                const codGen = 'ID' + idLimpio;
+                
+                // Buscar por código de barras, por ID limpio, o por ID+número
+                return codReal === codigoBuscado || idLimpio === codigoBuscado || codGen === codigoBuscado;
             });
             
             if (prod) {
