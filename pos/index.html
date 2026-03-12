@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>💎 CREACIONES MARILYN - POS v2</title>
+    <title>Caja - Creaciones Marilyn</title>
     <link rel="stylesheet" href="css/marilyn.css">
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -85,7 +85,7 @@
                     <span id="txtIva">0 Gs</span>
                 </div>
                 <div class="gran-total" id="txtTotal">0 Gs</div>
-                <button class="btn btn-cobrar" onclick="window.abrirModalCobro()">COBRAR</button>
+                <button class="btn-cobrar" onclick="window.abrirModalCobro()">COBRAR</button>
             </div>
         </div>
 
@@ -144,7 +144,8 @@
         
         // Conexión Directa a Firebase para subir las ventas
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getDatabase, ref, push, set, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        // CAMBIO QUIRÚRGICO 1: Agregamos "onValue" aquí para poder leer de la nube.
+        import { getDatabase, ref, push, set, update, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBmPvAk_lSJ1TlBVtMqKAC1HaPM5eVeZxo",
@@ -169,7 +170,7 @@
 
         // --- INICIALIZACIÓN ---
         document.addEventListener('DOMContentLoaded', async () => {
-            await dbSystem.init();
+            await dbSystem.init(); // Mantenemos tu BD local para guardar respaldos de ventas
             actualizarReloj();
             cargarProductos();
             
@@ -197,12 +198,17 @@
             document.getElementById('reloj').innerText = ahora.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
         }
 
-        async function cargarProductos() {
-            productosCache = await dbSystem.obtenerProductos();
-            buscarProductos(''); 
+        // CAMBIO QUIRÚRGICO 2: Modificamos esta función para que lea de Firebase en vez de IndexedDB
+        function cargarProductos() {
+            onValue(ref(rtdb, 'productos'), (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    productosCache = Object.values(data);
+                    buscarProductos(document.getElementById('inputBusqueda').value || ''); 
+                }
+            });
         }
 
-        // --- EL FIX QUIRÚRGICO DEL BUSCADOR ---
         function buscarProductos(texto) {
             const grid = document.getElementById('gridResultados');
             grid.innerHTML = '';
@@ -211,14 +217,10 @@
             const terminoLimpio = texto.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
             
             const filtrados = productosCache.filter(p => {
-                const estadoStr = (p.estado || p.status || 'activo').toLowerCase();
-                if (estadoStr === 'inactivo') return false;
-                
-                const nombreProd = (p.nombre || p.name || 'Sin nombre').toLowerCase();
                 const codRealLimpio = (p.codigo_barras || '').replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
-                const codGenLimpio = 'ID' + String(p.id || '').replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
-                
-                return nombreProd.includes(termino) || codRealLimpio.includes(terminoLimpio) || codGenLimpio.includes(terminoLimpio);
+                const codGenLimpio = 'ID' + p.id;
+                const nombreSeguro = p.nombre || p.name || ''; // Ajuste preventivo
+                return nombreSeguro.toLowerCase().includes(termino) || codRealLimpio.includes(terminoLimpio) || codGenLimpio.includes(terminoLimpio);
             });
 
             filtrados.forEach(p => {
@@ -226,13 +228,13 @@
                 card.className = 'producto-card';
                 card.onclick = () => window.agregarAlCarrito(p);
                 
-                const nombreMostrar = p.nombre || p.name || 'Producto sin nombre';
-                const precioMostrar = parseFloat(p.precio_gs || p.price || 0);
+                const nombreFinal = p.nombre || p.name || 'Sin nombre';
+                const precioFinal = parseFloat(p.precio_gs || p.price || 0);
 
                 card.innerHTML = `
-                    <div class="prod-nombre">${nombreMostrar}</div>
-                    <div class="prod-variante">${p.variante || ''}</div>
-                    <div class="prod-precio">${precioMostrar.toLocaleString('es-PY')} Gs</div>
+                    <div class="prod-nombre">${nombreFinal}</div>
+                    <div class="prod-variante">${p.variante || p.categoria || ''}</div>
+                    <div class="prod-precio">${precioFinal.toLocaleString('es-PY')} Gs</div>
                 `;
                 grid.appendChild(card);
             });
@@ -260,22 +262,16 @@
             });
         };
 
-        // --- FIX DEL ESCÁNER PARA FIREBASE ---
         function onScanSuccess(decodedText, decodedResult) {
             if (isScanningPaused) return; 
             isScanningPaused = true; 
             const feedbackEl = document.getElementById('scannerFeedback');
-            
-            // Limpiamos lo que lee la cámara
             const codigoBuscado = decodedText.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
             
             const prod = productosCache.find(p => {
                 const codReal = (p.codigo_barras || '').replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
-                const idLimpio = String(p.id || '').replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
-                const codGen = 'ID' + idLimpio; 
-                
-                // Buscar por código de barras, por ID limpio, o por ID+número
-                return codReal === codigoBuscado || idLimpio === codigoBuscado || codGen === codigoBuscado;
+                const codGen = 'ID' + p.id;
+                return codReal === codigoBuscado || codGen === codigoBuscado;
             });
 
             if (prod) {
@@ -287,7 +283,8 @@
                 } catch(e) {}
 
                 window.agregarAlCarrito(prod);
-                feedbackEl.innerText = `✅ ¡Agregado! ${prod.nombre || prod.name || 'Producto'}`;
+                const n = prod.nombre || prod.name || 'Producto';
+                feedbackEl.innerText = `✅ ¡Agregado! ${n}`;
                 feedbackEl.style.color = "var(--color-success)";
             } else {
                 try {
@@ -320,18 +317,12 @@
             document.getElementById('inputBusqueda').focus();
         };
 
-        // --- FIX DEL BUSCADOR MANUAL PARA FIREBASE ---
         function intentarAgregarPorCodigo(codigo) {
             if (!codigo) return;
             const codigoBuscado = codigo.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
-            
             const prod = productosCache.find(p => {
                 const codReal = (p.codigo_barras || '').replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
-                const idLimpio = String(p.id || '').replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
-                const codGen = 'ID' + idLimpio;
-                
-                // Buscar por código de barras, por ID limpio, o por ID+número
-                return codReal === codigoBuscado || idLimpio === codigoBuscado || codGen === codigoBuscado;
+                return codReal === codigoBuscado || 'ID'+p.id === codigoBuscado;
             });
             
             if (prod) {
@@ -346,23 +337,23 @@
         window.agregarAlCarrito = function(producto) {
             const itemEnCarrito = carrito.find(item => item.producto.id === producto.id);
             const cantidadEnCarrito = itemEnCarrito ? itemEnCarrito.cantidad : 0;
-            const stockActual = parseFloat(producto.stock_actual) || 99; // Fallback si no hay stock_actual
-            const nombreMostrar = producto.nombre || producto.name || 'Producto sin nombre';
-            const precioMostrar = parseFloat(producto.precio_gs || producto.price || 0);
+            const stockActual = parseFloat(producto.stock_actual) || 99;
+            const nombreFinal = producto.nombre || producto.name || 'Sin nombre';
+            const precioFinal = parseFloat(producto.precio_gs || producto.price || 0);
             
             if (stockActual - cantidadEnCarrito <= 0) {
-                alert(`⛔ ¡PRODUCTO AGOTADO!\nNo queda stock de: ${nombreMostrar}`);
+                alert(`⛔ ¡PRODUCTO AGOTADO!\nNo queda stock de: ${nombreFinal}`);
                 return; 
             }
 
             if (stockActual - cantidadEnCarrito <= (producto.stock_minimo || 5) && cantidadEnCarrito === 0) {
-                alert(`⚠️ ATENCIÓN: Poco stock de ${nombreMostrar}\nQuedan: ${stockActual}`);
+                alert(`⚠️ ATENCIÓN: Poco stock de ${nombreFinal}\nQuedan: ${stockActual}`);
             }
 
             if (itemEnCarrito) {
                 itemEnCarrito.cantidad++;
             } else {
-                carrito.push({ producto: producto, cantidad: 1, precio: precioMostrar, nombreMostrado: nombreMostrar });
+                carrito.push({ producto: producto, cantidad: 1, precio: precioFinal, nombreMostrado: nombreFinal });
             }
             renderizarCarrito();
             document.getElementById('inputBusqueda').value = ''; 
@@ -462,7 +453,7 @@
             btn.disabled = true; btn.innerText = "Procesando...";
 
             try {
-                // 1. Obtener número de venta
+                // 1. Obtener número de venta local
                 const txCount = dbSystem.db.transaction(['ventas'], 'readonly');
                 const reqCount = txCount.objectStore('ventas').count();
                 const siguienteNum = await new Promise(res => { reqCount.onsuccess = () => res((reqCount.result + 1).toString().padStart(3, '0')); });
@@ -477,13 +468,12 @@
                 };
 
                 // 2. Guardar Localmente para máxima velocidad
-                const tx = dbSystem.db.transaction(['ventas', 'detalle_ventas', 'productos'], 'readwrite');
+                const tx = dbSystem.db.transaction(['ventas', 'detalle_ventas'], 'readwrite');
                 const ventaReq = tx.objectStore('ventas').add(venta);
 
                 ventaReq.onsuccess = (e) => {
                     const ventaId = e.target.result;
                     const detStore = tx.objectStore('detalle_ventas');
-                    const prodStore = tx.objectStore('productos');
 
                     carrito.forEach(item => {
                         detStore.add({
@@ -491,10 +481,6 @@
                             cantidad: item.cantidad, precio_unitario: item.precio,
                             iva_unitario: Math.round(item.precio / 11)
                         });
-                        // Restar stock local
-                        const prod = item.producto;
-                        prod.stock_actual = (parseFloat(prod.stock_actual) || 99) - item.cantidad;
-                        prodStore.put(prod);
                     });
                 };
 
@@ -523,7 +509,8 @@
                         // Actualizar stock en la Nube
                         const updates = {};
                         carrito.forEach(item => {
-                            updates['productos/' + item.producto.id + '/stock_actual'] = item.producto.stock_actual;
+                            const currentStock = parseFloat(item.producto.stock_actual) || 99;
+                            updates['productos/' + item.producto.id + '/stock_actual'] = currentStock - item.cantidad;
                         });
                         await update(ref(rtdb), updates);
                         console.log("✅ Venta sincronizada a la Nube");
@@ -547,11 +534,10 @@
         window.prepararNuevaVenta = function() {
             carrito = []; renderizarCarrito(); ultimaVentaDatos = null;
             document.getElementById('modalExito').classList.remove('active');
-            cargarProductos(); 
             document.getElementById('inputBusqueda').focus();
         };
 
-        // --- PDF Y WHATSAPP (Mantenemos tu lógica igual) ---
+        // --- PDF Y WHATSAPP ---
         window.descargarTicketPDF = function() {
             if (!ultimaVentaDatos) return;
             const config = JSON.parse(localStorage.getItem('marilynConfig')) || { nombre: 'Creaciones Marilyn E.A.S.', ruc: '80167718-1', direccion: 'Luque, Paraguay', telefono: '' };
