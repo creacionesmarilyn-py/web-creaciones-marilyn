@@ -1,38 +1,88 @@
-// app.js - FASE 3: VITRINA INTELIGENTE (Destacados + Pop-up Dinámico + Meta Tracking)
+// app.js - FASE 3: VITRINA INTELIGENTE EN TIEMPO REAL (FIREBASE)
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+const firebaseConfig = {
+    apiKey: "AIzaSyBmPvAk_lSJ1TlBVtMqKAC1HaPM5eVeZxo",
+    authDomain: "creaciones-marilyn.firebaseapp.com",
+    databaseURL: "https://creaciones-marilyn-default-rtdb.firebaseio.com",
+    projectId: "creaciones-marilyn",
+    storageBucket: "creaciones-marilyn.firebasestorage.app",
+    messagingSenderId: "565099684746",
+    appId: "1:565099684746:web:a99ccfb9796aea22725e73"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+// --- ESTADO GLOBAL ---
 let cart = JSON.parse(localStorage.getItem('marilyn_cart')) || [];
 let allProducts = [];
 let activeCategory = 'todas';
 let currentGallery = [];
 let currentIndex = 0;
 
-const GITHUB_API_URL = "https://api.github.com/repos/creacionesmarilyn-py/web-creaciones-marilyn/contents/database.json";
 const RAW_BASE_URL = "https://raw.githubusercontent.com/creacionesmarilyn-py/web-creaciones-marilyn/main/";
 
-async function loadStore() {
-    try {
-        const response = await fetch(`${GITHUB_API_URL}?v=${Date.now()}`);
-        if (!response.ok) throw new Error("Error de conexión");
-        const data = await response.json();
-        const content = JSON.parse(decodeURIComponent(escape(atob(data.content))));
-        
-        allProducts = content.products.reverse();
-        
+// --- INICIALIZACIÓN EN TIEMPO REAL ---
+document.addEventListener('DOMContentLoaded', () => {
+    console.log("🚀 Conectando Vitrina a Firebase...");
+    
+    const productosRef = ref(db, 'productos');
+    onValue(productosRef, (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+            // Transformar el objeto de Firebase en Array y traducir los nombres de variables (POS vs Web)
+            allProducts = Object.keys(data).map(key => {
+                const p = data[key];
+                return {
+                    id: p.id || key,
+                    name: p.nombre || p.name || 'Producto sin nombre',
+                    price: parseFloat(p.precio_gs || p.price || 0),
+                    collection: p.categoria || p.collection || 'General',
+                    status: p.estado || p.status || 'normal',
+                    destacado: p.destacado === true,
+                    stock_actual: p.stock_actual !== undefined ? p.stock_actual : 99,
+                    images: p.images || (p.image ? [p.image] : (p.imagen ? [p.imagen] : ['img/logo_jpg.jpg']))
+                };
+            }).filter(p => p.status !== 'inactivo'); // Ocultar inactivos si existen
+            
+            // Revertir para mostrar los más nuevos primero
+            allProducts.reverse();
+        } else {
+            allProducts = [];
+        }
+
         renderCategories();
         applyFilters(); 
         updateCartUI();
-        checkAnnouncements(); 
-    } catch (e) { console.error("🚨 Error de Sincronización:", e); }
-}
+        checkAnnouncements();
+    });
+});
 
+// --- EXPORTAR FUNCIONES AL HTML (Obligatorio para Modules) ---
+window.applyFilters = applyFilters;
+window.filterByCategory = filterByCategory;
+window.addToCart = addToCart;
+window.removeFromCart = removeFromCart;
+window.toggleCart = toggleCart;
+window.openGallery = openGallery;
+window.closeGallery = closeGallery;
+window.nextImg = nextImg;
+window.prevImg = prevImg;
+window.closeAnnouncement = closeAnnouncement;
+window.sendWhatsApp = sendWhatsApp;
+
+// --- LÓGICA DE VITRINA ---
 function renderCategories() {
     const container = document.getElementById('category-filters');
     if(!container) return;
     const categories = ['todas', ...new Set(allProducts
-        .filter(p => (p.status || "").toLowerCase() !== 'anuncio')
-        .map(p => (p.collection || "").toLowerCase().trim()))];
+        .filter(p => p.status.toLowerCase() !== 'anuncio')
+        .map(p => p.collection.toLowerCase().trim()))];
         
     container.innerHTML = categories.map(cat => `
-        <button onclick="filterByCategory('${cat}')" 
+        <button onclick="window.filterByCategory('${cat}')" 
             class="whitespace-nowrap px-6 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all duration-300 shadow-sm
             ${cat === activeCategory ? 'bg-pink-600 text-white' : 'bg-white text-gray-400 hover:bg-gray-100'}">${cat}</button>
     `).join('');
@@ -43,9 +93,9 @@ function filterByCategory(cat) { activeCategory = cat; renderCategories(); apply
 function applyFilters() {
     const searchTerm = document.getElementById('search-input')?.value.toLowerCase().trim() || "";
     const filtered = allProducts.filter(p => {
-        const matchesSearch = (p.name || "").toLowerCase().includes(searchTerm);
-        const matchesCategory = activeCategory === 'todas' || (p.collection || "").toLowerCase().trim() === activeCategory;
-        return matchesSearch && matchesCategory && (p.status || "").toLowerCase() !== 'anuncio';
+        const matchesSearch = p.name.toLowerCase().includes(searchTerm);
+        const matchesCategory = activeCategory === 'todas' || p.collection.toLowerCase().trim() === activeCategory;
+        return matchesSearch && matchesCategory && p.status.toLowerCase() !== 'anuncio';
     });
     renderProducts(filtered);
 }
@@ -55,7 +105,7 @@ function renderProducts(products) {
     if(!grid) return;
 
     if (products.length === 0) {
-        grid.innerHTML = '<p class="text-center col-span-full py-20 text-gray-400 uppercase text-[10px]">Sin resultados</p>';
+        grid.innerHTML = '<p class="text-center col-span-full py-20 text-gray-400 uppercase text-[10px]">Sin resultados en la nube</p>';
         return;
     }
 
@@ -93,7 +143,7 @@ function renderProducts(products) {
         finalHTML += Object.keys(grouped).sort().map(category => `
             <div class="category-section">
                 <div class="flex justify-between items-center mb-6 px-2">
-                    <h3 onclick="filterByCategory('${category.toLowerCase()}')" class="text-sm font-black uppercase tracking-widest text-gray-800 cursor-pointer hover:text-pink-600 transition-colors">
+                    <h3 onclick="window.filterByCategory('${category.toLowerCase()}')" class="text-sm font-black uppercase tracking-widest text-gray-800 cursor-pointer hover:text-pink-600 transition-colors">
                         ${category} <i class="fas fa-chevron-right text-[10px] ml-2 opacity-30"></i>
                     </h3>
                     <span class="text-[9px] text-gray-400 font-bold uppercase">${grouped[category].length} items</span>
@@ -114,8 +164,9 @@ function renderProducts(products) {
 }
 
 function createProductCard(p, isHorizontal = false) {
-    const statusStr = (p.status || "").toLowerCase();
-    const isAgotado = statusStr.includes("agotado") || statusStr.includes("sin stock");
+    const statusStr = p.status.toLowerCase();
+    // ¡Magia! Si el POS baja el stock a 0, la web automáticamente lo marca agotado
+    const isAgotado = statusStr.includes("agotado") || statusStr.includes("sin stock") || p.stock_actual <= 0;
     const isOferta = statusStr.includes("oferta");
     const isNuevo = statusStr.includes("nuevo");
 
@@ -130,15 +181,15 @@ function createProductCard(p, isHorizontal = false) {
         badgeHTML = `<div class="absolute top-3 left-3 bg-pink-500 text-white px-3 py-1 rounded-full text-[9px] font-black uppercase z-20 shadow-lg">Nuevo</div>`;
     }
 
-    const imgPath = (p.images && p.images.length > 0 ? p.images[0] : (p.image || "")).replace(/^\//, '');
+    const imgPath = p.images[0].replace(/^\//, '');
     const fullImgUrl = imgPath.startsWith('http') ? imgPath : `${RAW_BASE_URL}${imgPath}?v=${Date.now()}`;
-    const galleryArray = (p.images ? p.images : [p.image]).map(img => 
+    const galleryArray = p.images.map(img => 
         (img || "").startsWith('http') ? img : `${RAW_BASE_URL}${(img || "").replace(/^\//, '')}?v=${Date.now()}`
     );
 
     return `
-        <div class="${isHorizontal ? 'min-w-[240px] md:min-w-[300px] snap-start' : ''} bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden group transition-all duration-500 hover:shadow-xl">
-            <div class="relative h-48 md:h-64 overflow-hidden cursor-pointer" onclick='openGallery(${JSON.stringify(galleryArray)})'>
+        <div class="${isHorizontal ? 'min-w-[240px] md:min-w-[300px] snap-start' : ''} bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden group transition-all duration-500 hover:shadow-xl relative">
+            <div class="relative h-48 md:h-64 overflow-hidden cursor-pointer" onclick='window.openGallery(${JSON.stringify(galleryArray)})'>
                 ${badgeHTML}
                 <img src="${fullImgUrl}" loading="lazy" class="w-full h-full object-cover transition-transform duration-700 ${!isAgotado ? 'group-hover:scale-110' : 'grayscale' }">
                 <div class="absolute top-3 right-3 bg-white/90 px-2 py-1 rounded-full text-[9px] font-bold uppercase text-gray-500 z-10">${p.collection}</div>
@@ -146,7 +197,7 @@ function createProductCard(p, isHorizontal = false) {
             <div class="p-4 md:p-6 text-center">
                 <h4 class="font-bold text-gray-800 uppercase text-[10px] md:text-[11px] mb-1 line-clamp-1">${p.name}</h4>
                 <p class="text-pink-600 font-black mb-4 text-xs md:text-sm">Gs. ${p.price.toLocaleString('es-PY')}</p>
-                <button onclick="${isAgotado ? '' : `addToCart(${p.id}, '${p.name}', ${p.price})`}" 
+                <button onclick="${isAgotado ? '' : `window.addToCart('${p.id}', '${p.name.replace(/'/g, "\\'")}', ${p.price})`}" 
                     class="w-full ${isAgotado ? 'bg-gray-100 text-gray-400' : 'bg-gray-900 text-white hover:bg-pink-600'} py-3 rounded-xl text-[9px] font-bold uppercase transition-all">
                     ${isAgotado ? 'Agotado' : 'Agregar al carrito'}
                 </button>
@@ -155,11 +206,11 @@ function createProductCard(p, isHorizontal = false) {
 }
 
 function checkAnnouncements() {
-    const announcement = allProducts.find(p => (p.status || "").toLowerCase() === 'anuncio');
+    const announcement = allProducts.find(p => p.status.toLowerCase() === 'anuncio');
     if (announcement) {
         const modal = document.getElementById('announcement-modal');
         const content = document.getElementById('announcement-content');
-        const imgPath = (announcement.images && announcement.images.length > 0 ? announcement.images[0] : announcement.image).replace(/^\//, '');
+        const imgPath = announcement.images[0].replace(/^\//, '');
         const fullImgUrl = imgPath.startsWith('http') ? imgPath : `${RAW_BASE_URL}${imgPath}?v=${Date.now()}`;
 
         content.innerHTML = `
@@ -167,27 +218,27 @@ function checkAnnouncements() {
             <div class="p-8 text-center">
                 <span class="bg-red-100 text-red-600 text-[9px] font-black uppercase px-3 py-1 rounded-full mb-3 inline-block tracking-widest">Oferta de Combo</span>
                 <h2 class="text-xl font-black text-gray-900 uppercase mb-2">${announcement.name}</h2>
-                <p class="text-pink-600 font-black text-2xl mb-6">Gs. ${announcement.price.toLocaleString()}</p>
-                <button onclick="addToCart(${announcement.id}, '${announcement.name}', ${announcement.price}); closeAnnouncement();" 
+                <p class="text-pink-600 font-black text-2xl mb-6">Gs. ${announcement.price.toLocaleString('es-PY')}</p>
+                <button onclick="window.addToCart('${announcement.id}', '${announcement.name.replace(/'/g, "\\'")}', ${announcement.price}); window.closeAnnouncement();" 
                     class="w-full bg-gray-900 text-white py-4 rounded-2xl font-bold uppercase hover:bg-pink-600 shadow-xl transition-all">
                     ¡Lo quiero ahora!
                 </button>
             </div>
         `;
         setTimeout(() => {
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
+            if(modal) { modal.classList.remove('hidden'); modal.classList.add('flex'); }
         }, 2000);
     }
 }
 
 function closeAnnouncement() {
     const modal = document.getElementById('announcement-modal');
-    modal.classList.replace('flex', 'hidden');
+    if(modal) modal.classList.replace('flex', 'hidden');
 }
 
+// --- LÓGICA DEL CARRITO ---
 function addToCart(id, name, price) { 
-    const item = cart.find(i => i.id === id); 
+    const item = cart.find(i => String(i.id) === String(id)); 
     if (item) item.qty++; else cart.push({ id, name, price, qty: 1 }); 
     saveCart(); toggleCart(true); 
 }
@@ -205,16 +256,29 @@ function updateCartUI() {
     container.innerHTML = cart.length === 0 ? '<p class="text-center text-gray-400 text-[10px] py-10">Vacío</p>' : '';
     cart.forEach(item => {
         total += item.price * item.qty;
-        container.innerHTML += `<div class="flex justify-between items-center mb-3 bg-gray-50 p-3 rounded-lg"><div class="text-left"><p class="font-bold text-[9px] uppercase">${item.name}</p><p class="text-pink-600 font-bold text-[10px]">Gs. ${item.price.toLocaleString()}</p></div><div class="flex items-center gap-2"><button onclick="removeFromCart(${item.id})" class="w-6 h-6 bg-gray-200 rounded-full text-xs">-</button><span class="text-xs font-bold">${item.qty}</span><button onclick="addToCart(${item.id},'${item.name}',${item.price})" class="w-6 h-6 bg-gray-200 rounded-full text-xs">+</button></div></div>`;
+        container.innerHTML += `
+            <div class="flex justify-between items-center mb-3 bg-gray-50 p-3 rounded-lg border border-gray-100">
+                <div class="text-left w-2/3">
+                    <p class="font-bold text-[9px] uppercase line-clamp-1">${item.name}</p>
+                    <p class="text-pink-600 font-bold text-[10px]">Gs. ${item.price.toLocaleString('es-PY')}</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button onclick="window.removeFromCart('${item.id}')" class="w-6 h-6 bg-gray-200 rounded-full text-xs hover:bg-pink-100 transition-colors">-</button>
+                    <span class="text-xs font-bold w-4 text-center">${item.qty}</span>
+                    <button onclick="window.addToCart('${item.id}','${item.name.replace(/'/g, "\\'")}',${item.price})" class="w-6 h-6 bg-gray-200 rounded-full text-xs hover:bg-pink-100 transition-colors">+</button>
+                </div>
+            </div>`;
     });
     const display = document.getElementById('cart-total-display');
-    if(display) display.textContent = `Gs. ${total.toLocaleString()}`;
+    if(display) display.textContent = `Gs. ${total.toLocaleString('es-PY')}`;
 }
 function removeFromCart(id) {
-    const index = cart.findIndex(i => i.id === id);
+    const index = cart.findIndex(i => String(i.id) === String(id));
     if (index !== -1) { if (cart[index].qty > 1) cart[index].qty--; else cart.splice(index, 1); }
     saveCart();
 }
+
+// --- GALERÍA ---
 function openGallery(images) { currentGallery = images; currentIndex = 0; updateGalleryModal(); document.getElementById('gallery-modal').classList.replace('hidden', 'flex'); }
 function closeGallery() { document.getElementById('gallery-modal').classList.replace('flex', 'hidden'); }
 function updateGalleryModal() { 
@@ -226,18 +290,18 @@ function updateGalleryModal() {
 function nextImg() { currentIndex = (currentIndex + 1) % currentGallery.length; updateGalleryModal(); }
 function prevImg() { currentIndex = (currentIndex - 1 + currentGallery.length) % currentGallery.length; updateGalleryModal(); }
 
-// FUNCIÓN ACTUALIZADA CON META TRACKING (CONTACTO)
+// --- CHECKOUT META TRACKING ---
 function sendWhatsApp() {
+    if (cart.length === 0) { alert("¡Tu carrito está vacío!"); return; }
+    
     // DISPARO DE EVENTO A META PIXEL
     if (typeof fbq === 'function') {
         fbq('track', 'Contact');
         console.log("🚀 Meta Pixel: Evento 'Contact' enviado con éxito.");
     }
 
-    let msg = "¡Hola Marilyn! Mi pedido es:\n\n";
-    cart.forEach(i => msg += `✨ ${i.qty}x ${i.name} - Gs. ${(i.price * i.qty).toLocaleString()}\n`);
-    msg += `\n*Total: Gs. ${cart.reduce((acc, i) => acc + (i.price * i.qty), 0).toLocaleString()}*`;
+    let msg = "¡Hola Marilyn! 💎 Mi pedido es:\n\n";
+    cart.forEach(i => msg += `✨ ${i.qty}x ${i.name} - Gs. ${(i.price * i.qty).toLocaleString('es-PY')}\n`);
+    msg += `\n*Total estimado: Gs. ${cart.reduce((acc, i) => acc + (i.price * i.qty), 0).toLocaleString('es-PY')}*`;
     window.open(`https://wa.me/595991391542?text=${encodeURIComponent(msg)}`, '_blank');
 }
-
-document.addEventListener('DOMContentLoaded', loadStore);

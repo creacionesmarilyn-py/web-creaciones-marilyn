@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Migración Marilyn a Firebase</title>
+    <style>
+        body { background: #111; color: #fff; font-family: sans-serif; text-align: center; padding-top: 50px; }
+        .spinner { width: 50px; height: 50px; border: 5px solid #333; border-top-color: #D4AF37; border-radius: 50%; animation: spin 1s linear infinite; margin: 20px auto; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+    <h1 style="color: #D4AF37;">Camión de Mudanza Firebase 🚛</h1>
+    <h2 id="status">Preparando motores...</h2>
+    <div id="loader" class="spinner"></div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBmPvAk_lSJ1TlBVtMqKAC1HaPM5eVeZxo",
+            authDomain: "creaciones-marilyn.firebaseapp.com",
+            databaseURL: "https://creaciones-marilyn-default-rtdb.firebaseio.com",
+            projectId: "creaciones-marilyn",
+            storageBucket: "creaciones-marilyn.firebasestorage.app",
+            messagingSenderId: "565099684746",
+            appId: "1:565099684746:web:a99ccfb9796aea22725e73"
+        };
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        async function migrar() {
+            try {
+                document.getElementById('status').innerText = "📦 Paso 1: Descargando 200 productos de GitHub...";
+                // Traemos los datos viejos
+                const res = await fetch("https://raw.githubusercontent.com/creacionesmarilyn-py/web-creaciones-marilyn/main/database.json?v=" + Date.now());
+                const data = await res.json();
+                
+                document.getElementById('status').innerText = "🚀 Paso 2: Inyectando a la nube de Firebase...";
+                const firebaseData = {};
+                
+                // Formateamos para que Firebase y el POS lo entiendan a la perfección
+                data.products.forEach(p => {
+                    firebaseData[p.id] = {
+                        id: p.id,
+                        nombre: p.name || "Producto sin nombre",
+                        precio_gs: parseInt(p.price) || 0,
+                        categoria: p.collection || "General",
+                        estado: p.status || "normal",
+                        destacado: p.destacado === true,
+                        stock_actual: 99,
+                        images: p.images || (p.image ? [p.image] : ["img/logo_jpg.jpg"])
+                    };
+                });
+
+                // Hacemos el envío masivo
+                await set(ref(db, 'productos'), firebaseData);
+                
+                document.getElementById('status').innerText = "✅ ¡MIGRACIÓN EXITOSA!";
+                document.getElementById('status').style.color = "#00ff00";
+                document.getElementById('loader').style.display = "none";
+            } catch (e) {
+                document.getElementById('status').innerText = "❌ Error: " + e.message;
+                document.getElementById('status').style.color = "red";
+                document.getElementById('loader').style.display = "none";
+            }
+        }
+        
+        // Arrancamos el camión en cuanto carga la página
+        setTimeout(migrar, 1000);
+    </script>
+</body>
+</html>
