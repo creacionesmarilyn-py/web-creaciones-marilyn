@@ -63,14 +63,39 @@ const dbSystem = {
         });
     },
 
-    // Leer productos (Para cargar la tabla rápido, leemos del local)
-    obtenerProductos: function() {
-        return new Promise((resolve, reject) => {
-            const tx = this.db.transaction(['productos'], 'readonly');
-            const store = tx.objectStore('productos');
-            const req = store.getAll();
-            req.onsuccess = () => resolve(req.result);
-            req.onerror = (e) => reject(e.target.error);
+    // Leer productos (Sincroniza la Nube oficial con el Local)
+    obtenerProductos: async function() {
+        return new Promise(async (resolve, reject) => {
+            try {
+                // 1. Descargar los productos de Firebase (La verdad absoluta)
+                const snapshot = await get(ref(rtdb, 'productos'));
+                const productosActualizados = [];
+
+                if (snapshot.exists()) {
+                    const data = snapshot.val();
+                    const tx = this.db.transaction(['productos'], 'readwrite');
+                    const store = tx.objectStore('productos');
+
+                    // 2. Guardarlos en el local para que el POS sea rápido
+                    for (let key in data) {
+                        productosActualizados.push(data[key]);
+                        store.put(data[key]); // Sincroniza local con nube
+                    }
+                }
+                
+                // 3. Enviar los productos a la pantalla de la caja
+                resolve(productosActualizados);
+
+            } catch (error) {
+                console.error("Sin conexión a la nube. Leyendo caché local:", error);
+                
+                // 4. Modo Offline: Si no hay internet, usamos la memoria local
+                const tx = this.db.transaction(['productos'], 'readonly');
+                const store = tx.objectStore('productos');
+                const req = store.getAll();
+                req.onsuccess = () => resolve(req.result);
+                req.onerror = (e) => reject(e.target.error);
+            }
         });
     },
 
