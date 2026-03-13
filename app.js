@@ -1,4 +1,4 @@
-// app.js - FASE 3: VITRINA INTELIGENTE EN TIEMPO REAL (FIREBASE - 100% LOCAL IMG)
+// app.js - FASE 4: FUSIÓN EN MEMORIA (FIREBASE + GITHUB)
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
@@ -22,51 +22,84 @@ let activeCategory = 'todas';
 let currentGallery = [];
 let currentIndex = 0;
 
+// URL de tu base de datos antigua que TIENE las fotos y destacados
+const GITHUB_DB_URL = "https://raw.githubusercontent.com/creacionesmarilyn-py/web-creaciones-marilyn/main/database.json";
+
+function normalizar(texto) {
+    if (!texto) return "";
+    return String(texto).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, " ").trim();
+}
+
 // --- INICIALIZACIÓN EN TIEMPO REAL ---
-document.addEventListener('DOMContentLoaded', () => {
-    console.log("🚀 Conectando Vitrina a Firebase (Rutas Locales)...");
+document.addEventListener('DOMContentLoaded', async () => {
+    console.log("🚀 Iniciando Fusión: Descargando fotos originales...");
     
+    let oldDataArray = [];
+    try {
+        const res = await fetch(GITHUB_DB_URL + "?v=" + Date.now());
+        const oldData = await res.json();
+        oldDataArray = oldData.products || oldData.productos || [];
+        console.log(`✅ Base antigua lista (${oldDataArray.length} items).`);
+    } catch (e) {
+        console.error("⚠️ Error leyendo GitHub:", e);
+    }
+
+    console.log("🚀 Conectando a Firebase para precios y stock...");
     const productosRef = ref(db, 'productos');
+    
     onValue(productosRef, (snapshot) => {
         const data = snapshot.val();
         if (data) {
             allProducts = Object.keys(data).map(key => {
-                const p = data[key];
-                
-                // 1. BLINDAJE DE IMÁGENES (Leemos de la propia web, no de GitHub)
-                let rawImages = p.images || p.image || p.imagen || ['img/logo_jpg.jpg'];
-                if (!Array.isArray(rawImages)) {
-                    rawImages = [rawImages]; 
-                }
-                
-                let finalImages = rawImages.filter(img => img && String(img).trim() !== "").map(img => {
-                    const strImg = String(img);
-                    if (strImg.startsWith('http') || strImg.startsWith('blob:')) return strImg;
-                    // Ruta local directa (Vercel ya tiene las fotos)
-                    return strImg.replace(/^\//, '');
-                });
-                
-                if (finalImages.length === 0) finalImages = ['img/logo_jpg.jpg'];
+                const pFb = data[key];
+                const nombreNorm = normalizar(pFb.nombre);
 
-                // 2. BLINDAJE DE LÓGICAS (Captura cualquier formato de verdadero/falso)
-                const esDestacado = p.destacado === true || String(p.destacado).toLowerCase() === 'true' || String(p.destacado) === '1';
-                const esPopup = p.popup === true || String(p.popup).toLowerCase() === 'true' || String(p.popup) === '1';
+                // 🔥 LA FUSIÓN: Buscar el producto equivalente en la base vieja
+                const pViejo = oldDataArray.find(op => 
+                    String(op.id) === String(pFb.id) || 
+                    normalizar(op.name || op.nombre) === nombreNorm
+                );
+
+                // --- Rescatar Foto Original ---
+                let finalImages = ['img/logo_jpg.jpg'];
+                if (pViejo && (pViejo.image || (pViejo.images && pViejo.images.length > 0))) {
+                    let imgs = pViejo.images || [pViejo.image];
+                    finalImages = imgs.map(i => String(i).replace(/^\//, ''));
+                } else {
+                    // Si no está en la base vieja, usar la de Firebase (por si es nuevo)
+                    let fbImgs = pFb.images || pFb.image || pFb.imagen;
+                    if (fbImgs) {
+                        if (!Array.isArray(fbImgs)) fbImgs = [fbImgs];
+                        let valid = fbImgs.filter(i => i && i.trim() !== "" && !i.includes("logo_jpg"));
+                        if (valid.length > 0) finalImages = valid.map(i => String(i).replace(/^\//, ''));
+                    }
+                }
+
+                // --- Rescatar Lógicas Originales ---
+                const esDestacado = pViejo ? (pViejo.destacado === true) : (pFb.destacado === true || String(pFb.destacado).toLowerCase() === 'true' || String(pFb.destacado) === '1');
+                const esPopup = pViejo ? (pViejo.popup === true) : (pFb.popup === true || String(pFb.popup).toLowerCase() === 'true' || String(pFb.popup) === '1');
+
+                // Si por error se le cambió el nombre a "destacado" (como en el ID 146), intentar usar el nombre de GitHub
+                let nombreFinal = pFb.nombre || 'Producto';
+                if (nombreFinal.toLowerCase() === 'destacado' && pViejo) {
+                    nombreFinal = pViejo.name || pViejo.nombre || 'Producto';
+                }
 
                 return {
-                    id: p.id || key,
-                    name: p.nombre || p.name || 'Producto sin nombre',
-                    price: parseFloat(p.precio_gs || p.price || 0),
-                    collection: p.categoria || p.collection || 'General',
-                    status: p.estado || p.status || 'normal',
+                    id: pFb.id || key,
+                    name: nombreFinal,
+                    price: parseFloat(pFb.precio_gs || pFb.price || 0),
+                    collection: pFb.categoria || pFb.collection || 'General',
+                    status: pFb.estado || pFb.status || 'normal',
                     destacado: esDestacado,
                     popup: esPopup,
-                    stock_actual: p.stock_actual !== undefined ? parseFloat(p.stock_actual) : 99,
+                    stock_actual: pFb.stock_actual !== undefined ? parseFloat(pFb.stock_actual) : 99,
                     images: finalImages
                 };
             }).filter(p => p.status.toLowerCase() !== 'inactivo'); 
             
             allProducts.reverse();
-            console.log(`✅ ${allProducts.length} productos procesados exitosamente.`);
+            console.log(`✅ Fusión completada: ${allProducts.length} productos listos para mostrar.`);
         } else {
             allProducts = [];
         }
