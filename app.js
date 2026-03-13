@@ -1,4 +1,4 @@
-// app.js - FASE 3: VITRINA INTELIGENTE EN TIEMPO REAL (FIREBASE)
+// app.js - FASE 3: VITRINA INTELIGENTE EN TIEMPO REAL (FIREBASE - FIX DEFINITIVO)
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
@@ -32,22 +32,41 @@ document.addEventListener('DOMContentLoaded', () => {
     onValue(productosRef, (snapshot) => {
         const data = snapshot.val();
         if (data) {
-            // Transformar el objeto de Firebase en Array y traducir los nombres de variables (POS vs Web)
             allProducts = Object.keys(data).map(key => {
                 const p = data[key];
+                
+                // 1. BLINDAJE DE IMÁGENES (Soporta Arrays y Textos Simples)
+                let rawImages = p.images || p.image || p.imagen || ['img/logo_jpg.jpg'];
+                if (!Array.isArray(rawImages)) {
+                    rawImages = [rawImages]; // Si es texto, lo convertimos en array de 1 elemento
+                }
+                
+                // Limpiar imágenes vacías y asegurar formato
+                let finalImages = rawImages.filter(img => img && img.trim() !== "").map(img => {
+                    if (img.startsWith('http') || img.startsWith('blob:')) return img;
+                    return `${RAW_BASE_URL}${img.replace(/^\//, '')}?v=${Date.now()}`;
+                });
+                
+                // Fallback final si quedó vacío
+                if (finalImages.length === 0) finalImages = ['img/logo_jpg.jpg'];
+
+                // 2. BLINDAJE DE LÓGICAS (Soporta booleanos y textos "true")
+                const esDestacado = p.destacado === true || String(p.destacado).toLowerCase() === 'true';
+                const esPopup = p.popup === true || String(p.popup).toLowerCase() === 'true';
+
                 return {
                     id: p.id || key,
                     name: p.nombre || p.name || 'Producto sin nombre',
                     price: parseFloat(p.precio_gs || p.price || 0),
                     collection: p.categoria || p.collection || 'General',
                     status: p.estado || p.status || 'normal',
-                    destacado: p.destacado === true,
-                    stock_actual: p.stock_actual !== undefined ? p.stock_actual : 99,
-                    images: p.images || (p.image ? [p.image] : (p.imagen ? [p.imagen] : ['img/logo_jpg.jpg']))
+                    destacado: esDestacado,
+                    popup: esPopup,
+                    stock_actual: p.stock_actual !== undefined ? parseFloat(p.stock_actual) : 99,
+                    images: finalImages
                 };
-            }).filter(p => p.status !== 'inactivo'); // Ocultar inactivos si existen
+            }).filter(p => p.status.toLowerCase() !== 'inactivo'); 
             
-            // Revertir para mostrar los más nuevos primero
             allProducts.reverse();
         } else {
             allProducts = [];
@@ -60,7 +79,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-// --- EXPORTAR FUNCIONES AL HTML (Obligatorio para Modules) ---
+// --- EXPORTAR FUNCIONES AL HTML ---
 window.applyFilters = applyFilters;
 window.filterByCategory = filterByCategory;
 window.addToCart = addToCart;
@@ -78,8 +97,8 @@ function renderCategories() {
     const container = document.getElementById('category-filters');
     if(!container) return;
     const categories = ['todas', ...new Set(allProducts
-        .filter(p => p.status.toLowerCase() !== 'anuncio')
-        .map(p => p.collection.toLowerCase().trim()))];
+        .filter(p => p.status.toLowerCase() !== 'anuncio' && p.popup !== true) // No poner los popups en el menú
+        .map(p => p.collection.toLowerCase().trim()))].sort();
         
     container.innerHTML = categories.map(cat => `
         <button onclick="window.filterByCategory('${cat}')" 
@@ -95,7 +114,7 @@ function applyFilters() {
     const filtered = allProducts.filter(p => {
         const matchesSearch = p.name.toLowerCase().includes(searchTerm);
         const matchesCategory = activeCategory === 'todas' || p.collection.toLowerCase().trim() === activeCategory;
-        return matchesSearch && matchesCategory && p.status.toLowerCase() !== 'anuncio';
+        return matchesSearch && matchesCategory && p.status.toLowerCase() !== 'anuncio' && p.popup !== true;
     });
     renderProducts(filtered);
 }
@@ -112,7 +131,7 @@ function renderProducts(products) {
     const searchTerm = document.getElementById('search-input')?.value.toLowerCase().trim() || "";
 
     if (activeCategory === 'todas' && searchTerm === "") {
-        const destacados = products.filter(p => p.destacado === true).slice(0, 3);
+        const destacados = products.filter(p => p.destacado === true).slice(0, 5); // Mostrar hasta 5 destacados
         const noDestacados = products.filter(p => p.destacado !== true);
 
         const grouped = noDestacados.reduce((acc, p) => {
@@ -165,14 +184,13 @@ function renderProducts(products) {
 
 function createProductCard(p, isHorizontal = false) {
     const statusStr = p.status.toLowerCase();
-    // ¡Magia! Si el POS baja el stock a 0, la web automáticamente lo marca agotado
     const isAgotado = statusStr.includes("agotado") || statusStr.includes("sin stock") || p.stock_actual <= 0;
     const isOferta = statusStr.includes("oferta");
     const isNuevo = statusStr.includes("nuevo");
 
     let badgeHTML = '';
     if (isAgotado) {
-        badgeHTML = `<div class="absolute inset-0 bg-white/40 backdrop-blur-[1px] flex items-center justify-center z-10 font-black text-gray-800 text-[10px] uppercase tracking-[0.2em]">Sin Stock</div>`;
+        badgeHTML = `<div class="absolute inset-0 bg-white/60 backdrop-blur-[1px] flex items-center justify-center z-10 font-black text-gray-900 text-[12px] uppercase tracking-[0.2em]">Agotado</div>`;
     } else if (p.destacado) {
         badgeHTML = `<div class="absolute top-3 left-3 bg-yellow-400 text-white px-3 py-1 rounded-full text-[9px] font-black uppercase z-20 shadow-lg"><i class="fas fa-star"></i> Destacado</div>`;
     } else if (isOferta) {
@@ -181,24 +199,21 @@ function createProductCard(p, isHorizontal = false) {
         badgeHTML = `<div class="absolute top-3 left-3 bg-pink-500 text-white px-3 py-1 rounded-full text-[9px] font-black uppercase z-20 shadow-lg">Nuevo</div>`;
     }
 
-    const imgPath = p.images[0].replace(/^\//, '');
-    const fullImgUrl = imgPath.startsWith('http') ? imgPath : `${RAW_BASE_URL}${imgPath}?v=${Date.now()}`;
-    const galleryArray = p.images.map(img => 
-        (img || "").startsWith('http') ? img : `${RAW_BASE_URL}${(img || "").replace(/^\//, '')}?v=${Date.now()}`
-    );
+    const mainImage = p.images[0];
+    const galleryString = JSON.stringify(p.images).replace(/'/g, "&apos;").replace(/"/g, "&quot;");
 
     return `
         <div class="${isHorizontal ? 'min-w-[240px] md:min-w-[300px] snap-start' : ''} bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden group transition-all duration-500 hover:shadow-xl relative">
-            <div class="relative h-48 md:h-64 overflow-hidden cursor-pointer" onclick='window.openGallery(${JSON.stringify(galleryArray)})'>
+            <div class="relative h-48 md:h-64 overflow-hidden cursor-pointer bg-gray-50 flex items-center justify-center" onclick="window.openGallery(${galleryString})">
                 ${badgeHTML}
-                <img src="${fullImgUrl}" loading="lazy" class="w-full h-full object-cover transition-transform duration-700 ${!isAgotado ? 'group-hover:scale-110' : 'grayscale' }">
+                <img src="${mainImage}" loading="lazy" onerror="this.src='img/logo_jpg.jpg'" class="w-full h-full object-cover transition-transform duration-700 ${!isAgotado ? 'group-hover:scale-110' : 'grayscale opacity-70' }">
                 <div class="absolute top-3 right-3 bg-white/90 px-2 py-1 rounded-full text-[9px] font-bold uppercase text-gray-500 z-10">${p.collection}</div>
             </div>
             <div class="p-4 md:p-6 text-center">
-                <h4 class="font-bold text-gray-800 uppercase text-[10px] md:text-[11px] mb-1 line-clamp-1">${p.name}</h4>
+                <h4 class="font-bold text-gray-800 uppercase text-[10px] md:text-[11px] mb-1 line-clamp-1" title="${p.name}">${p.name}</h4>
                 <p class="text-pink-600 font-black mb-4 text-xs md:text-sm">Gs. ${p.price.toLocaleString('es-PY')}</p>
                 <button onclick="${isAgotado ? '' : `window.addToCart('${p.id}', '${p.name.replace(/'/g, "\\'")}', ${p.price})`}" 
-                    class="w-full ${isAgotado ? 'bg-gray-100 text-gray-400' : 'bg-gray-900 text-white hover:bg-pink-600'} py-3 rounded-xl text-[9px] font-bold uppercase transition-all">
+                    class="w-full ${isAgotado ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-gray-900 text-white hover:bg-pink-600 cursor-pointer'} py-3 rounded-xl text-[9px] font-bold uppercase transition-all">
                     ${isAgotado ? 'Agotado' : 'Agregar al carrito'}
                 </button>
             </div>
@@ -206,17 +221,18 @@ function createProductCard(p, isHorizontal = false) {
 }
 
 function checkAnnouncements() {
-    const announcement = allProducts.find(p => p.status.toLowerCase() === 'anuncio');
-    if (announcement) {
+    const announcement = allProducts.find(p => p.popup === true || p.status.toLowerCase() === 'anuncio');
+    if (announcement && !sessionStorage.getItem('popup_visto_' + announcement.id)) {
         const modal = document.getElementById('announcement-modal');
         const content = document.getElementById('announcement-content');
-        const imgPath = announcement.images[0].replace(/^\//, '');
-        const fullImgUrl = imgPath.startsWith('http') ? imgPath : `${RAW_BASE_URL}${imgPath}?v=${Date.now()}`;
+        if (!modal || !content) return;
+
+        const imgPath = announcement.images[0];
 
         content.innerHTML = `
-            <img src="${fullImgUrl}" class="w-full h-72 object-cover">
+            <img src="${imgPath}" onerror="this.src='img/logo_jpg.jpg'" class="w-full h-72 object-cover">
             <div class="p-8 text-center">
-                <span class="bg-red-100 text-red-600 text-[9px] font-black uppercase px-3 py-1 rounded-full mb-3 inline-block tracking-widest">Oferta de Combo</span>
+                <span class="bg-red-100 text-red-600 text-[9px] font-black uppercase px-3 py-1 rounded-full mb-3 inline-block tracking-widest">Oferta Especial</span>
                 <h2 class="text-xl font-black text-gray-900 uppercase mb-2">${announcement.name}</h2>
                 <p class="text-pink-600 font-black text-2xl mb-6">Gs. ${announcement.price.toLocaleString('es-PY')}</p>
                 <button onclick="window.addToCart('${announcement.id}', '${announcement.name.replace(/'/g, "\\'")}', ${announcement.price}); window.closeAnnouncement();" 
@@ -225,8 +241,11 @@ function checkAnnouncements() {
                 </button>
             </div>
         `;
+        
+        // Mostrar popup con retraso y marcar como visto en esta sesión
         setTimeout(() => {
-            if(modal) { modal.classList.remove('hidden'); modal.classList.add('flex'); }
+            modal.classList.remove('hidden'); modal.classList.add('flex');
+            sessionStorage.setItem('popup_visto_' + announcement.id, 'true');
         }, 2000);
     }
 }
@@ -284,7 +303,10 @@ function closeGallery() { document.getElementById('gallery-modal').classList.rep
 function updateGalleryModal() { 
     const modalImg = document.getElementById('modal-img');
     const counter = document.getElementById('gallery-counter');
-    if(modalImg) modalImg.src = currentGallery[currentIndex]; 
+    if(modalImg) {
+        modalImg.onerror = function() { this.src = 'img/logo_jpg.jpg'; }; // Fallback de galería
+        modalImg.src = currentGallery[currentIndex]; 
+    }
     if(counter) counter.textContent = `${currentIndex + 1} / ${currentGallery.length}`; 
 }
 function nextImg() { currentIndex = (currentIndex + 1) % currentGallery.length; updateGalleryModal(); }
