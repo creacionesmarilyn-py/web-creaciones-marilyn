@@ -1,4 +1,4 @@
-// app.js - FASE 4: FUSIÓN EN MEMORIA (FIREBASE + GITHUB)
+// app.js - FASE 5: FUSIÓN EN MEMORIA (CON URLS ABSOLUTAS)
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
@@ -22,8 +22,9 @@ let activeCategory = 'todas';
 let currentGallery = [];
 let currentIndex = 0;
 
-// URL de tu base de datos antigua que TIENE las fotos y destacados
 const GITHUB_DB_URL = "https://raw.githubusercontent.com/creacionesmarilyn-py/web-creaciones-marilyn/main/database.json";
+// ESTE ES EL GPS QUE FALTABA 👇
+const RAW_BASE_URL = "https://raw.githubusercontent.com/creacionesmarilyn-py/web-creaciones-marilyn/main/";
 
 function normalizar(texto) {
     if (!texto) return "";
@@ -54,24 +55,30 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const pFb = data[key];
                 const nombreNorm = normalizar(pFb.nombre);
 
-                // 🔥 LA FUSIÓN: Buscar el producto equivalente en la base vieja
                 const pViejo = oldDataArray.find(op => 
                     String(op.id) === String(pFb.id) || 
                     normalizar(op.name || op.nombre) === nombreNorm
                 );
 
-                // --- Rescatar Foto Original ---
+                // --- Rescatar Foto Original con GPS Absoluto ---
                 let finalImages = ['img/logo_jpg.jpg'];
                 if (pViejo && (pViejo.image || (pViejo.images && pViejo.images.length > 0))) {
                     let imgs = pViejo.images || [pViejo.image];
-                    finalImages = imgs.map(i => String(i).replace(/^\//, ''));
+                    finalImages = imgs.map(i => {
+                        let path = String(i).replace(/^\//, '');
+                        return path.startsWith('http') || path.startsWith('blob:') ? path : RAW_BASE_URL + path;
+                    });
                 } else {
-                    // Si no está en la base vieja, usar la de Firebase (por si es nuevo)
                     let fbImgs = pFb.images || pFb.image || pFb.imagen;
                     if (fbImgs) {
                         if (!Array.isArray(fbImgs)) fbImgs = [fbImgs];
                         let valid = fbImgs.filter(i => i && i.trim() !== "" && !i.includes("logo_jpg"));
-                        if (valid.length > 0) finalImages = valid.map(i => String(i).replace(/^\//, ''));
+                        if (valid.length > 0) {
+                            finalImages = valid.map(i => {
+                                let path = String(i).replace(/^\//, '');
+                                return path.startsWith('http') || path.startsWith('blob:') ? path : RAW_BASE_URL + path;
+                            });
+                        }
                     }
                 }
 
@@ -79,7 +86,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const esDestacado = pViejo ? (pViejo.destacado === true) : (pFb.destacado === true || String(pFb.destacado).toLowerCase() === 'true' || String(pFb.destacado) === '1');
                 const esPopup = pViejo ? (pViejo.popup === true) : (pFb.popup === true || String(pFb.popup).toLowerCase() === 'true' || String(pFb.popup) === '1');
 
-                // Si por error se le cambió el nombre a "destacado" (como en el ID 146), intentar usar el nombre de GitHub
                 let nombreFinal = pFb.nombre || 'Producto';
                 if (nombreFinal.toLowerCase() === 'destacado' && pViejo) {
                     nombreFinal = pViejo.name || pViejo.nombre || 'Producto';
@@ -111,7 +117,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 });
 
-// --- EXPORTAR FUNCIONES AL HTML ---
 window.applyFilters = applyFilters;
 window.filterByCategory = filterByCategory;
 window.addToCart = addToCart;
@@ -124,7 +129,6 @@ window.prevImg = prevImg;
 window.closeAnnouncement = closeAnnouncement;
 window.sendWhatsApp = sendWhatsApp;
 
-// --- LÓGICA DE VITRINA ---
 function renderCategories() {
     const container = document.getElementById('category-filters');
     if(!container) return;
@@ -286,7 +290,6 @@ function closeAnnouncement() {
     if(modal) modal.classList.replace('flex', 'hidden');
 }
 
-// --- LÓGICA DEL CARRITO ---
 function addToCart(id, name, price) { 
     const item = cart.find(i => String(i.id) === String(id)); 
     if (item) item.qty++; else cart.push({ id, name, price, qty: 1 }); 
@@ -328,7 +331,6 @@ function removeFromCart(id) {
     saveCart();
 }
 
-// --- GALERÍA ---
 function openGallery(images) { currentGallery = images; currentIndex = 0; updateGalleryModal(); document.getElementById('gallery-modal').classList.replace('hidden', 'flex'); }
 function closeGallery() { document.getElementById('gallery-modal').classList.replace('flex', 'hidden'); }
 function updateGalleryModal() { 
@@ -343,7 +345,6 @@ function updateGalleryModal() {
 function nextImg() { currentIndex = (currentIndex + 1) % currentGallery.length; updateGalleryModal(); }
 function prevImg() { currentIndex = (currentIndex - 1 + currentGallery.length) % currentGallery.length; updateGalleryModal(); }
 
-// --- CHECKOUT META TRACKING ---
 function sendWhatsApp() {
     if (cart.length === 0) { alert("¡Tu carrito está vacío!"); return; }
     
