@@ -41,7 +41,6 @@
             overflow: hidden;
         }
 
-        /* Lista de Productos (Izquierda) */
         .lista-seleccion {
             flex: 1;
             padding: 20px;
@@ -80,7 +79,6 @@
         
         .check-grande { transform: scale(1.5); margin-right: 10px; cursor: pointer; accent-color: var(--color-gold); }
 
-        /* Área de Previsualización (Derecha) */
         .preview-container {
             flex: 2;
             background-color: #333; 
@@ -94,28 +92,28 @@
         /* La Hoja Visual */
         #hojaImpresion {
             background-color: white;
-            width: 216mm; /* Ancho Oficio/Legal */
-            min-height: 356mm; /* Alto Oficio/Legal */
+            width: 216mm; 
+            min-height: 356mm; 
             padding: 10mm; 
             box-shadow: 0 0 20px rgba(0,0,0,0.8);
             
             display: flex;
             flex-wrap: wrap;
-            gap: 2mm; 
+            gap: 1mm; /* MÁXIMA DENSIDAD: Reducido de 2mm a 1mm */
             align-content: flex-start;
             justify-content: flex-start;
         }
 
-        /* --- NUEVO: ESTILO DEL TÍTULO SEPARADOR --- */
+        /* --- MICRO SEPARADOR --- */
         .separador-producto {
-            width: 100%; /* Ocupa toda la línea para forzar salto */
-            font-size: 14pt;
-            font-weight: black;
-            color: #222;
-            margin-top: 15mm;
-            margin-bottom: 5mm;
-            padding-bottom: 2mm;
-            border-bottom: 2px dashed #999;
+            width: 100%; 
+            font-size: 8pt; /* Letra mucho más pequeña */
+            font-weight: bold;
+            color: #444;
+            margin-top: 2mm; /* Espacio mínimo */
+            margin-bottom: 1mm;
+            padding-bottom: 1mm;
+            border-bottom: 1px solid #ccc;
             text-transform: uppercase;
             page-break-after: avoid;
             break-after: avoid;
@@ -123,20 +121,18 @@
             justify-content: space-between;
             align-items: center;
         }
-        .separador-producto:first-child {
-            margin-top: 0;
-        }
+        .separador-producto:first-child { margin-top: 0; }
 
-        /* Estilo de la Etiqueta Individual 35x25 mm */
+        /* Estiqueta Individual 35x25 mm Intacta */
         .etiqueta {
             border: 1px dashed #aaa; 
             box-sizing: border-box;
             width: 35mm;  
             height: 25mm; 
-            padding: 1.5mm;
+            padding: 1mm; /* Padding reducido para más espacio interno */
             display: flex;
             flex-direction: column;
-            justify-content: center;
+            justify-content: space-between;
             align-items: center;
             overflow: hidden;
             background: white;
@@ -148,19 +144,18 @@
         }
 
         .etiqueta-nombre {
-            font-size: 6pt; 
+            font-size: 5.5pt; /* Letra ajustada para nombres largos */
             font-weight: bold;
             line-height: 1;
             max-height: 2em; 
             overflow: hidden;
-            margin-bottom: 1mm;
+            margin-top: 1mm;
             text-transform: uppercase;
         }
 
         .etiqueta-precio {
             font-size: 7pt;
             font-weight: bold;
-            margin-bottom: 1mm;
         }
 
         .etiqueta svg {
@@ -200,9 +195,7 @@
                 margin: 0 !important;
                 padding: 0 !important;
             }
-            .control-panel, .lista-seleccion {
-                display: none !important;
-            }
+            .control-panel, .lista-seleccion { display: none !important; }
             #hojaImpresion {
                 width: 100% !important;
                 padding: 0 !important;
@@ -218,7 +211,7 @@
     <div class="control-panel no-print">
         <div class="panel-grupo">
             <a href="admin.html" class="btn-outline">⬅ Volver al Admin</a>
-            <h2 style="margin: 0; color: white; font-size: 1.2rem;">🖨️ Etiquetas de Nube</h2>
+            <h2 style="margin: 0; color: white; font-size: 1.2rem;">🖨️ Etiquetas Optimizadas</h2>
         </div>
         
         <div class="panel-grupo">
@@ -235,36 +228,28 @@
     </div>
 
     <div class="main-container no-print">
-        
         <div class="lista-seleccion">
             <div class="filtros-avanzados">
                 <select id="filtroCategoria" class="input-dark" onchange="window.filtrarLista()">
                     <option value="TODAS">📁 Todas las Categorías</option>
                 </select>
-                
                 <input type="text" id="filtroProd" class="input-dark" placeholder="🔍 Buscar producto específico..." onkeyup="window.filtrarLista()">
-                
                 <div style="display: flex; gap: 10px; margin-top: 5px;">
                     <button class="btn-outline" style="font-size: 12px; flex:1;" onclick="window.checkTodos(true)">☑️ Marcar Visibles</button>
                     <button class="btn-outline" style="font-size: 12px; flex:1; border-color: #666; color: #aaa;" onclick="window.checkTodos(false)">Desmarcar</button>
                 </div>
             </div>
-            
-            <div id="contenedorLista">
-                <p style="color: #aaa; padding: 10px;">Conectando a Firebase...</p>
-            </div>
+            <div id="contenedorLista"><p style="color: #aaa; padding: 10px;">Conectando a Firebase...</p></div>
         </div>
 
         <div class="preview-container">
             <div id="hojaImpresion">
                 <div style="grid-column: 1 / -1; text-align: center; color: #aaa; margin-top: 50px; font-size: 1.2rem;">
-                    1️⃣ Filtra por categoría a la izquierda.<br><br>
-                    2️⃣ Clic en "Marcar Visibles".<br><br>
-                    3️⃣ Clic en "Generar Grilla".
+                    🎯 Modo Alta Densidad Activado.<br><br>
+                    Selecciona hasta 4 productos, deja 15 copias y dale a Generar.
                 </div>
             </div>
         </div>
-
     </div>
 
     <script type="module">
@@ -283,12 +268,10 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
-
         window.productosCache = [];
 
         document.addEventListener('DOMContentLoaded', () => {
             const productosRef = ref(db, 'productos');
-            
             onValue(productosRef, (snapshot) => {
                 const data = snapshot.val();
                 if (data) {
@@ -301,8 +284,6 @@
                                           categoriasUnicas.map(c => `<option value="${c}">${c}</option>`).join('');
 
                     window.renderizarLista(window.productosCache);
-                } else {
-                    document.getElementById('contenedorLista').innerHTML = '<p style="color: red;">No hay productos en la base de datos.</p>';
                 }
             });
         });
@@ -310,14 +291,11 @@
         window.renderizarLista = function(productos) {
             const container = document.getElementById('contenedorLista');
             container.innerHTML = '';
-
             productos.forEach(p => {
                 if (p.estado === 'inactivo') return;
-
                 const div = document.createElement('div');
                 div.className = 'producto-row';
                 div.setAttribute('data-categoria', p.categoria || "Sin Categoría");
-                
                 div.innerHTML = `
                     <input type="checkbox" class="prod-check check-grande" value="${p.id}">
                     <div style="flex: 1;">
@@ -340,19 +318,15 @@
             filas.forEach(fila => {
                 const contenido = fila.innerText.toLowerCase();
                 const categoriaFila = fila.getAttribute('data-categoria');
-                
                 const cumpleTexto = contenido.includes(textoBusqueda);
                 const cumpleCategoria = (categoriaSeleccionada === 'TODAS' || categoriaFila === categoriaSeleccionada);
-
                 fila.style.display = (cumpleTexto && cumpleCategoria) ? 'flex' : 'none';
             });
         };
 
         window.checkTodos = function(estado) {
             document.querySelectorAll('.prod-check').forEach(c => {
-                if (c.closest('.producto-row').style.display !== 'none') {
-                    c.checked = estado;
-                }
+                if (c.closest('.producto-row').style.display !== 'none') c.checked = estado;
             });
         };
 
@@ -363,29 +337,21 @@
             const checkboxes = document.querySelectorAll('.prod-check:checked');
             const copiasPorProducto = parseInt(document.getElementById('inputCopias').value) || 15;
 
-            if (checkboxes.length === 0) {
-                alert("Selecciona al menos un producto de la lista.");
-                return;
-            }
+            if (checkboxes.length === 0) { alert("Selecciona al menos un producto."); return; }
 
             checkboxes.forEach(chk => {
                 const idStr = chk.value;
                 const prod = window.productosCache.find(p => String(p.id) === idStr);
                 
                 if (prod) {
-                    // --- NUEVO: INSERTAR EL TÍTULO SEPARADOR ---
                     const separador = document.createElement('div');
                     separador.className = 'separador-producto';
-                    separador.innerHTML = `
-                        <span>📦 ${prod.nombre}</span>
-                        <span style="font-size: 10pt; font-weight: normal; color: #666;">(${copiasPorProducto} Etiquetas)</span>
-                    `;
+                    separador.innerHTML = `<span>✂️ ${prod.nombre}</span><span>(${copiasPorProducto})</span>`;
                     hoja.appendChild(separador);
 
                     for (let i = 0; i < copiasPorProducto; i++) {
                         const etiqueta = document.createElement('div');
                         etiqueta.className = 'etiqueta';
-                        
                         const codigoParaBarras = prod.codigo_barras && prod.codigo_barras.trim() !== "" ? prod.codigo_barras : prod.id;
                         const precioFormateado = Number(prod.precio_gs || 0).toLocaleString('es-PY');
 
@@ -397,10 +363,10 @@
                                 jsbarcode-value="${codigoParaBarras}"
                                 jsbarcode-textmargin="0"
                                 jsbarcode-fontoptions="bold"
-                                jsbarcode-height="25"
+                                jsbarcode-height="15" 
                                 jsbarcode-width="1"
                                 jsbarcode-displayValue="true"
-                                jsbarcode-fontSize="10"
+                                jsbarcode-fontSize="8"
                                 jsbarcode-margin="0"
                             ></svg>
                         `;
@@ -409,19 +375,12 @@
                 }
             });
 
-            try {
-                JsBarcode(".barcode").init();
-            } catch (e) {
-                console.error("Error generando barras", e);
-            }
+            try { JsBarcode(".barcode").init(); } catch (e) { console.error(e); }
         };
 
         window.imprimirEtiquetas = function(modo) {
             const hoja = document.getElementById('hojaImpresion');
-            if (hoja.innerHTML.trim() === '' || hoja.innerText.includes('Selecciona productos')) {
-                alert("Primero debes hacer clic en 'Generar Grilla'.");
-                return;
-            }
+            if (hoja.innerHTML.trim() === '' || hoja.innerText.includes('Selecciona')) return;
 
             let styleEl = document.getElementById('print-override');
             if (!styleEl) {
@@ -431,40 +390,14 @@
             }
 
             if (modo === 'OFICIO') {
-                styleEl.innerHTML = `
-                    @media print {
-                        @page { size: legal !important; margin: 10mm !important; }
-                        .etiqueta { border: 0.5px dashed #ccc !important; }
-                    }
-                `;
+                styleEl.innerHTML = `@media print { @page { size: legal !important; margin: 10mm !important; } .etiqueta { border: 0.5px dashed #ccc !important; } }`;
             } else if (modo === 'A4') {
-                styleEl.innerHTML = `
-                    @media print {
-                        @page { size: A4 !important; margin: 10mm !important; }
-                        .etiqueta { border: 0.5px dashed #ccc !important; }
-                    }
-                `;
+                styleEl.innerHTML = `@media print { @page { size: A4 !important; margin: 10mm !important; } .etiqueta { border: 0.5px dashed #ccc !important; } }`;
             } else if (modo === 'TERMICA') {
-                // Aquí usamos CSS para ocultar los títulos si se imprime en Rollo Térmico
-                styleEl.innerHTML = `
-                    @media print {
-                        @page { size: 35mm 25mm !important; margin: 0 !important; }
-                        #hojaImpresion { display: block !important; padding: 0 !important; gap: 0 !important; }
-                        .separador-producto { display: none !important; }
-                        .etiqueta { 
-                            width: 35mm !important; 
-                            height: 25mm !important; 
-                            border: none !important; 
-                            page-break-after: always !important; 
-                            margin: 0 !important;
-                        }
-                    }
-                `;
+                styleEl.innerHTML = `@media print { @page { size: 35mm 25mm !important; margin: 0 !important; } #hojaImpresion { display: block !important; padding: 0 !important; gap: 0 !important; } .separador-producto { display: none !important; } .etiqueta { width: 35mm !important; height: 25mm !important; border: none !important; page-break-after: always !important; margin: 0 !important; } }`;
             }
 
-            setTimeout(() => { 
-                window.print(); 
-            }, 200);
+            setTimeout(() => { window.print(); }, 200);
         };
     </script>
 </body>
