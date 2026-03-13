@@ -182,18 +182,18 @@
     <div class="control-panel no-print">
         <div class="panel-grupo">
             <a href="admin.html" class="btn-outline">⬅ Volver al Admin</a>
-            <h2 style="margin: 0; color: white; font-size: 1.2rem;">🖨️ Etiquetas</h2>
+            <h2 style="margin: 0; color: white; font-size: 1.2rem;">🖨️ Etiquetas de Nube</h2>
         </div>
         
         <div class="panel-grupo">
             <label style="color: #aaa; font-size: 0.9rem;">Copias:</label>
             <input type="number" id="inputCopias" value="1" min="1" style="width: 50px; height: 35px; text-align: center;">
-            <button class="btn-gold" onclick="generarVistaPrevia()">🔄 Generar</button>
+            <button class="btn-gold" onclick="window.generarVistaPrevia()">🔄 Generar</button>
             
             <span style="border-left: 1px solid #555; height: 30px; margin: 0 5px;"></span>
             
-            <button class="btn-gold" style="background-color: #2196F3; color: white;" onclick="imprimirEtiquetas('A4')">📄 Imprimir A4</button>
-            <button class="btn-gold" style="background-color: var(--color-success); color: white;" onclick="imprimirEtiquetas('TERMICA')">🎟️ Rollo Térmico</button>
+            <button class="btn-gold" style="background-color: #2196F3; color: white;" onclick="window.imprimirEtiquetas('A4')">📄 Imprimir A4</button>
+            <button class="btn-gold" style="background-color: var(--color-success); color: white;" onclick="window.imprimirEtiquetas('TERMICA')">🎟️ Rollo Térmico</button>
         </div>
     </div>
 
@@ -201,15 +201,15 @@
         
         <div class="lista-seleccion">
             <div style="margin-bottom: 15px; border-bottom: 1px solid #444; padding-bottom: 10px;">
-                <input type="text" id="filtroProd" placeholder="🔍 Buscar producto..." style="margin-bottom: 10px; width: 100%;" onkeyup="filtrarLista()">
+                <input type="text" id="filtroProd" placeholder="🔍 Buscar producto..." style="margin-bottom: 10px; width: 100%; padding: 8px;" onkeyup="window.filtrarLista()">
                 <div style="display: flex; gap: 10px;">
-                    <button class="btn-outline" style="font-size: 12px; flex:1;" onclick="checkTodos(true)">Todos</button>
-                    <button class="btn-outline" style="font-size: 12px; flex:1;" onclick="checkTodos(false)">Ninguno</button>
+                    <button class="btn-outline" style="font-size: 12px; flex:1;" onclick="window.checkTodos(true)">Todos</button>
+                    <button class="btn-outline" style="font-size: 12px; flex:1;" onclick="window.checkTodos(false)">Ninguno</button>
                 </div>
             </div>
             
             <div id="contenedorLista">
-                <p style="color: #666;">Cargando productos...</p>
+                <p style="color: #aaa; padding: 10px;">Conectando a Firebase...</p>
             </div>
         </div>
 
@@ -223,44 +223,62 @@
 
     </div>
 
-    <script src="js/db.js"></script>
-    <script>
-        let productosCache = [];
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-        document.addEventListener('DOMContentLoaded', async () => {
-            await dbSystem.init();
-            cargarListaProductos();
+        const firebaseConfig = {
+            apiKey: "AIzaSyBmPvAk_lSJ1TlBVtMqKAC1HaPM5eVeZxo",
+            authDomain: "creaciones-marilyn.firebaseapp.com",
+            databaseURL: "https://creaciones-marilyn-default-rtdb.firebaseio.com",
+            projectId: "creaciones-marilyn",
+            storageBucket: "creaciones-marilyn.firebasestorage.app",
+            messagingSenderId: "565099684746",
+            appId: "1:565099684746:web:a99ccfb9796aea22725e73"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        // Variable global para usar en las funciones
+        window.productosCache = [];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const productosRef = ref(db, 'productos');
+            
+            onValue(productosRef, (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    window.productosCache = Object.values(data);
+                    window.productosCache.sort((a, b) => (a.nombre || '').localeCompare(b.nombre || ''));
+                    window.renderizarLista(window.productosCache);
+                } else {
+                    document.getElementById('contenedorLista').innerHTML = '<p style="color: red;">No hay productos en la base de datos.</p>';
+                }
+            });
         });
 
-        // 1. Cargar lista para seleccionar
-        async function cargarListaProductos() {
-            productosCache = await dbSystem.obtenerProductos();
-            productosCache.sort((a, b) => a.nombre.localeCompare(b.nombre));
-            renderizarLista(productosCache);
-        }
-
-        function renderizarLista(productos) {
+        window.renderizarLista = function(productos) {
             const container = document.getElementById('contenedorLista');
             container.innerHTML = '';
 
             productos.forEach(p => {
-                if (!p.activo) return;
+                if (p.estado === 'inactivo') return; // Filtramos inactivos igual que el Admin
 
                 const div = document.createElement('div');
                 div.className = 'producto-row';
                 div.innerHTML = `
                     <input type="checkbox" class="prod-check check-grande" value="${p.id}">
                     <div style="flex: 1;">
-                        <div style="color: white; font-weight: bold; font-size: 0.9em;">${p.nombre}</div>
-                        <div style="color: #aaa; font-size: 0.8em;">${p.codigo_barras || 'Sin código'} - ${Number(p.precio_gs).toLocaleString('es-PY')} Gs</div>
+                        <div style="color: white; font-weight: bold; font-size: 0.9em;">${p.nombre || 'Sin nombre'}</div>
+                        <div style="color: #aaa; font-size: 0.8em;">${p.codigo_barras || 'Sin código'} - ${Number(p.precio_gs || 0).toLocaleString('es-PY')} Gs</div>
                     </div>
                 `;
                 container.appendChild(div);
             });
-        }
+        };
 
-        // 2. Filtrar lista
-        function filtrarLista() {
+        window.filtrarLista = function() {
             const texto = document.getElementById('filtroProd').value.toLowerCase();
             const filas = document.querySelectorAll('.producto-row');
             
@@ -268,19 +286,17 @@
                 const contenido = fila.innerText.toLowerCase();
                 fila.style.display = contenido.includes(texto) ? 'flex' : 'none';
             });
-        }
+        };
 
-        // 3. Check All / None
-        function checkTodos(estado) {
+        window.checkTodos = function(estado) {
             document.querySelectorAll('.prod-check').forEach(c => {
                 if (c.closest('.producto-row').style.display !== 'none') {
                     c.checked = estado;
                 }
             });
-        }
+        };
 
-        // 4. GENERAR VISTA PREVIA
-        function generarVistaPrevia() {
+        window.generarVistaPrevia = function() {
             const hoja = document.getElementById('hojaImpresion');
             hoja.innerHTML = ''; 
 
@@ -293,16 +309,17 @@
             }
 
             checkboxes.forEach(chk => {
-                const id = parseInt(chk.value);
-                const prod = productosCache.find(p => p.id === id);
+                const idStr = chk.value;
+                const prod = window.productosCache.find(p => String(p.id) === idStr);
                 
                 if (prod) {
                     for (let i = 0; i < copiasPorProducto; i++) {
                         const etiqueta = document.createElement('div');
                         etiqueta.className = 'etiqueta';
                         
-                        const codigoParaBarras = prod.codigo_barras || ('ID-' + prod.id);
-                        const precioFormateado = Number(prod.precio_gs).toLocaleString('es-PY');
+                        // Si no tiene código de barras escrito, usa su ID único de Firebase
+                        const codigoParaBarras = prod.codigo_barras && prod.codigo_barras.trim() !== "" ? prod.codigo_barras : prod.id;
+                        const precioFormateado = Number(prod.precio_gs || 0).toLocaleString('es-PY');
 
                         etiqueta.innerHTML = `
                             <div class="etiqueta-nombre">${prod.nombre}</div>
@@ -325,21 +342,20 @@
             });
 
             try {
+                // Genera los códigos de barra en los SVG creados
                 JsBarcode(".barcode").init();
             } catch (e) {
                 console.error("Error generando barras", e);
             }
-        }
+        };
 
-        // 5. MOTOR DE IMPRESIÓN DUAL (LA MAGIA QUIRÚRGICA)
-        function imprimirEtiquetas(modo) {
+        window.imprimirEtiquetas = function(modo) {
             const hoja = document.getElementById('hojaImpresion');
             if (hoja.innerHTML.trim() === '' || hoja.innerText.includes('Selecciona productos')) {
                 alert("Primero debes generar la vista previa de las etiquetas.");
                 return;
             }
 
-            // Crear o buscar el bloque de estilos dinámicos
             let styleEl = document.getElementById('print-override');
             if (!styleEl) {
                 styleEl = document.createElement('style');
@@ -347,9 +363,7 @@
                 document.head.appendChild(styleEl);
             }
 
-            // Inyectar las reglas según el botón presionado
             if (modo === 'TERMICA') {
-                // Modo Rollo Térmico: Cada etiqueta es una página nueva, sin márgenes, tamaño 35x25mm
                 styleEl.innerHTML = `
                     @media print {
                         @page { size: 35mm 25mm !important; margin: 0 !important; }
@@ -357,14 +371,13 @@
                         .etiqueta { 
                             width: 35mm !important; 
                             height: 25mm !important; 
-                            border: none !important; /* Quitamos linea punteada */
+                            border: none !important; 
                             page-break-after: always !important; 
                             margin: 0 !important;
                         }
                     }
                 `;
             } else {
-                // Modo A4 Normal: Todo fluye en una hoja grande
                 styleEl.innerHTML = `
                     @media print {
                         @page { size: A4 !important; margin: 10mm !important; }
@@ -373,12 +386,10 @@
                 `;
             }
 
-            // Darle un pequeño respiro al navegador para aplicar el CSS antes de abrir la ventana de impresión
             setTimeout(() => { 
                 window.print(); 
-            }, 100);
-        }
-
+            }, 200);
+        };
     </script>
 </body>
 </html>
