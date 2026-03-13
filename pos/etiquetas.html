@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generador de Etiquetas - Creaciones Marilyn</title>
+    <title>Generador de Etiquetas Masivo - Creaciones Marilyn</title>
     <link rel="stylesheet" href="css/marilyn.css">
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
     
@@ -17,7 +17,6 @@
             background-color: #000;
         }
 
-        /* Panel de Control Superior */
         .control-panel {
             background-color: #1a1a1a;
             border-bottom: 2px solid var(--color-gold);
@@ -36,7 +35,6 @@
             gap: 10px;
         }
 
-        /* Layout Principal */
         .main-container {
             display: flex;
             flex: 1;
@@ -50,7 +48,25 @@
             overflow-y: auto;
             background-color: #111;
             border-right: 1px solid #333;
-            min-width: 300px;
+            min-width: 320px;
+        }
+
+        .filtros-avanzados {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #444;
+            padding-bottom: 15px;
+        }
+
+        .input-dark {
+            width: 100%;
+            padding: 10px;
+            background: #222;
+            border: 1px solid #444;
+            color: white;
+            border-radius: 4px;
         }
 
         .producto-row {
@@ -62,7 +78,7 @@
         }
         .producto-row:hover { background-color: #222; }
         
-        .check-grande { transform: scale(1.5); margin-right: 10px; cursor: pointer; }
+        .check-grande { transform: scale(1.5); margin-right: 10px; cursor: pointer; accent-color: var(--color-gold); }
 
         /* Área de Previsualización (Derecha) */
         .preview-container {
@@ -75,11 +91,11 @@
             align-items: flex-start;
         }
 
-        /* La Hoja Visual (En Pantalla siempre se ve tipo A4) */
+        /* La Hoja Visual */
         #hojaImpresion {
             background-color: white;
-            width: 210mm;
-            min-height: 297mm;
+            width: 216mm; /* Ancho Oficio/Legal */
+            min-height: 356mm; /* Alto Oficio/Legal */
             padding: 10mm; 
             box-shadow: 0 0 20px rgba(0,0,0,0.8);
             
@@ -90,7 +106,7 @@
             justify-content: flex-start;
         }
 
-        /* Estilo de la Etiqueta Individual 3x2 cm */
+        /* Estilo de la Etiqueta Individual 35x25 mm */
         .etiqueta {
             border: 1px dashed #aaa; 
             box-sizing: border-box;
@@ -132,7 +148,6 @@
             max-width: 100%;
         }
 
-        /* Botones personalizados */
         .btn-gold {
             background-color: var(--color-gold);
             color: #000;
@@ -186,12 +201,13 @@
         </div>
         
         <div class="panel-grupo">
-            <label style="color: #aaa; font-size: 0.9rem;">Copias:</label>
-            <input type="number" id="inputCopias" value="1" min="1" style="width: 50px; height: 35px; text-align: center;">
-            <button class="btn-gold" onclick="window.generarVistaPrevia()">🔄 Generar</button>
+            <label style="color: #aaa; font-size: 0.9rem;">Copias x Producto:</label>
+            <input type="number" id="inputCopias" value="15" min="1" style="width: 60px; height: 35px; text-align: center; font-weight: bold;">
+            <button class="btn-gold" onclick="window.generarVistaPrevia()">🔄 Generar Grilla</button>
             
             <span style="border-left: 1px solid #555; height: 30px; margin: 0 5px;"></span>
             
+            <button class="btn-gold" style="background-color: #9C27B0; color: white;" onclick="window.imprimirEtiquetas('OFICIO')">📄 Imprimir Oficio</button>
             <button class="btn-gold" style="background-color: #2196F3; color: white;" onclick="window.imprimirEtiquetas('A4')">📄 Imprimir A4</button>
             <button class="btn-gold" style="background-color: var(--color-success); color: white;" onclick="window.imprimirEtiquetas('TERMICA')">🎟️ Rollo Térmico</button>
         </div>
@@ -200,11 +216,16 @@
     <div class="main-container no-print">
         
         <div class="lista-seleccion">
-            <div style="margin-bottom: 15px; border-bottom: 1px solid #444; padding-bottom: 10px;">
-                <input type="text" id="filtroProd" placeholder="🔍 Buscar producto..." style="margin-bottom: 10px; width: 100%; padding: 8px;" onkeyup="window.filtrarLista()">
-                <div style="display: flex; gap: 10px;">
-                    <button class="btn-outline" style="font-size: 12px; flex:1;" onclick="window.checkTodos(true)">Todos</button>
-                    <button class="btn-outline" style="font-size: 12px; flex:1;" onclick="window.checkTodos(false)">Ninguno</button>
+            <div class="filtros-avanzados">
+                <select id="filtroCategoria" class="input-dark" onchange="window.filtrarLista()">
+                    <option value="TODAS">📁 Todas las Categorías</option>
+                </select>
+                
+                <input type="text" id="filtroProd" class="input-dark" placeholder="🔍 Buscar producto específico..." onkeyup="window.filtrarLista()">
+                
+                <div style="display: flex; gap: 10px; margin-top: 5px;">
+                    <button class="btn-outline" style="font-size: 12px; flex:1;" onclick="window.checkTodos(true)">☑️ Marcar Visibles</button>
+                    <button class="btn-outline" style="font-size: 12px; flex:1; border-color: #666; color: #aaa;" onclick="window.checkTodos(false)">Desmarcar</button>
                 </div>
             </div>
             
@@ -215,8 +236,10 @@
 
         <div class="preview-container">
             <div id="hojaImpresion">
-                <div style="grid-column: 1 / -1; text-align: center; color: #aaa; margin-top: 50px;">
-                    Selecciona productos a la izquierda y dale a "Generar"
+                <div style="grid-column: 1 / -1; text-align: center; color: #aaa; margin-top: 50px; font-size: 1.2rem;">
+                    1️⃣ Filtra por categoría a la izquierda.<br><br>
+                    2️⃣ Clic en "Marcar Visibles".<br><br>
+                    3️⃣ Clic en "Generar Grilla".
                 </div>
             </div>
         </div>
@@ -240,7 +263,6 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        // Variable global para usar en las funciones
         window.productosCache = [];
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -251,6 +273,13 @@
                 if (data) {
                     window.productosCache = Object.values(data);
                     window.productosCache.sort((a, b) => (a.nombre || '').localeCompare(b.nombre || ''));
+                    
+                    // Extraer categorías únicas para el filtro
+                    const categoriasUnicas = [...new Set(window.productosCache.map(p => p.categoria || "Sin Categoría"))].sort();
+                    const selectCat = document.getElementById('filtroCategoria');
+                    selectCat.innerHTML = '<option value="TODAS">📁 Todas las Categorías</option>' + 
+                                          categoriasUnicas.map(c => `<option value="${c}">${c}</option>`).join('');
+
                     window.renderizarLista(window.productosCache);
                 } else {
                     document.getElementById('contenedorLista').innerHTML = '<p style="color: red;">No hay productos en la base de datos.</p>';
@@ -263,15 +292,21 @@
             container.innerHTML = '';
 
             productos.forEach(p => {
-                if (p.estado === 'inactivo') return; // Filtramos inactivos igual que el Admin
+                if (p.estado === 'inactivo') return;
 
                 const div = document.createElement('div');
                 div.className = 'producto-row';
+                // Guardamos la categoría oculta en el div para poder filtrar después
+                div.setAttribute('data-categoria', p.categoria || "Sin Categoría");
+                
                 div.innerHTML = `
                     <input type="checkbox" class="prod-check check-grande" value="${p.id}">
                     <div style="flex: 1;">
                         <div style="color: white; font-weight: bold; font-size: 0.9em;">${p.nombre || 'Sin nombre'}</div>
-                        <div style="color: #aaa; font-size: 0.8em;">${p.codigo_barras || 'Sin código'} - ${Number(p.precio_gs || 0).toLocaleString('es-PY')} Gs</div>
+                        <div style="color: #aaa; font-size: 0.8em; margin-top: 3px;">
+                            <span style="background: #333; padding: 2px 6px; border-radius: 4px; font-size: 0.8em; margin-right: 5px;">${p.categoria || 'Varios'}</span>
+                            ${p.codigo_barras || 'Auto-ID'} - ${Number(p.precio_gs || 0).toLocaleString('es-PY')} Gs
+                        </div>
                     </div>
                 `;
                 container.appendChild(div);
@@ -279,17 +314,24 @@
         };
 
         window.filtrarLista = function() {
-            const texto = document.getElementById('filtroProd').value.toLowerCase();
+            const textoBusqueda = document.getElementById('filtroProd').value.toLowerCase();
+            const categoriaSeleccionada = document.getElementById('filtroCategoria').value;
             const filas = document.querySelectorAll('.producto-row');
             
             filas.forEach(fila => {
                 const contenido = fila.innerText.toLowerCase();
-                fila.style.display = contenido.includes(texto) ? 'flex' : 'none';
+                const categoriaFila = fila.getAttribute('data-categoria');
+                
+                const cumpleTexto = contenido.includes(textoBusqueda);
+                const cumpleCategoria = (categoriaSeleccionada === 'TODAS' || categoriaFila === categoriaSeleccionada);
+
+                fila.style.display = (cumpleTexto && cumpleCategoria) ? 'flex' : 'none';
             });
         };
 
         window.checkTodos = function(estado) {
             document.querySelectorAll('.prod-check').forEach(c => {
+                // Solo marca los que están visibles actualmente por el filtro
                 if (c.closest('.producto-row').style.display !== 'none') {
                     c.checked = estado;
                 }
@@ -301,10 +343,10 @@
             hoja.innerHTML = ''; 
 
             const checkboxes = document.querySelectorAll('.prod-check:checked');
-            const copiasPorProducto = parseInt(document.getElementById('inputCopias').value) || 1;
+            const copiasPorProducto = parseInt(document.getElementById('inputCopias').value) || 15; // 15 por defecto
 
             if (checkboxes.length === 0) {
-                alert("Selecciona al menos un producto.");
+                alert("Selecciona al menos un producto de la lista.");
                 return;
             }
 
@@ -317,7 +359,6 @@
                         const etiqueta = document.createElement('div');
                         etiqueta.className = 'etiqueta';
                         
-                        // Si no tiene código de barras escrito, usa su ID único de Firebase
                         const codigoParaBarras = prod.codigo_barras && prod.codigo_barras.trim() !== "" ? prod.codigo_barras : prod.id;
                         const precioFormateado = Number(prod.precio_gs || 0).toLocaleString('es-PY');
 
@@ -342,7 +383,6 @@
             });
 
             try {
-                // Genera los códigos de barra en los SVG creados
                 JsBarcode(".barcode").init();
             } catch (e) {
                 console.error("Error generando barras", e);
@@ -352,7 +392,7 @@
         window.imprimirEtiquetas = function(modo) {
             const hoja = document.getElementById('hojaImpresion');
             if (hoja.innerHTML.trim() === '' || hoja.innerText.includes('Selecciona productos')) {
-                alert("Primero debes generar la vista previa de las etiquetas.");
+                alert("Primero debes hacer clic en 'Generar Grilla'.");
                 return;
             }
 
@@ -363,7 +403,22 @@
                 document.head.appendChild(styleEl);
             }
 
-            if (modo === 'TERMICA') {
+            // Inyectamos el tamaño exacto de la hoja según el botón que se presionó
+            if (modo === 'OFICIO') {
+                styleEl.innerHTML = `
+                    @media print {
+                        @page { size: legal !important; margin: 10mm !important; }
+                        .etiqueta { border: 0.5px dashed #ccc !important; }
+                    }
+                `;
+            } else if (modo === 'A4') {
+                styleEl.innerHTML = `
+                    @media print {
+                        @page { size: A4 !important; margin: 10mm !important; }
+                        .etiqueta { border: 0.5px dashed #ccc !important; }
+                    }
+                `;
+            } else if (modo === 'TERMICA') {
                 styleEl.innerHTML = `
                     @media print {
                         @page { size: 35mm 25mm !important; margin: 0 !important; }
@@ -375,13 +430,6 @@
                             page-break-after: always !important; 
                             margin: 0 !important;
                         }
-                    }
-                `;
-            } else {
-                styleEl.innerHTML = `
-                    @media print {
-                        @page { size: A4 !important; margin: 10mm !important; }
-                        .etiqueta { border: 0.5px dashed #ccc !important; }
                     }
                 `;
             }
