@@ -1,4 +1,4 @@
-// app.js - FASE 3: VITRINA INTELIGENTE EN TIEMPO REAL (FIREBASE - FIX DEFINITIVO)
+// app.js - FASE 3: VITRINA INTELIGENTE EN TIEMPO REAL (FIREBASE - 100% LOCAL IMG)
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
@@ -22,11 +22,9 @@ let activeCategory = 'todas';
 let currentGallery = [];
 let currentIndex = 0;
 
-const RAW_BASE_URL = "https://raw.githubusercontent.com/creacionesmarilyn-py/web-creaciones-marilyn/main/";
-
 // --- INICIALIZACIÓN EN TIEMPO REAL ---
 document.addEventListener('DOMContentLoaded', () => {
-    console.log("🚀 Conectando Vitrina a Firebase...");
+    console.log("🚀 Conectando Vitrina a Firebase (Rutas Locales)...");
     
     const productosRef = ref(db, 'productos');
     onValue(productosRef, (snapshot) => {
@@ -35,24 +33,24 @@ document.addEventListener('DOMContentLoaded', () => {
             allProducts = Object.keys(data).map(key => {
                 const p = data[key];
                 
-                // 1. BLINDAJE DE IMÁGENES (Soporta Arrays y Textos Simples)
+                // 1. BLINDAJE DE IMÁGENES (Leemos de la propia web, no de GitHub)
                 let rawImages = p.images || p.image || p.imagen || ['img/logo_jpg.jpg'];
                 if (!Array.isArray(rawImages)) {
-                    rawImages = [rawImages]; // Si es texto, lo convertimos en array de 1 elemento
+                    rawImages = [rawImages]; 
                 }
                 
-                // Limpiar imágenes vacías y asegurar formato
-                let finalImages = rawImages.filter(img => img && img.trim() !== "").map(img => {
-                    if (img.startsWith('http') || img.startsWith('blob:')) return img;
-                    return `${RAW_BASE_URL}${img.replace(/^\//, '')}?v=${Date.now()}`;
+                let finalImages = rawImages.filter(img => img && String(img).trim() !== "").map(img => {
+                    const strImg = String(img);
+                    if (strImg.startsWith('http') || strImg.startsWith('blob:')) return strImg;
+                    // Ruta local directa (Vercel ya tiene las fotos)
+                    return strImg.replace(/^\//, '');
                 });
                 
-                // Fallback final si quedó vacío
                 if (finalImages.length === 0) finalImages = ['img/logo_jpg.jpg'];
 
-                // 2. BLINDAJE DE LÓGICAS (Soporta booleanos y textos "true")
-                const esDestacado = p.destacado === true || String(p.destacado).toLowerCase() === 'true';
-                const esPopup = p.popup === true || String(p.popup).toLowerCase() === 'true';
+                // 2. BLINDAJE DE LÓGICAS (Captura cualquier formato de verdadero/falso)
+                const esDestacado = p.destacado === true || String(p.destacado).toLowerCase() === 'true' || String(p.destacado) === '1';
+                const esPopup = p.popup === true || String(p.popup).toLowerCase() === 'true' || String(p.popup) === '1';
 
                 return {
                     id: p.id || key,
@@ -68,6 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }).filter(p => p.status.toLowerCase() !== 'inactivo'); 
             
             allProducts.reverse();
+            console.log(`✅ ${allProducts.length} productos procesados exitosamente.`);
         } else {
             allProducts = [];
         }
@@ -97,7 +96,7 @@ function renderCategories() {
     const container = document.getElementById('category-filters');
     if(!container) return;
     const categories = ['todas', ...new Set(allProducts
-        .filter(p => p.status.toLowerCase() !== 'anuncio' && p.popup !== true) // No poner los popups en el menú
+        .filter(p => p.status.toLowerCase() !== 'anuncio' && !p.popup)
         .map(p => p.collection.toLowerCase().trim()))].sort();
         
     container.innerHTML = categories.map(cat => `
@@ -114,7 +113,7 @@ function applyFilters() {
     const filtered = allProducts.filter(p => {
         const matchesSearch = p.name.toLowerCase().includes(searchTerm);
         const matchesCategory = activeCategory === 'todas' || p.collection.toLowerCase().trim() === activeCategory;
-        return matchesSearch && matchesCategory && p.status.toLowerCase() !== 'anuncio' && p.popup !== true;
+        return matchesSearch && matchesCategory && p.status.toLowerCase() !== 'anuncio' && !p.popup;
     });
     renderProducts(filtered);
 }
@@ -124,15 +123,15 @@ function renderProducts(products) {
     if(!grid) return;
 
     if (products.length === 0) {
-        grid.innerHTML = '<p class="text-center col-span-full py-20 text-gray-400 uppercase text-[10px]">Sin resultados en la nube</p>';
+        grid.innerHTML = '<p class="text-center col-span-full py-20 text-gray-400 uppercase text-[10px]">Sin resultados</p>';
         return;
     }
 
     const searchTerm = document.getElementById('search-input')?.value.toLowerCase().trim() || "";
 
     if (activeCategory === 'todas' && searchTerm === "") {
-        const destacados = products.filter(p => p.destacado === true).slice(0, 5); // Mostrar hasta 5 destacados
-        const noDestacados = products.filter(p => p.destacado !== true);
+        const destacados = products.filter(p => p.destacado).slice(0, 6);
+        const noDestacados = products.filter(p => !p.destacado);
 
         const grouped = noDestacados.reduce((acc, p) => {
             const col = p.collection || "Otros";
@@ -221,7 +220,7 @@ function createProductCard(p, isHorizontal = false) {
 }
 
 function checkAnnouncements() {
-    const announcement = allProducts.find(p => p.popup === true || p.status.toLowerCase() === 'anuncio');
+    const announcement = allProducts.find(p => p.popup || p.status.toLowerCase() === 'anuncio');
     if (announcement && !sessionStorage.getItem('popup_visto_' + announcement.id)) {
         const modal = document.getElementById('announcement-modal');
         const content = document.getElementById('announcement-content');
@@ -242,7 +241,6 @@ function checkAnnouncements() {
             </div>
         `;
         
-        // Mostrar popup con retraso y marcar como visto en esta sesión
         setTimeout(() => {
             modal.classList.remove('hidden'); modal.classList.add('flex');
             sessionStorage.setItem('popup_visto_' + announcement.id, 'true');
@@ -304,7 +302,7 @@ function updateGalleryModal() {
     const modalImg = document.getElementById('modal-img');
     const counter = document.getElementById('gallery-counter');
     if(modalImg) {
-        modalImg.onerror = function() { this.src = 'img/logo_jpg.jpg'; }; // Fallback de galería
+        modalImg.onerror = function() { this.src = 'img/logo_jpg.jpg'; }; 
         modalImg.src = currentGallery[currentIndex]; 
     }
     if(counter) counter.textContent = `${currentIndex + 1} / ${currentGallery.length}`; 
@@ -316,10 +314,8 @@ function prevImg() { currentIndex = (currentIndex - 1 + currentGallery.length) %
 function sendWhatsApp() {
     if (cart.length === 0) { alert("¡Tu carrito está vacío!"); return; }
     
-    // DISPARO DE EVENTO A META PIXEL
     if (typeof fbq === 'function') {
         fbq('track', 'Contact');
-        console.log("🚀 Meta Pixel: Evento 'Contact' enviado con éxito.");
     }
 
     let msg = "¡Hola Marilyn! 💎 Mi pedido es:\n\n";
