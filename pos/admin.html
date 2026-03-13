@@ -6,20 +6,20 @@
     <title>Admin - Creaciones Marilyn</title>
     <link rel="stylesheet" href="css/marilyn.css">
     <style>
-        /* Semáforo de Stock */
         .stock-ok { background-color: rgba(76, 175, 80, 0.1); color: #4CAF50; font-weight: bold; }
         .stock-warning { background-color: rgba(255, 193, 7, 0.1); color: #FFC107; font-weight: bold; }
         .stock-danger { background-color: rgba(244, 67, 54, 0.1); color: #F44336; font-weight: bold; }
-        .btn-mini { padding: 5px 10px; font-size: 14px; height: auto; margin-left: 5px; }
+        .btn-mini { padding: 5px 10px; font-size: 14px; height: auto; margin-left: 5px; cursor: pointer; border-radius: 4px; border: none; }
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; align-items: center; justify-content: center; }
-        .btn-danger-outline { background: transparent; border: 1px solid #F44336; color: #F44336; }
-        .btn-danger-outline:hover { background: #F44336; color: white; }
+        .checkbox-wrapper { display: flex; align-items: center; gap: 10px; background: #222; padding: 15px; border-radius: 8px; border: 1px solid #444; margin-top: 10px; }
+        .checkbox-wrapper input[type="checkbox"] { width: 20px; height: 20px; accent-color: #D4AF37; cursor: pointer; }
+        .checkbox-wrapper label { margin: 0; cursor: pointer; font-size: 14px; }
     </style>
 </head>
 <body>
 
     <header style="display: flex; justify-content: space-between; align-items: center;">
-        <h1>💎 Creaciones Marilyn POS (Sincronizado a la Nube)</h1>
+        <h1>💎 Marilyn Panel E-commerce (Cloudinary + Firebase)</h1>
         <div>
             <a href="index.html" class="btn" style="background: transparent; border: 1px solid var(--color-gold); color: var(--color-gold);">Ir a Caja ➡</a>
         </div>
@@ -37,14 +37,8 @@
                     </div>
                     <div class="col">
                         <label for="categoria">Categoría:</label>
-                        <select id="categoria">
-                            <option value="Collares">Collares</option>
-                            <option value="Pulseras">Pulseras</option>
-                            <option value="Aros">Aros</option>
-                            <option value="Anillos">Anillos</option>
-                            <option value="Rosarios">Rosarios</option>
-                            <option value="Varios">Varios</option>
-                        </select>
+                        <input type="text" id="categoria" list="listaCategorias" placeholder="Ej: Collares" required>
+                        <datalist id="listaCategorias"></datalist>
                     </div>
                 </div>
                 <div class="row">
@@ -81,37 +75,34 @@
                         <input type="number" id="minimo" value="2">
                     </div>
                 </div>
+                
+                <div class="row mt-2">
+                    <div class="col">
+                        <label for="imgUrl" style="color: var(--color-gold);">🖼️ URL de Foto (Cloudinary):</label>
+                        <input type="text" id="imgUrl" placeholder="Dejá vacío para mantener la foto actual">
+                    </div>
+                </div>
+                
+                <div class="checkbox-wrapper">
+                    <input type="checkbox" id="destacado">
+                    <label for="destacado" style="color: #FFD700; font-weight: bold;">🌟 Mostrar como Destacado en Inicio</label>
+                    
+                    <input type="checkbox" id="popup" style="margin-left: 20px;">
+                    <label for="popup" style="color: #FF4500; font-weight: bold;">🔥 Lanzar como Pop-up (Oferta Especial)</label>
+                </div>
+
                 <div class="mt-2 text-right">
                     <button type="button" class="btn" onclick="window.limpiarFormulario()" style="background:#555; color:white;">Cancelar</button>
-                    <button type="submit" class="btn btn-primary">💾 Guardar Producto en la Nube</button>
+                    <button type="submit" class="btn btn-primary">💾 Guardar en la Nube</button>
                 </div>
             </form>
         </section>
 
-        <details class="card">
-            <summary style="font-size: 1.2rem; font-weight: bold; cursor: pointer; color: var(--color-gold);">📥 Importar Desde Excel / CSV</summary>
-            <div class="mt-2">
-                <textarea id="importInput" rows="5" placeholder="Pega aquí los datos..." style="height: 150px; width: 100%; background: #111; color: #fff;"></textarea>
-                <div class="row mt-2">
-                    <div class="col"><button onclick="window.procesarImportacion('CSV')" class="btn btn-primary">📂 Importar CSV</button></div>
-                </div>
-            </div>
-        </details>
-
-        <details class="card">
-            <summary style="font-size: 1.2rem; font-weight: bold; cursor: pointer; color: var(--color-gold);">⚙️ Configuración del Ticket</summary>
-            <div class="mt-2 row">
-                <div class="col"><label>Negocio:</label><input type="text" id="confNombre" value="Creaciones Marilyn E.A.S."></div>
-                <div class="col"><label>RUC:</label><input type="text" id="confRuc" value="80167718-1"></div>
-            </div>
-            <div class="mt-2 text-right"><button class="btn btn-primary" onclick="window.guardarConfiguracion()">💾 Guardar Config</button></div>
-        </details>
-
         <section class="card">
             <h2>Inventario Actual (Nube)</h2>
-            <input type="text" id="searchInput" placeholder="🔍 Buscar..." onkeyup="window.cargarTabla()">
+            <input type="text" id="searchInput" placeholder="🔍 Buscar por nombre o código..." onkeyup="window.cargarTabla()" style="width: 100%; padding: 10px; margin-bottom: 15px;">
             <div class="table-responsive">
-                <table id="tablaProductos">
+                <table id="tablaProductos" style="width: 100%; text-align: left;">
                     <thead>
                         <tr>
                             <th>Código</th>
@@ -131,10 +122,10 @@
         <div class="card" style="width: 400px; background: #222; border: 2px solid var(--color-gold);">
             <h3 id="stockTitleProd" style="color: var(--color-gold); text-align: center;">📦 Reponer Stock</h3>
             <input type="hidden" id="stockIdProd">
-            <input type="number" id="stockCantidad" placeholder="Cantidad" style="width: 100%; padding: 10px; margin: 10px 0;">
+            <input type="number" id="stockCantidad" placeholder="Cantidad a sumar" style="width: 100%; padding: 10px; margin: 10px 0;">
             <div style="display: flex; gap: 10px;">
-                <button class="btn" onclick="document.getElementById('modalStock').style.display='none'">Cerrar</button>
-                <button class="btn btn-success" onclick="window.confirmarCargaStock()">✅ Guardar</button>
+                <button class="btn" onclick="document.getElementById('modalStock').style.display='none'">Cancelar</button>
+                <button class="btn btn-success" onclick="window.confirmarCargaStock()">✅ Sumar Stock</button>
             </div>
         </div>
     </div>
@@ -157,21 +148,26 @@
         const db = getDatabase(app);
         let listaProductos = [];
 
-        // --- CARGAR DATOS EN TIEMPO REAL ---
         onValue(ref(db, 'productos'), (snapshot) => {
             const data = snapshot.val();
             listaProductos = data ? Object.values(data) : [];
+            actualizarComboCategorias();
             window.cargarTabla();
         });
 
-        // --- FUNCIONES GLOBALES ---
+        function actualizarComboCategorias() {
+            const datalist = document.getElementById('listaCategorias');
+            const categoriasUnicas = [...new Set(listaProductos.map(p => p.categoria || "Varios"))].sort();
+            datalist.innerHTML = categoriasUnicas.map(cat => `<option value="${cat}">`).join('');
+        }
+
         window.cargarTabla = function() {
             const tbody = document.getElementById('tbodyInventario');
             const filtro = document.getElementById('searchInput').value.toLowerCase();
             tbody.innerHTML = '';
 
             listaProductos.sort((a,b) => a.nombre.localeCompare(b.nombre)).forEach(p => {
-                if (filtro && !p.nombre.toLowerCase().includes(filtro) && !String(p.codigo_barras).toLowerCase().includes(filtro)) return;
+                if (filtro && !p.nombre.toLowerCase().includes(filtro) && !String(p.codigo_barras || p.id).toLowerCase().includes(filtro)) return;
 
                 const tr = document.createElement('tr');
                 let clase = 'stock-ok';
@@ -179,14 +175,17 @@
                 if (p.stock_actual <= 0) { clase = 'stock-danger'; texto = 'AGOTADO'; }
                 else if (p.stock_actual <= (p.stock_minimo || 2)) { clase = 'stock-warning'; texto = 'BAJO'; }
 
+                let estrellas = p.destacado ? '🌟 ' : '';
+                let popup = p.popup ? '🔥 ' : '';
+
                 tr.innerHTML = `
-                    <td>${p.codigo_barras || '-'}</td>
-                    <td><strong>${p.nombre}</strong><br><small>${p.variante || ''} (${p.categoria})</small></td>
-                    <td>${Number(p.precio_gs).toLocaleString('es-PY')}</td>
-                    <td class="${clase}">${p.stock_actual} un.<br><small>(${texto})</small></td>
-                    <td>
-                        <button class="btn btn-primary btn-mini" onclick='window.editar(${JSON.stringify(p)})'>✏️</button>
-                        <button class="btn btn-success btn-mini" onclick="window.abrirModalStock('${p.id}', '${p.nombre.replace(/'/g, "\\'")}')">➕</button>
+                    <td style="padding: 10px; border-bottom: 1px solid #333;">${p.codigo_barras || p.id}</td>
+                    <td style="padding: 10px; border-bottom: 1px solid #333;"><strong>${estrellas}${popup}${p.nombre}</strong><br><small style="color:#888;">${p.categoria}</small></td>
+                    <td style="padding: 10px; border-bottom: 1px solid #333;">${Number(p.precio_gs).toLocaleString('es-PY')}</td>
+                    <td style="padding: 10px; border-bottom: 1px solid #333;" class="${clase}">${p.stock_actual} un.<br><small>(${texto})</small></td>
+                    <td style="padding: 10px; border-bottom: 1px solid #333;">
+                        <button class="btn btn-primary btn-mini" onclick='window.editar(${JSON.stringify(p).replace(/'/g, "&apos;")})'>✏️ Editar</button>
+                        <button class="btn btn-success btn-mini" onclick="window.abrirModalStock('${p.id}', '${p.nombre.replace(/'/g, "\\'")}')">➕ Stock</button>
                     </td>
                 `;
                 tbody.appendChild(tr);
@@ -195,15 +194,22 @@
 
         window.editar = function(p) {
             document.getElementById('prodId').value = p.id;
-            document.getElementById('codigo').value = p.codigo_barras;
-            document.getElementById('categoria').value = p.categoria;
-            document.getElementById('nombre').value = p.nombre;
+            document.getElementById('codigo').value = p.codigo_barras || p.id;
+            document.getElementById('categoria').value = p.categoria || '';
+            document.getElementById('nombre').value = p.nombre || '';
             document.getElementById('variante').value = p.variante || '';
-            document.getElementById('precio').value = p.precio_gs;
+            document.getElementById('precio').value = p.precio_gs || 0;
             document.getElementById('iva').value = p.iva_pct || 10;
-            document.getElementById('stock').value = p.stock_actual;
+            document.getElementById('stock').value = p.stock_actual || 0;
             document.getElementById('minimo').value = p.stock_minimo || 2;
-            document.getElementById('formTitle').innerText = "Editar Producto";
+            
+            // Limpiar input de imagen para no sobreescribir accidentalmente si no se cambia
+            document.getElementById('imgUrl').value = '';
+
+            document.getElementById('destacado').checked = (p.destacado === true || String(p.destacado) === 'true' || String(p.destacado) === '1');
+            document.getElementById('popup').checked = (p.popup === true || String(p.popup) === 'true' || String(p.popup) === '1');
+
+            document.getElementById('formTitle').innerText = "Editando: " + p.nombre;
             window.scrollTo(0, 0);
         };
 
@@ -213,10 +219,16 @@
             document.getElementById('formTitle').innerText = "Nuevo Producto";
         };
 
-        // --- GUARDAR EN FIREBASE ---
         document.getElementById('productForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const id = document.getElementById('prodId').value || Date.now().toString();
+            
+            // CAMBIO B: Blindaje de foto en la construcción del objeto producto
+            const urlNueva = document.getElementById('imgUrl').value.trim();
+            const pExistente = listaProductos.find(p => String(p.id) === String(id));
+            const fotoActual = pExistente?.images?.[0] || pExistente?.img || pExistente?.imagen || pExistente?.image || 'img/logo_jpg.jpg';
+            const imgFinal = urlNueva || fotoActual;
+
             const producto = {
                 id: id,
                 codigo_barras: document.getElementById('codigo').value.toUpperCase(),
@@ -227,11 +239,22 @@
                 iva_pct: parseInt(document.getElementById('iva').value),
                 stock_actual: parseInt(document.getElementById('stock').value),
                 stock_minimo: parseInt(document.getElementById('minimo').value),
-                images: ["img/logo_jpg.jpg"]
+                
+                // Los 3 campos garantizados para máxima compatibilidad con el frontend
+                img: imgFinal,
+                imagen: imgFinal,
+                image: imgFinal,
+                images: [imgFinal], 
+                
+                destacado: document.getElementById('destacado').checked,
+                popup: document.getElementById('popup').checked,
+                activo: true,
+                estado: "normal"
             };
 
-            await set(ref(db, 'productos/' + id), producto);
-            alert("✅ Sincronizado con la nube");
+            // CAMBIO A: Reemplazar set() por update()
+            await update(ref(db, 'productos/' + id), producto);
+            alert("✅ Guardado Exitosamente");
             window.limpiarFormulario();
         });
 
@@ -248,16 +271,8 @@
             const p = listaProductos.find(prod => String(prod.id) === String(id));
             const nuevoStock = (parseInt(p.stock_actual) || 0) + cant;
             await update(ref(db, 'productos/' + id), { stock_actual: nuevoStock });
+            document.getElementById('stockCantidad').value = '';
             document.getElementById('modalStock').style.display = 'none';
-        };
-        
-        window.guardarConfiguracion = function() {
-            const config = {
-                nombre: document.getElementById('confNombre').value,
-                ruc: document.getElementById('confRuc').value
-            };
-            localStorage.setItem('marilynConfig', JSON.stringify(config));
-            alert("Configuración guardada.");
         };
     </script>
 </body>
