@@ -1,4 +1,4 @@
-// app.js - FASE 5: FUSIÓN EN MEMORIA (CON URLS ABSOLUTAS)
+// app.js - FASE 5: FUSIÓN EN MEMORIA (CON RECONOCIMIENTO DE BASE64 NATIVO)
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
@@ -23,7 +23,6 @@ let currentGallery = [];
 let currentIndex = 0;
 
 const GITHUB_DB_URL = "https://raw.githubusercontent.com/creacionesmarilyn-py/web-creaciones-marilyn/main/database.json";
-// ESTE ES EL GPS QUE FALTABA 👇
 const RAW_BASE_URL = "https://raw.githubusercontent.com/creacionesmarilyn-py/web-creaciones-marilyn/main/";
 
 function normalizar(texto) {
@@ -60,23 +59,25 @@ document.addEventListener('DOMContentLoaded', async () => {
                     normalizar(op.name || op.nombre) === nombreNorm
                 );
 
-                // --- Rescatar Foto Original con GPS Absoluto ---
+                // --- Rescatar Foto Original con GPS Absoluto y Compatibilidad Base64 ---
                 let finalImages = ['img/logo_jpg.jpg'];
                 if (pViejo && (pViejo.image || (pViejo.images && pViejo.images.length > 0))) {
                     let imgs = pViejo.images || [pViejo.image];
                     finalImages = imgs.map(i => {
                         let path = String(i).replace(/^\//, '');
-                        return path.startsWith('http') || path.startsWith('blob:') ? path : RAW_BASE_URL + path;
+                        // EL FIX MAESTRO ESTÁ AQUÍ (Añadido path.startsWith('data:'))
+                        return path.startsWith('http') || path.startsWith('blob:') || path.startsWith('data:') ? path : RAW_BASE_URL + path;
                     });
                 } else {
-                    let fbImgs = pFb.images || pFb.image || pFb.imagen;
+                    let fbImgs = pFb.images || pFb.image || pFb.imagen || pFb.img;
                     if (fbImgs) {
                         if (!Array.isArray(fbImgs)) fbImgs = [fbImgs];
                         let valid = fbImgs.filter(i => i && i.trim() !== "" && !i.includes("logo_jpg"));
                         if (valid.length > 0) {
                             finalImages = valid.map(i => {
                                 let path = String(i).replace(/^\//, '');
-                                return path.startsWith('http') || path.startsWith('blob:') ? path : RAW_BASE_URL + path;
+                                // EL FIX MAESTRO ESTÁ AQUÍ (Añadido path.startsWith('data:'))
+                                return path.startsWith('http') || path.startsWith('blob:') || path.startsWith('data:') ? path : RAW_BASE_URL + path;
                             });
                         }
                     }
