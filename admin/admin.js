@@ -101,7 +101,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     precio_gs: parseInt(document.getElementById('p-price').value),
                     categoria: document.getElementById('p-collection').value,
                     estado: document.getElementById('p-status').value,
-                    imagen: imgFinal, // <-- Aquí se guarda la foto comprimida nativa
+                    
+                    // --- BLINDAJE DE IMÁGENES (Compatible con cualquier frontend) ---
+                    imagen: imgFinal,
+                    img: imgFinal,
+                    image: imgFinal,
+                    images: [imgFinal], 
+                    // ----------------------------------------------------------------
+                    
                     destacado: false,
                     fecha_registro: new Date().toISOString()
                 };
@@ -194,11 +201,15 @@ document.addEventListener('DOMContentLoaded', () => {
             const productosArray = Object.keys(data).map(key => data[key]);
             counter.textContent = `${productosArray.length} productos en base`;
 
-            container.innerHTML = productosArray.reverse().map(p => `
+            container.innerHTML = productosArray.reverse().map(p => {
+                // Leer la imagen de forma segura sin importar cómo se guardó
+                const miniatura = p.images?.[0] || p.img || p.imagen || p.image || '';
+                
+                return `
                 <div class="flex justify-between items-center py-3 px-2 border-b border-gray-50 last:border-0 group">
                     <div class="flex items-center gap-3">
                         <div class="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden border border-gray-200 relative">
-                            ${p.imagen ? `<img src="${p.imagen}" class="w-full h-full object-cover">` : `<i class="fas fa-image text-gray-300"></i>`}
+                            ${miniatura ? `<img src="${miniatura}" class="w-full h-full object-cover">` : `<i class="fas fa-image text-gray-300"></i>`}
                             ${p.destacado ? '<span class="absolute -top-1 -left-1 text-[8px] bg-yellow-400 text-white px-1 rounded-full shadow-sm"><i class="fas fa-star"></i></span>' : ''}
                         </div>
                         <div>
@@ -211,7 +222,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <button onclick="window.eliminarProductoNube(${p.id})" class="text-gray-300 hover:text-red-500 transition-colors p-2"><i class="fas fa-trash-alt"></i></button>
                     </div>
                 </div>
-            `).join('');
+            `}).join('');
         });
     }
 
