@@ -14,12 +14,16 @@
         .checkbox-wrapper { display: flex; align-items: center; gap: 10px; background: #222; padding: 15px; border-radius: 8px; border: 1px solid #444; margin-top: 10px; }
         .checkbox-wrapper input[type="checkbox"] { width: 20px; height: 20px; accent-color: #D4AF37; cursor: pointer; }
         .checkbox-wrapper label { margin: 0; cursor: pointer; font-size: 14px; }
+        
+        /* Estilos del subidor de fotos */
+        .file-upload-container { background: #111; border: 1px dashed var(--color-gold); padding: 15px; border-radius: 8px; margin-top: 15px; text-align: center; }
+        .file-upload-input { width: 100%; padding: 10px; background: #222; color: white; border: 1px solid #444; border-radius: 4px; cursor: pointer; }
     </style>
 </head>
 <body>
 
     <header style="display: flex; justify-content: space-between; align-items: center;">
-        <h1>💎 Marilyn Panel E-commerce (Cloudinary + Firebase)</h1>
+        <h1>💎 Marilyn Panel E-commerce (Firebase Local)</h1>
         <div>
             <a href="index.html" class="btn" style="background: transparent; border: 1px solid var(--color-gold); color: var(--color-gold);">Ir a Caja ➡</a>
         </div>
@@ -76,10 +80,12 @@
                     </div>
                 </div>
                 
-                <div class="row mt-2">
-                    <div class="col">
-                        <label for="imgUrl" style="color: var(--color-gold);">🖼️ URL de Foto (Cloudinary):</label>
-                        <input type="text" id="imgUrl" placeholder="Dejá vacío para mantener la foto actual">
+                <div class="file-upload-container">
+                    <label style="color: var(--color-gold); font-weight: bold; display: block; margin-bottom: 10px;">🖼️ Foto del Producto (Desde tu PC)</label>
+                    <input type="file" id="imgUpload" class="file-upload-input" accept="image/*">
+                    
+                    <div id="imgPreview" style="margin-top: 15px; display: none;">
+                        <img id="previewImgTag" src="" style="max-height: 100px; border-radius: 8px; border: 2px solid var(--color-gold);">
                     </div>
                 </div>
                 
@@ -105,6 +111,7 @@
                 <table id="tablaProductos" style="width: 100%; text-align: left;">
                     <thead>
                         <tr>
+                            <th>Foto</th>
                             <th>Código</th>
                             <th>Producto</th>
                             <th>Precio Gs</th>
@@ -146,7 +153,38 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
+        
         let listaProductos = [];
+        window.imagenBase64Actual = ""; 
+
+        // --- SISTEMA DE COMPRESIÓN DE IMAGEN ---
+        document.getElementById('imgUpload').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = function(event) {
+                const img = new Image();
+                img.src = event.target.result;
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    const MAX_WIDTH = 600;
+                    let scaleSize = 1;
+                    if (img.width > MAX_WIDTH) scaleSize = MAX_WIDTH / img.width;
+                    
+                    canvas.width = img.width * scaleSize;
+                    canvas.height = img.height * scaleSize;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    
+                    window.imagenBase64Actual = canvas.toDataURL('image/jpeg', 0.7);
+                    
+                    document.getElementById('previewImgTag').src = window.imagenBase64Actual;
+                    document.getElementById('imgPreview').style.display = 'block';
+                }
+            };
+        });
 
         onValue(ref(db, 'productos'), (snapshot) => {
             const data = snapshot.val();
@@ -177,8 +215,10 @@
 
                 let estrellas = p.destacado ? '🌟 ' : '';
                 let popup = p.popup ? '🔥 ' : '';
+                let miniatura = p.images?.[0] || p.img || p.imagen || p.image || 'img/logo_jpg.jpg';
 
                 tr.innerHTML = `
+                    <td style="padding: 10px; border-bottom: 1px solid #333;"><img src="${miniatura}" style="width: 40px; height: 40px; object-fit: cover; border-radius: 4px; border: 1px solid #555;"></td>
                     <td style="padding: 10px; border-bottom: 1px solid #333;">${p.codigo_barras || p.id}</td>
                     <td style="padding: 10px; border-bottom: 1px solid #333;"><strong>${estrellas}${popup}${p.nombre}</strong><br><small style="color:#888;">${p.categoria}</small></td>
                     <td style="padding: 10px; border-bottom: 1px solid #333;">${Number(p.precio_gs).toLocaleString('es-PY')}</td>
@@ -203,8 +243,16 @@
             document.getElementById('stock').value = p.stock_actual || 0;
             document.getElementById('minimo').value = p.stock_minimo || 2;
             
-            // Limpiar input de imagen para no sobreescribir accidentalmente si no se cambia
-            document.getElementById('imgUrl').value = '';
+            window.imagenBase64Actual = p.images?.[0] || p.img || p.imagen || p.image || '';
+            document.getElementById('imgUpload').value = ''; 
+            
+            const previewBox = document.getElementById('imgPreview');
+            if (window.imagenBase64Actual && !window.imagenBase64Actual.includes('logo_jpg.jpg')) {
+                document.getElementById('previewImgTag').src = window.imagenBase64Actual;
+                previewBox.style.display = 'block';
+            } else {
+                previewBox.style.display = 'none';
+            }
 
             document.getElementById('destacado').checked = (p.destacado === true || String(p.destacado) === 'true' || String(p.destacado) === '1');
             document.getElementById('popup').checked = (p.popup === true || String(p.popup) === 'true' || String(p.popup) === '1');
@@ -217,17 +265,16 @@
             document.getElementById('productForm').reset();
             document.getElementById('prodId').value = '';
             document.getElementById('formTitle').innerText = "Nuevo Producto";
+            window.imagenBase64Actual = "";
+            document.getElementById('imgPreview').style.display = 'none';
         };
 
         document.getElementById('productForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const id = document.getElementById('prodId').value || Date.now().toString();
             
-            // CAMBIO B: Blindaje de foto en la construcción del objeto producto
-            const urlNueva = document.getElementById('imgUrl').value.trim();
-            const pExistente = listaProductos.find(p => String(p.id) === String(id));
-            const fotoActual = pExistente?.images?.[0] || pExistente?.img || pExistente?.imagen || pExistente?.image || 'img/logo_jpg.jpg';
-            const imgFinal = urlNueva || fotoActual;
+            // Blindaje 100% igual al Admin Web
+            const imgFinal = window.imagenBase64Actual || 'img/logo_jpg.jpg';
 
             const producto = {
                 id: id,
@@ -240,7 +287,6 @@
                 stock_actual: parseInt(document.getElementById('stock').value),
                 stock_minimo: parseInt(document.getElementById('minimo').value),
                 
-                // Los 3 campos garantizados para máxima compatibilidad con el frontend
                 img: imgFinal,
                 imagen: imgFinal,
                 image: imgFinal,
@@ -252,7 +298,6 @@
                 estado: "normal"
             };
 
-            // CAMBIO A: Reemplazar set() por update()
             await update(ref(db, 'productos/' + id), producto);
             alert("✅ Guardado Exitosamente");
             window.limpiarFormulario();
