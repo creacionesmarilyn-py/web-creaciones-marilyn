@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Reparación Maestra Marilyn</title>
+    <style>
+        body { background: #111; color: #fff; font-family: sans-serif; text-align: center; padding: 50px; }
+        .card { background: #222; padding: 30px; border-radius: 10px; border: 2px solid #D4AF37; max-width: 600px; margin: 0 auto; }
+        button { background: #D4AF37; color: black; padding: 15px 30px; border: none; font-size: 18px; font-weight: bold; cursor: pointer; border-radius: 5px; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>🛠️ Fusión Maestra de Base de Datos</h1>
+        <p>Este proceso restaurará las lógicas perdidas (Destacados, Popups, Etiquetas) y los enlaces web de las fotos originales desde GitHub, fusionándolas con tus IDs y stocks actuales de Firebase.</p>
+        <button onclick="ejecutarFusion()" id="btnFusion">🚀 INICIAR FUSIÓN MAESTRA</button>
+        <h2 id="status" style="margin-top: 20px;"></h2>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getDatabase, ref, get, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBmPvAk_lSJ1TlBVtMqKAC1HaPM5eVeZxo",
+            authDomain: "creaciones-marilyn.firebaseapp.com",
+            databaseURL: "https://creaciones-marilyn-default-rtdb.firebaseio.com",
+            projectId: "creaciones-marilyn",
+            storageBucket: "creaciones-marilyn.firebasestorage.app",
+            messagingSenderId: "565099684746",
+            appId: "1:565099684746:web:a99ccfb9796aea22725e73"
+        };
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        function normalizar(texto) {
+            if (!texto) return "";
+            return String(texto).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, " ").trim();
+        }
+
+        window.ejecutarFusion = async function() {
+            const statusEl = document.getElementById('status');
+            const btn = document.getElementById('btnFusion');
+            btn.disabled = true;
+
+            try {
+                statusEl.innerText = "⏳ 1. Descargando repositorio original de GitHub...";
+                statusEl.style.color = "yellow";
+                
+                const res = await fetch("https://raw.githubusercontent.com/creacionesmarilyn-py/web-creaciones-marilyn/main/database.json?v=" + Date.now());
+                const oldData = await res.json();
+                const arrayViejo = oldData.products || oldData.productos || [];
+
+                statusEl.innerText = "⏳ 2. Conectando con Firebase...";
+                const snapshot = await get(ref(db, 'productos'));
+                const currentData = snapshot.val();
+
+                if (!currentData) throw new Error("Firebase está vacío.");
+
+                statusEl.innerText = "⏳ 3. Fusionando Lógicas y Fotos...";
+                const updates = {};
+                let modificados = 0;
+
+                for (const key in currentData) {
+                    const pActual = currentData[key];
+                    const nombreActualNorm = normalizar(pActual.nombre);
+
+                    // Buscar el producto en la base vieja
+                    const pViejo = arrayViejo.find(op => 
+                        String(op.id) === String(pActual.id) || 
+                        normalizar(op.name || op.nombre) === nombreActualNorm
+                    );
+
+                    if (pViejo) {
+                        let necesitaUpdate = false;
+
+                        // 1. Restaurar Lógicas
+                        if (pViejo.destacado !== undefined) { updates[`productos/${key}/destacado`] = pViejo.destacado; necesitaUpdate = true; }
+                        if (pViejo.popup !== undefined) { updates[`productos/${key}/popup`] = pViejo.popup; necesitaUpdate = true; }
+                        if (pViejo.badge !== undefined) { updates[`productos/${key}/badge`] = pViejo.badge; necesitaUpdate = true; }
+                        if (pViejo.isNew !== undefined) { updates[`productos/${key}/isNew`] = pViejo.isNew; necesitaUpdate = true; }
+
+                        // 2. Restaurar Foto (Si la actual es el logo por defecto o está rota)
+                        const imgActual = pActual.image || (pActual.images && pActual.images[0]);
+                        if (!imgActual || imgActual.includes("logo_jpg") || imgActual.startsWith("blob:")) {
+                            const fotoOriginal = pViejo.image || (pViejo.images && pViejo.images[0]);
+                            if (fotoOriginal) {
+                                updates[`productos/${key}/image`] = fotoOriginal;
+                                updates[`productos/${key}/images`] = [fotoOriginal];
+                                necesitaUpdate = true;
+                            }
+                        }
+
+                        if (necesitaUpdate) modificados++;
+                    }
+                }
+
+                if (Object.keys(updates).length > 0) {
+                    await update(ref(db), updates);
+                    statusEl.innerText = `✅ ¡Fusión Éxitosa! Se restauraron las fotos y lógicas (destacados/popups) de ${modificados} productos.`;
+                    statusEl.style.color = "#00ff00";
+                } else {
+                    statusEl.innerText = "⚠️ No se encontraron diferencias para fusionar.";
+                    statusEl.style.color = "orange";
+                }
+
+            } catch (error) {
+                statusEl.innerText = "❌ Error: " + error.message;
+                statusEl.style.color = "red";
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "FUSIÓN COMPLETADA";
+            }
+        };
+    </script>
+</body>
+</html>

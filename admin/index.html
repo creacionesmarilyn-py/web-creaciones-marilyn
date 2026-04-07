@@ -66,11 +66,14 @@
                 </div>
 
                 <div class="flex flex-col gap-2">
-                    <label class="text-[9px] font-black text-gray-400 uppercase ml-1 tracking-widest">Imágenes (URL o Nombre de archivo)</label>
-                    <input type="text" id="p-image-url" placeholder="ej. img/producto1.jpg" class="border p-3 rounded-xl bg-gray-50 focus:bg-white transition outline-none focus:ring-2 focus:ring-pink-500 text-sm" required>
+                    <label class="text-[9px] font-black text-gray-400 uppercase ml-1 tracking-widest">🖼️ Foto del Producto (Desde tu PC)</label>
+                    <input type="file" id="p-image-file" accept="image/*" class="w-full text-sm text-gray-500 file:mr-4 file:py-3 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-pink-100 file:text-pink-600 hover:file:bg-pink-200 cursor-pointer border p-1 rounded-xl bg-gray-50 outline-none focus:ring-2 focus:ring-pink-500 transition" required>
+                    
+                    <div id="img-preview-container" class="mt-2 hidden">
+                        <img id="img-preview" src="" class="h-24 w-24 rounded-lg border-2 border-pink-200 object-cover shadow-sm">
+                    </div>
                 </div>
-                
-                <button type="submit" id="submit-btn" class="w-full bg-gray-900 text-white font-bold py-4 rounded-xl hover:bg-pink-600 transition-all flex justify-center items-center gap-3 shadow-xl active:scale-95">
+                <button type="submit" id="submit-btn" class="w-full bg-gray-900 text-white font-bold py-4 rounded-xl hover:bg-pink-600 transition-all flex justify-center items-center gap-3 shadow-xl active:scale-95 mt-4">
                     <i class="fas fa-cloud-upload-alt"></i>
                     <span class="text-xs uppercase tracking-[0.2em]">Guardar en la Nube</span>
                 </button>

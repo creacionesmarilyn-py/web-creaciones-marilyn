@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Rescate Local de Fotos</title>
+    <style>
+        body { background: #111; color: #fff; font-family: sans-serif; text-align: center; padding: 50px; }
+        .card { background: #222; padding: 30px; border-radius: 10px; border: 2px solid #D4AF37; max-width: 600px; margin: 0 auto; }
+        button { background: #D4AF37; color: black; padding: 15px 30px; border: none; font-size: 18px; font-weight: bold; cursor: pointer; border-radius: 5px; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>💾 Rescate desde tu Computadora</h1>
+        <p>Vamos a extraer las fotos de los Craquelados, Hilos y Combos que están en la memoria interna de tu PC y subirlas a Firebase.</p>
+        <button onclick="rescatarDesdeLocal()" id="btnRescate">🚀 INICIAR EXTRACCIÓN LOCAL</button>
+        <h2 id="status" style="margin-top: 20px;"></h2>
+    </div>
+
+    <script type="module">
+        import dbSystem from './js/db.js';
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getDatabase, ref, get, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBmPvAk_lSJ1TlBVtMqKAC1HaPM5eVeZxo",
+            authDomain: "creaciones-marilyn.firebaseapp.com",
+            databaseURL: "https://creaciones-marilyn-default-rtdb.firebaseio.com",
+            projectId: "creaciones-marilyn",
+            storageBucket: "creaciones-marilyn.firebasestorage.app",
+            messagingSenderId: "565099684746",
+            appId: "1:565099684746:web:a99ccfb9796aea22725e73"
+        };
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        window.rescatarDesdeLocal = async function() {
+            const statusEl = document.getElementById('status');
+            const btn = document.getElementById('btnRescate');
+            btn.disabled = true;
+
+            try {
+                statusEl.innerText = "⏳ 1. Leyendo memoria secreta de tu PC...";
+                statusEl.style.color = "yellow";
+                
+                await dbSystem.init();
+                const productosLocales = await dbSystem.obtenerProductos();
+
+                statusEl.innerText = "⏳ 2. Conectando con Firebase...";
+                const snapshot = await get(ref(db, 'productos'));
+                const firebaseData = snapshot.val();
+
+                if (!firebaseData) throw new Error("Firebase está vacío.");
+
+                statusEl.innerText = "⏳ 3. Aspirando e inyectando fotos...";
+                const updates = {};
+                let recuperadas = 0;
+
+                for (const key in firebaseData) {
+                    const prodFb = firebaseData[key];
+                    
+                    // Buscar el mismo producto en tu PC
+                    const prodLocal = productosLocales.find(p => String(p.id) === String(prodFb.id));
+                    
+                    if (prodLocal) {
+                        // Buscar la foto en la memoria de tu compu
+                        const foto = prodLocal.image || prodLocal.images || prodLocal.imagen || prodLocal.foto;
+                        
+                        if (foto && foto !== "img/logo_jpg.jpg" && foto.length > 0) {
+                            updates[`productos/${key}/images`] = Array.isArray(foto) ? foto : [foto];
+                            recuperadas++;
+                        }
+                    }
+                }
+
+                if (Object.keys(updates).length > 0) {
+                    await update(ref(db), updates);
+                    statusEl.innerText = `✅ ¡Misión Cumplida! Se extrajeron y subieron a la nube las fotos de ${recuperadas} productos desde tu PC.`;
+                    statusEl.style.color = "#00ff00";
+                } else {
+                    statusEl.innerText = "⚠️ Proceso terminado. No se encontraron más fotos ocultas.";
+                    statusEl.style.color = "orange";
+                }
+
+            } catch (error) {
+                statusEl.innerText = "❌ Error: " + error.message;
+                statusEl.style.color = "red";
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "PROCESO FINALIZADO";
+            }
+        };
+    </script>
+</body>
+</html>

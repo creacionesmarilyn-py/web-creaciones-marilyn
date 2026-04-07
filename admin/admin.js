@@ -16,7 +16,6 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-// Asegurar que el código se ejecute cuando el HTML esté listo
 document.addEventListener('DOMContentLoaded', () => {
 
     // --- 1. SISTEMA DE LOGIN ---
@@ -33,13 +32,54 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Botón Cerrar Sesión
     const logoutBtn = document.getElementById('logout-btn');
     if(logoutBtn) {
         logoutBtn.addEventListener('click', () => location.reload());
     }
 
-    // --- 2. GUARDAR NUEVO PRODUCTO ---
+    // --- 2. SISTEMA DE CONVERSIÓN DE FOTO A BASE64 ---
+    window.imagenBase64Actual = ""; 
+    const fileInput = document.getElementById('p-image-file');
+    
+    if (fileInput) {
+        fileInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = function(event) {
+                const img = new Image();
+                img.src = event.target.result;
+                img.onload = function() {
+                    // Comprimir la imagen para que no sature la base de datos
+                    const canvas = document.createElement('canvas');
+                    const MAX_WIDTH = 600;
+                    let scaleSize = 1;
+                    if (img.width > MAX_WIDTH) {
+                        scaleSize = MAX_WIDTH / img.width;
+                    }
+                    canvas.width = img.width * scaleSize;
+                    canvas.height = img.height * scaleSize;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+                    // Guardar en variable global como texto
+                    window.imagenBase64Actual = canvas.toDataURL('image/jpeg', 0.7);
+
+                    // Mostrar miniatura de previsualización en el HTML
+                    const previewImg = document.getElementById('img-preview');
+                    const previewContainer = document.getElementById('img-preview-container');
+                    if(previewImg && previewContainer) {
+                        previewImg.src = window.imagenBase64Actual;
+                        previewContainer.classList.remove('hidden');
+                    }
+                }
+            };
+        });
+    }
+
+    // --- 3. GUARDAR NUEVO PRODUCTO ---
     const productForm = document.getElementById('product-form');
     if (productForm) {
         productForm.addEventListener('submit', async (e) => {
@@ -50,21 +90,31 @@ document.addEventListener('DOMContentLoaded', () => {
 
             try {
                 const id = Date.now(); 
+                
+                // Si subió una foto nueva usa el Base64, sino revisa si dejó una URL vieja (o lo deja en blanco)
+                const inputUrlViejo = document.getElementById('p-image-url');
+                const imgFinal = window.imagenBase64Actual || (inputUrlViejo ? inputUrlViejo.value : "");
+
                 const nuevoProducto = {
                     id: id,
                     nombre: document.getElementById('p-name').value,
                     precio_gs: parseInt(document.getElementById('p-price').value),
                     categoria: document.getElementById('p-collection').value,
                     estado: document.getElementById('p-status').value,
-                    imagen: document.getElementById('p-image-url').value, 
+                    imagen: imgFinal, // <-- Aquí se guarda la foto comprimida nativa
                     destacado: false,
                     fecha_registro: new Date().toISOString()
                 };
 
                 await set(ref(db, 'productos/' + id), nuevoProducto);
                 
-                alert("✅ ¡Producto guardado en la Nube!");
+                alert("✅ ¡Producto y Foto guardados en la Nube!");
+                
+                // Limpiar el formulario y la foto
                 productForm.reset();
+                window.imagenBase64Actual = "";
+                if(document.getElementById('img-preview-container')) document.getElementById('img-preview-container').classList.add('hidden');
+                
             } catch (err) { 
                 alert("❌ Error al guardar: " + err.message); 
             } finally {
@@ -74,8 +124,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- 3. FUNCIONES DE EDICIÓN Y ELIMINACIÓN (Globales para la tabla dinámica) ---
-    // Como la tabla se crea dinámicamente, pegamos las funciones al window
+    // --- 4. FUNCIONES DE EDICIÓN Y ELIMINACIÓN ---
     window.abrirModalEdicion = function(id, precio, estado, destacado) {
         document.getElementById('edit-id').value = id;
         document.getElementById('edit-price').value = precio;
@@ -94,7 +143,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // Botones del Modal de Edición
     const closeModalBtn = document.getElementById('close-modal-btn');
     if(closeModalBtn) {
         closeModalBtn.addEventListener('click', () => {
@@ -128,7 +176,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- 4. ESCUCHAR INVENTARIO EN TIEMPO REAL ---
+    // --- 5. ESCUCHAR INVENTARIO EN TIEMPO REAL ---
     function iniciarEscuchaNube() {
         const productosRef = ref(db, 'productos');
         

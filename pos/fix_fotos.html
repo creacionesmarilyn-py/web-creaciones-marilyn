@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Fix Fotos Web Marilyn</title>
+    <style>
+        body { background: #111; color: #fff; font-family: sans-serif; text-align: center; padding: 50px; }
+        .card { background: #222; padding: 30px; border-radius: 10px; border: 2px solid #D4AF37; max-width: 600px; margin: 0 auto; }
+        button { background: #D4AF37; color: black; padding: 15px 30px; border: none; font-size: 18px; font-weight: bold; cursor: pointer; border-radius: 5px; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>🔧 Reparación Final de Enlaces Web</h1>
+        <p>Ajustando el formato de "images" (plural/lista) a "image" (singular/texto) para que tu vitrina pública pueda leer las fotos.</p>
+        <button onclick="arreglarFotos()" id="btnArreglar">🚀 APLICAR PARCHE A FIREBASE</button>
+        <h2 id="status" style="margin-top: 20px;"></h2>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getDatabase, ref, get, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBmPvAk_lSJ1TlBVtMqKAC1HaPM5eVeZxo",
+            authDomain: "creaciones-marilyn.firebaseapp.com",
+            databaseURL: "https://creaciones-marilyn-default-rtdb.firebaseio.com",
+            projectId: "creaciones-marilyn",
+            storageBucket: "creaciones-marilyn.firebasestorage.app",
+            messagingSenderId: "565099684746",
+            appId: "1:565099684746:web:a99ccfb9796aea22725e73"
+        };
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        window.arreglarFotos = async function() {
+            const statusEl = document.getElementById('status');
+            const btn = document.getElementById('btnArreglar');
+            btn.disabled = true;
+
+            try {
+                statusEl.innerText = "⏳ Conectando con Firebase...";
+                statusEl.style.color = "yellow";
+                
+                const snapshot = await get(ref(db, 'productos'));
+                const firebaseData = snapshot.val();
+
+                if (!firebaseData) throw new Error("Firebase está vacío.");
+
+                statusEl.innerText = "⏳ Adaptando formato para la página web...";
+                const updates = {};
+                let adaptadas = 0;
+
+                for (const key in firebaseData) {
+                    const prod = firebaseData[key];
+                    let fotoFinal = "img/logo_jpg.jpg"; // Fallback por defecto
+
+                    // 1. Si está guardado en plural como lista (Array)
+                    if (prod.images && Array.isArray(prod.images) && prod.images.length > 0) {
+                        fotoFinal = prod.images[0];
+                    } 
+                    // 2. Si estaba como texto
+                    else if (prod.images && typeof prod.images === 'string') {
+                        fotoFinal = prod.images;
+                    }
+
+                    // Forzamos la creación de la etiqueta 'image' en SINGULAR para la web
+                    updates[`productos/${key}/image`] = fotoFinal;
+                    adaptadas++;
+                }
+
+                if (Object.keys(updates).length > 0) {
+                    await update(ref(db), updates);
+                    statusEl.innerText = `✅ ¡Listo! Se adaptó el formato de ${adaptadas} fotos.`;
+                    statusEl.style.color = "#00ff00";
+                }
+
+            } catch (error) {
+                statusEl.innerText = "❌ Error: " + error.message;
+                statusEl.style.color = "red";
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "PARCHE APLICADO";
+            }
+        };
+    </script>
+</body>
+</html>
