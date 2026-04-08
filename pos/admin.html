@@ -15,7 +15,6 @@
         .checkbox-wrapper input[type="checkbox"] { width: 20px; height: 20px; accent-color: #D4AF37; cursor: pointer; }
         .checkbox-wrapper label { margin: 0; cursor: pointer; font-size: 14px; }
         
-        /* Estilos del subidor de fotos */
         .file-upload-container { background: #111; border: 1px dashed var(--color-gold); padding: 15px; border-radius: 8px; margin-top: 15px; text-align: center; }
         .file-upload-input { width: 100%; padding: 10px; background: #222; color: white; border: 1px solid #444; border-radius: 4px; cursor: pointer; }
     </style>
@@ -37,7 +36,7 @@
                 <div class="row">
                     <div class="col">
                         <label for="codigo">Código de Barras / Ref:</label>
-                        <input type="text" id="codigo" placeholder="Ej: A001" required>
+                        <input type="text" id="codigo" placeholder="Ej: A001 (Para forzar código corto)" required>
                     </div>
                     <div class="col">
                         <label for="categoria">Categoría:</label>
@@ -69,6 +68,7 @@
                         </select>
                     </div>
                 </div>
+                
                 <div class="row">
                     <div class="col">
                         <label for="stock">Stock Actual:</label>
@@ -78,10 +78,17 @@
                         <label for="minimo">Stock Mínimo (Alerta):</label>
                         <input type="number" id="minimo" value="2">
                     </div>
+                    <div class="col">
+                        <label for="estado">Visibilidad Web:</label>
+                        <select id="estado" style="width: 100%; padding: 10px; background: #222; color: white; border: 1px solid #444; border-radius: 4px;">
+                            <option value="normal">🌐 Público (Web)</option>
+                            <option value="oculto">👻 Oculto (Solo Caja)</option>
+                        </select>
+                    </div>
                 </div>
                 
                 <div class="file-upload-container">
-                    <label style="color: var(--color-gold); font-weight: bold; display: block; margin-bottom: 10px;">🖼️ Foto del Producto (Desde tu PC)</label>
+                    <label style="color: var(--color-gold); font-weight: bold; display: block; margin-bottom: 10px;">🖼️ Foto del Producto (Opcional si es oculto)</label>
                     <input type="file" id="imgUpload" class="file-upload-input" accept="image/*">
                     
                     <div id="imgPreview" style="margin-top: 15px; display: none;">
@@ -157,7 +164,6 @@
         let listaProductos = [];
         window.imagenBase64Actual = ""; 
 
-        // --- SISTEMA DE COMPRESIÓN DE IMAGEN ---
         document.getElementById('imgUpload').addEventListener('change', function(e) {
             const file = e.target.files[0];
             if (!file) return;
@@ -209,18 +215,20 @@
 
                 const tr = document.createElement('tr');
                 let clase = 'stock-ok';
-                let texto = 'OK';
+                let texto = p.estado === 'oculto' ? 'FANTASMA' : 'OK';
+                
                 if (p.stock_actual <= 0) { clase = 'stock-danger'; texto = 'AGOTADO'; }
                 else if (p.stock_actual <= (p.stock_minimo || 2)) { clase = 'stock-warning'; texto = 'BAJO'; }
 
                 let estrellas = p.destacado ? '🌟 ' : '';
                 let popup = p.popup ? '🔥 ' : '';
+                let iconoOculto = p.estado === 'oculto' ? '👻 ' : '';
                 let miniatura = p.images?.[0] || p.img || p.imagen || p.image || 'img/logo_jpg.jpg';
 
                 tr.innerHTML = `
                     <td style="padding: 10px; border-bottom: 1px solid #333;"><img src="${miniatura}" style="width: 40px; height: 40px; object-fit: cover; border-radius: 4px; border: 1px solid #555;"></td>
                     <td style="padding: 10px; border-bottom: 1px solid #333;">${p.codigo_barras || p.id}</td>
-                    <td style="padding: 10px; border-bottom: 1px solid #333;"><strong>${estrellas}${popup}${p.nombre}</strong><br><small style="color:#888;">${p.categoria}</small></td>
+                    <td style="padding: 10px; border-bottom: 1px solid #333;"><strong>${iconoOculto}${estrellas}${popup}${p.nombre}</strong><br><small style="color:#888;">${p.categoria}</small></td>
                     <td style="padding: 10px; border-bottom: 1px solid #333;">${Number(p.precio_gs).toLocaleString('es-PY')}</td>
                     <td style="padding: 10px; border-bottom: 1px solid #333;" class="${clase}">${p.stock_actual} un.<br><small>(${texto})</small></td>
                     <td style="padding: 10px; border-bottom: 1px solid #333;">
@@ -242,6 +250,7 @@
             document.getElementById('iva').value = p.iva_pct || 10;
             document.getElementById('stock').value = p.stock_actual || 0;
             document.getElementById('minimo').value = p.stock_minimo || 2;
+            document.getElementById('estado').value = p.estado || 'normal';
             
             window.imagenBase64Actual = p.images?.[0] || p.img || p.imagen || p.image || '';
             document.getElementById('imgUpload').value = ''; 
@@ -272,8 +281,6 @@
         document.getElementById('productForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const id = document.getElementById('prodId').value || Date.now().toString();
-            
-            // Blindaje 100% igual al Admin Web
             const imgFinal = window.imagenBase64Actual || 'img/logo_jpg.jpg';
 
             const producto = {
@@ -295,7 +302,7 @@
                 destacado: document.getElementById('destacado').checked,
                 popup: document.getElementById('popup').checked,
                 activo: true,
-                estado: "normal"
+                estado: document.getElementById('estado').value
             };
 
             await update(ref(db, 'productos/' + id), producto);

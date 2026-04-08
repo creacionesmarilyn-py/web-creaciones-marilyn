@@ -1,4 +1,4 @@
-// app.js - FASE 5: FUSIÓN EN MEMORIA (CON RECONOCIMIENTO DE BASE64 NATIVO)
+// app.js - FASE 5: FUSIÓN EN MEMORIA (CON RECONOCIMIENTO DE BASE64 NATIVO Y PRODUCTOS FANTASMA)
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
@@ -65,7 +65,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                     let imgs = pViejo.images || [pViejo.image];
                     finalImages = imgs.map(i => {
                         let path = String(i).replace(/^\//, '');
-                        // EL FIX MAESTRO ESTÁ AQUÍ (Añadido path.startsWith('data:'))
                         return path.startsWith('http') || path.startsWith('blob:') || path.startsWith('data:') ? path : RAW_BASE_URL + path;
                     });
                 } else {
@@ -76,7 +75,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                         if (valid.length > 0) {
                             finalImages = valid.map(i => {
                                 let path = String(i).replace(/^\//, '');
-                                // EL FIX MAESTRO ESTÁ AQUÍ (Añadido path.startsWith('data:'))
                                 return path.startsWith('http') || path.startsWith('blob:') || path.startsWith('data:') ? path : RAW_BASE_URL + path;
                             });
                         }
@@ -103,7 +101,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                     stock_actual: pFb.stock_actual !== undefined ? parseFloat(pFb.stock_actual) : 99,
                     images: finalImages
                 };
-            }).filter(p => p.status.toLowerCase() !== 'inactivo'); 
+            }).filter(p => p.status.toLowerCase() !== 'inactivo' && p.status.toLowerCase() !== 'oculto'); 
+            // 👆 AQUÍ ESTÁ LA MAGIA: Los productos "ocultos" son ignorados por el Frontend
             
             allProducts.reverse();
             console.log(`✅ Fusión completada: ${allProducts.length} productos listos para mostrar.`);
