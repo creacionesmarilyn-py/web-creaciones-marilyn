@@ -1,0 +1,5 @@
+User-agent: *
+Disallow: /admin/
+Disallow: /pos/
+
+Sitemap: https://www.creacionesmarilyn.com.py/sitemap.xml

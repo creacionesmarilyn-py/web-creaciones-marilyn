@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.env
+.env.*
+!.env.example
+.vercel/
+*Backup*.json
+*backup*.json
+*.log
+# Local audit evidence: keep out of the public repository while remediation is pending.
+docs/etapa-1-optimizacion.md

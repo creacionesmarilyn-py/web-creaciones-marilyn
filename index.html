@@ -10,12 +10,15 @@
     <link rel="icon" type="image/jpg" href="img/logo_jpg.jpg">
 
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://creacionesmarilyn.com.py/">
+    <link rel="canonical" href="https://www.creacionesmarilyn.com.py/">
+    <meta property="og:url" content="https://www.creacionesmarilyn.com.py/">
     <meta property="og:title" content="Creaciones Marilyn | Bijouterie & Bordados">
     <meta property="og:description" content="Abre las puertas a tu creatividad con nuestros diseños únicos.">
     <meta property="og:image" content="https://creacionesmarilyn.com.py/img/imagen_front.jpg">
 
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/assets/site.css">
+    <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://raw.githubusercontent.com" crossorigin>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
@@ -52,14 +55,14 @@
 
     <header class="bg-white py-6 shadow-sm sticky top-0 z-50">
         <div class="container mx-auto px-4 flex flex-col items-center">
-            <img src="img/logo_jpg.jpg" alt="Logo" class="w-20 h-20 rounded-full mb-2 shadow-md">
+            <img src="img/logo_jpg.jpg" alt="Creaciones Marilyn" width="80" height="80" class="w-20 h-20 rounded-full mb-2 shadow-md">
             <h1 class="text-2xl font-bold tracking-widest uppercase italic text-pink-600">Creaciones Marilyn</h1>
             <p class="text-[10px] tracking-[0.2em] uppercase text-gray-400 font-medium">Accesorios de bijouterie & bordados</p>
         </div>
     </header>
 
     <section class="relative h-[40vh] flex items-center justify-center overflow-hidden bg-black">
-        <img src="img/imagen_front.jpg" alt="Portada" class="absolute w-full h-full object-cover opacity-60">
+        <img src="img/imagen_front.jpg" alt="Accesorios y materiales de Creaciones Marilyn" fetchpriority="high" decoding="async" class="absolute w-full h-full object-cover opacity-60">
         <div class="relative z-10 text-center px-4">
             <h2 class="text-3xl md:text-5xl font-bold text-white mb-4 italic tracking-tight">Abre las puertas a tu creatividad</h2>
             <div class="h-1 w-20 bg-pink-500 mx-auto"></div>
@@ -158,6 +161,6 @@
         </div>
     </footer>
 
-    <script type="module" src="app.js?v=100"></script>
+    <script type="module" src="app.js?v=101"></script>
 </body>
 </html>
