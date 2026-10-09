@@ -9,3 +9,10 @@ dist/
 *.log
 # Local audit evidence: keep out of the public repository while remediation is pending.
 docs/etapa-1-optimizacion.md
+docs/apply-firewall-step1.cjs
+docs/check-firewall-aliases.cjs
+docs/verify-firewall-step1.cjs
+docs/verificacion-firewall-2026-10-09.json
+docs/preview-publicacion.html
+docs/verificar-preview-publicacion.mjs
+docs/publicacion-2026-10-09*

@@ -6,3 +6,8 @@ pos/
 tests/
 docs/
 .env*
+dist/
+node_modules/
+.git/
+security/
+database.json
