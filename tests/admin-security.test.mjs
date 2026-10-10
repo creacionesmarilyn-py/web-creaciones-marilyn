@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {readFile} from 'node:fs/promises';
+import {readFile,readdir} from 'node:fs/promises';
 import {PGlite} from '@electric-sql/pglite';
 const owner='11111111-1111-4111-8111-111111111111',editor='22222222-2222-4222-8222-222222222222',outsider='33333333-3333-4333-8333-333333333333';
 const category='aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
@@ -18,7 +18,8 @@ test('PostgreSQL enforces staff authorization, private data, immutable links, co
  alter table storage.objects enable row level security; grant usage on schema storage to anon,authenticated; grant insert,select,update,delete on storage.objects to anon,authenticated;
  create function storage.foldername(name text) returns text[] language sql immutable as $$select (string_to_array(name,'/'))[1:array_length(string_to_array(name,'/'),1)-1]$$;
  insert into auth.users(id) values('${owner}'),('${editor}'),('${outsider}');`);
- for(const file of ['202610100001_marilyn_catalog.sql','202610100002_marilyn_storage.sql']) await db.exec(await readFile(new URL('../supabase/migrations/'+file,import.meta.url),'utf8'));
+ const migrations=new URL('../supabase/migrations/',import.meta.url);
+ for(const file of (await readdir(migrations)).filter(name=>/_marilyn_(catalog|storage|policy_indexes)\.sql$/.test(name)).sort()) await db.exec(await readFile(new URL(file,migrations),'utf8'));
  await db.exec(`insert into marilyn_private.staff_members(user_id,role) values('${owner}','owner'),('${editor}','editor');
  insert into public.marilyn_categories(id,name,category_key,path) values('${category}','Perlas','perlas','/categorias/perlas');
  insert into public.marilyn_products(id,category_id,name,price,visibility,path) values('26','${category}','Perla original',5000,'published','/productos/perla-original'),('hidden','${category}','Hidden',5000,'hidden','/productos/hidden');

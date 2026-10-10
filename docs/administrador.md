@@ -2,6 +2,14 @@
 
 El código de `/gestion` está preparado, pero **no está activado en producción**. No sustituye aún a Firebase. La compilación normal conserva la tienda pública y omite el panel mientras `MARILYN_ADMIN_ENABLED` no sea `true`.
 
+## Conexión real verificada — 10 de octubre de 2026
+
+El MCP directo ya accede exclusivamente a `mskmfxkhfqimsmicuowv`. Se aplicaron las migraciones del catálogo, Storage, permisos del event trigger y políticas/índices. Los nombres de archivo locales coinciden con las versiones devueltas por el historial remoto. Las siete tablas tienen RLS; `writes_enabled=false` y todavía no se concedieron permisos al personal.
+
+Verificación anónima por HTTPS: catálogo HTTP 200 (vacío), datos internos HTTP 401, esquema `marilyn_private` HTTP 406 porque solo se exponen `public` y `graphql_public`. Se revocó EXECUTE de `public.rls_auto_enable()` a PUBLIC/anon/authenticated, conservando el event trigger de RLS. Los asesores ya no devuelven WARN/ERROR; quedan avisos INFO esperados sobre tablas privadas cerradas sin políticas e índices aún sin uso.
+
+Google está deshabilitado y no hay usuarios Auth. Se abrió Google Auth del proyecto existente `creaciones-marilyn`, con la cuenta de Marilyn; la consola solicita aceptación inicial de términos por el usuario. Aún faltan cliente OAuth, prueba real de acceso, propietario verificado, importación del catálogo/fotos y circuito de publicación. La tienda sigue en Firebase; no habilitar escrituras ni desplegar el administrador todavía.
+
 ## Revisar el panel sin cambiar la tienda
 
 1. `npm ci`

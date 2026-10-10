@@ -18,3 +18,4 @@ docs/verificar-preview-publicacion.mjs
 docs/publicacion-2026-10-09*
 .preview-panel/
 .private-migration/
+supabase/.temp/
