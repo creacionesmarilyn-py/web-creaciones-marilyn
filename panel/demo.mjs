@@ -1,6 +1,7 @@
 // Preview-only adapter. Never imported by the production build.
 import {mountPanel} from './app.mjs';
-const response=await fetch('/demo-catalog.json');if(!response.ok)throw new Error('Demo unavailable');
+try {
+const response=await fetch('/demo-catalog.json',{signal:AbortSignal.timeout(15000)});if(!response.ok)throw new Error('Demo unavailable');
 const data=await response.json();
 await mountPanel({
   session:async()=>({id:'demo',email:'Cuenta de prueba',role:'owner',writable:true}),
@@ -16,3 +17,10 @@ await mountPanel({
   },
   logout:async()=>{},login:async()=>{},upload:async()=>{throw new Error('Photo uploads are disabled in demo');}
 },{demo:true});
+
+} catch {
+  const status=document.getElementById('global-status');
+  status.hidden=false;status.className='notice error';
+  status.textContent='No se pudo cargar la demostración. Actualizá esta página. Si el problema continúa, avisame para revisar el servidor local.';
+  document.getElementById('demo-banner').hidden=false;
+}

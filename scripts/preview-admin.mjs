@@ -1,3 +1,4 @@
+import {adminPreviewHeaders} from '../server/admin-preview.mjs';
 import {build} from 'esbuild';
 import fs from 'node:fs/promises';
 import http from 'node:http';
@@ -19,7 +20,7 @@ const files=new Map([
  ['/demo-catalog.json',{type:'application/json',body:JSON.stringify({products,categories})}]
 ]);
 const config=JSON.parse(await fs.readFile(new URL('../vercel.json',import.meta.url)));
-const headers=Object.fromEntries(config.headers.find(rule=>rule.source==='/gestion(.*)').headers.map(h=>[h.key,h.value]));
+const headers=adminPreviewHeaders(config);
 http.createServer((req,res)=>{
  if(!['localhost:4174','127.0.0.1:4174'].includes(req.headers.host)){res.writeHead(400);res.end();return;}
  const pathname=new URL(req.url,'http://localhost').pathname;
