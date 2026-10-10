@@ -27,6 +27,20 @@ test('PostgreSQL enforces staff authorization, private data, immutable links, co
  insert into public.marilyn_products(id,store_id,category_id,name,price,visibility,path) values('other','99999999-9999-4999-8999-999999999999','${category}','Other store',1000,'published','/productos/other-store');`);
  const as=async(role,id='')=>{await db.exec(`reset role; set role ${role};`);await db.query("select set_config('request.jwt.claim.sub',$1,false)",[id]);};
  const save=(id='26',version=1,data=changes)=>db.query('select * from public.marilyn_save_product($1,$2,$3::jsonb)',[id,version,JSON.stringify(data)]);
+ await t.test('public RPCs use caller privileges and private functions cannot bypass authorization',async()=>{
+  const functions=(await db.query("select p.proname,p.prosecdef from pg_proc p join pg_namespace n on n.oid=p.pronamespace where n.nspname='public' and p.proname like 'marilyn_%'")).rows;
+  assert.equal(functions.length,4);assert.ok(functions.every(fn=>fn.prosecdef===false));
+  await as('anon');
+  assert.equal((await db.query('select marilyn_private.marilyn_staff_role() as role')).rows[0].role,null);
+  for(const table of ['staff_members','site_state','audit_log']) await assert.rejects(db.query('select * from marilyn_private.'+table),/permission denied/);
+  await assert.rejects(db.query('select marilyn_private.require_writer()'),/permission denied/);
+  await assert.rejects(db.query('select marilyn_private.marilyn_staff_context()'),/permission denied/);
+  await assert.rejects(db.query('select * from marilyn_private.marilyn_save_product(null,null,null)'),/permission denied/);
+  await as('authenticated',outsider);
+  await assert.rejects(db.query('select * from marilyn_private.marilyn_save_product(null,null,null)'),/CATALOG_FORBIDDEN/);
+  await assert.rejects(db.query("select * from marilyn_private.marilyn_create_category('Unauthorized')"),/CATALOG_FORBIDDEN/);
+  await as('authenticated');await assert.rejects(save(),/CATALOG_FORBIDDEN/);
+ });
  await t.test('anonymous sees only published catalog and cannot read private data or write',async()=>{
   await as('anon');assert.deepEqual((await db.query('select id from marilyn_products order by id')).rows.map(x=>x.id),['26','other']);
   await assert.rejects(db.query('select * from marilyn_product_internal'),/permission denied/);
@@ -88,6 +102,7 @@ test('PostgreSQL enforces staff authorization, private data, immutable links, co
  await t.test('missing activation state fails closed',async()=>{
   await db.exec('reset role; delete from marilyn_private.site_state');
   await as('authenticated',owner);await assert.rejects(save('26',3),/CATALOG_NOT_ACTIVE/);
+  assert.equal((await db.query('select marilyn_staff_context() as context')).rows[0].context.writes_enabled,false);
  });
  } finally { await db.close(); }
 });

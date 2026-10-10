@@ -25,10 +25,11 @@ test('input rules protect prices, hidden availability, links and photos',()=>{
 
 test('admin build defaults off and refuses privileged credentials before emitting files',async()=>{
   assert.equal(adminConfig({}),null);
-  const env={MARILYN_ADMIN_ENABLED:'true',SUPABASE_URL:'https://testproject.supabase.co'};
+  const env={MARILYN_ADMIN_ENABLED:'true',SUPABASE_URL:'https://mskmfxkhfqimsmicuowv.supabase.co'};
   const jwt=payload=>['header',Buffer.from(JSON.stringify(payload)).toString('base64url'),'signature'].join('.');
   for(const key of ['sb_secret_example',jwt({role:'service_role'}),''])assert.throws(()=>adminConfig({...env,SUPABASE_PUBLISHABLE_KEY:key}),/public publishable\/anon/);
   assert.throws(()=>adminConfig({...env,SUPABASE_URL:'https://testproject.supabase.co@evil.example',SUPABASE_PUBLISHABLE_KEY:'sb_publishable_example'}),/hosted/);
+  assert.throws(()=>adminConfig({...env,SUPABASE_URL:'https://anotherproject.supabase.co',SUPABASE_PUBLISHABLE_KEY:'sb_publishable_example'}),/different Supabase project/);
   const folder=await mkdtemp(path.join(os.tmpdir(),'marilyn-admin-test-'));
   try{
     assert.equal(await buildAdmin(folder,{}),false);assert.deepEqual(await readdir(folder),[]);

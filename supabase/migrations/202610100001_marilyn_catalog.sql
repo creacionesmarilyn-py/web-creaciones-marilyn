@@ -3,6 +3,10 @@
 begin;
 create schema if not exists marilyn_private;
 revoke all on schema marilyn_private from public, anon, authenticated;
+-- Clients can resolve explicitly granted functions, but cannot access private tables.
+-- Keep marilyn_private OUT of the Data API exposed schemas.
+grant usage on schema marilyn_private to anon, authenticated;
+alter default privileges in schema marilyn_private revoke execute on functions from public;
 
 create table marilyn_private.staff_members (
   user_id uuid primary key references auth.users(id) on delete cascade,
@@ -30,19 +34,36 @@ alter table marilyn_private.audit_log enable row level security;
 revoke all on all tables in schema marilyn_private from public, anon, authenticated;
 revoke all on all sequences in schema marilyn_private from public, anon, authenticated;
 
-create function public.marilyn_staff_role() returns text
+create function marilyn_private.marilyn_staff_role() returns text
 language sql stable security definer set search_path = '' as $$
   select role from marilyn_private.staff_members where user_id = (select auth.uid()) and active
 $$;
-revoke all on function public.marilyn_staff_role() from public;
+revoke all on function marilyn_private.marilyn_staff_role() from public,anon,authenticated;
+grant execute on function marilyn_private.marilyn_staff_role() to anon, authenticated;
+
+-- Exposed RPC uses caller privileges; only its checked private implementation is privileged.
+create function public.marilyn_staff_role() returns text
+language sql stable security invoker set search_path='' as $$
+  select marilyn_private.marilyn_staff_role()
+$$;
+revoke all on function public.marilyn_staff_role() from public,anon,authenticated;
 grant execute on function public.marilyn_staff_role() to anon, authenticated;
 
-create function public.marilyn_staff_context() returns jsonb
+create function marilyn_private.marilyn_staff_context() returns jsonb
 language sql stable security definer set search_path = '' as $$
-  select jsonb_build_object('role', public.marilyn_staff_role(), 'writes_enabled',
-    public.marilyn_staff_role() is not null and (select writes_enabled from marilyn_private.site_state where singleton))
+  select jsonb_build_object('role', marilyn_private.marilyn_staff_role(), 'writes_enabled',
+    marilyn_private.marilyn_staff_role() is not null and coalesce((select writes_enabled from marilyn_private.site_state where singleton),false))
+  where (select auth.uid()) is not null
 $$;
-revoke all on function public.marilyn_staff_context() from public;
+revoke all on function marilyn_private.marilyn_staff_context() from public,anon,authenticated;
+grant execute on function marilyn_private.marilyn_staff_context() to authenticated;
+
+-- Exposed RPC uses caller privileges; only its checked private implementation is privileged.
+create function public.marilyn_staff_context() returns jsonb
+language sql stable security invoker set search_path='' as $$
+  select marilyn_private.marilyn_staff_context()
+$$;
+revoke all on function public.marilyn_staff_context() from public,anon,authenticated;
 grant execute on function public.marilyn_staff_context() to authenticated;
 
 create table public.marilyn_stores (
@@ -101,12 +122,12 @@ create policy marilyn_internal_owner on public.marilyn_product_internal for sele
 create function marilyn_private.require_writer() returns void
 language plpgsql security definer set search_path='' as $$
 begin
-  if public.marilyn_staff_role() is null then raise exception 'CATALOG_FORBIDDEN' using errcode='42501'; end if;
+  if auth.uid() is null or marilyn_private.marilyn_staff_role() is null then raise exception 'CATALOG_FORBIDDEN' using errcode='42501'; end if;
   if not coalesce((select writes_enabled from marilyn_private.site_state where singleton),false) then raise exception 'CATALOG_NOT_ACTIVE' using errcode='55000'; end if;
 end $$;
 revoke all on function marilyn_private.require_writer() from public,anon,authenticated;
 
-create function public.marilyn_save_product(p_id text, p_expected_version bigint, p_changes jsonb) returns public.marilyn_products
+create function marilyn_private.marilyn_save_product(p_id text, p_expected_version bigint, p_changes jsonb) returns public.marilyn_products
 language plpgsql security definer set search_path='' as $$
 declare before_row public.marilyn_products; saved public.marilyn_products; next_id text; next_path text; image_url text;
 begin
@@ -145,10 +166,18 @@ begin
     values(auth.uid(),saved.id,case when p_id is null then 'create' else 'update' end,to_jsonb(before_row),to_jsonb(saved));
   return saved;
 end $$;
-revoke all on function public.marilyn_save_product(text,bigint,jsonb) from public,anon;
+revoke all on function marilyn_private.marilyn_save_product(text,bigint,jsonb) from public,anon,authenticated;
+grant execute on function marilyn_private.marilyn_save_product(text,bigint,jsonb) to authenticated;
+
+-- Exposed RPC uses caller privileges; only its checked private implementation is privileged.
+create function public.marilyn_save_product(p_id text, p_expected_version bigint, p_changes jsonb) returns public.marilyn_products
+language sql security invoker set search_path='' as $$
+  select * from marilyn_private.marilyn_save_product(p_id,p_expected_version,p_changes)
+$$;
+revoke all on function public.marilyn_save_product(text,bigint,jsonb) from public,anon,authenticated;
 grant execute on function public.marilyn_save_product(text,bigint,jsonb) to authenticated;
 
-create function public.marilyn_create_category(p_name text) returns public.marilyn_categories
+create function marilyn_private.marilyn_create_category(p_name text) returns public.marilyn_categories
 language plpgsql security definer set search_path='' as $$
 declare saved public.marilyn_categories; category_id uuid := gen_random_uuid(); path_slug text;
 begin
@@ -161,6 +190,14 @@ begin
     values(category_id,btrim(p_name),lower(btrim(p_name)),'/categorias/'||coalesce(nullif(path_slug,''),'categoria')||'-'||replace(category_id::text,'-','')) returning * into saved;
   return saved;
 end $$;
-revoke all on function public.marilyn_create_category(text) from public,anon;
+revoke all on function marilyn_private.marilyn_create_category(text) from public,anon,authenticated;
+grant execute on function marilyn_private.marilyn_create_category(text) to authenticated;
+
+-- Exposed RPC uses caller privileges; only its checked private implementation is privileged.
+create function public.marilyn_create_category(p_name text) returns public.marilyn_categories
+language sql security invoker set search_path='' as $$
+  select * from marilyn_private.marilyn_create_category(p_name)
+$$;
+revoke all on function public.marilyn_create_category(text) from public,anon,authenticated;
 grant execute on function public.marilyn_create_category(text) to authenticated;
 commit;
