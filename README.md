@@ -39,3 +39,13 @@ npm run verify:release -- https://www.creacionesmarilyn.com.py --firebase
 ```
 
 El verificador solo hace lecturas. Comprueba cabeceras, recursos optimizados y que archivos internos no estén disponibles. Con `--firebase`, comprueba que el catálogo es público y la lectura anónima de ventas está denegada; solicita únicamente metadatos superficiales y no los guarda ni muestra. No prueba escrituras. Devuelve un error si alguna comprobación está pendiente. Los despliegues históricos deben revisarse por separado.
+
+## Páginas por producto y categoría
+
+El build genera HTML propio para cada producto público y categoría, con URL canónica, Open Graph, imagen JPEG 1200×630, datos estructurados y sitemap. Las fichas incluyen precio estimado, galería, carrito, consulta por WhatsApp con referencia y URL, y copia de enlace. No requieren cuenta ni cobran en la web. La actualización del catálogo conserva la ficha o categoría abierta.
+
+`content/catalog-routes.json` es el registro de enlaces permanentes, vinculado a los IDs existentes. No borrar ni reasignar rutas de productos retirados. Un cambio de nombre conserva la ruta del producto. Los duplicados de nombre reciben un sufijo y nunca comparten dirección. Para incorporar productos o categorías nuevos, ejecutar `npm run routes:sync`, revisar y guardar el registro en Git, compilar y publicar. El build falla si faltan rutas, evitando publicar enlaces rotos. La futura administración debe automatizar este flujo. Los cambios de nombre de categoría necesitan conservar o redirigir explícitamente su ruta antes de publicar.
+
+El precio y la disponibilidad visibles se actualizan desde el endpoint; las vistas previas sociales y el HTML para buscadores se renuevan al publicar. WhatsApp también puede conservar su propia caché. Los productos retirados dejan de generarse en la siguiente publicación y conservan su ruta reservada. Las fichas solo incluyen en sus datos iniciales el producto y sus imágenes; las categorías incluyen sus propios productos.
+
+Pruebas adicionales: estabilidad de enlaces, variantes con nombres repetidos, escape en HTML/metadatos, las 355 páginas y sus recursos, copia con alternativa si se bloquea el portapapeles, actualización de precio/retiro y búsqueda dentro de una categoría. Referencias: [Open Graph](https://ogp.me/) y [datos estructurados de producto de Google](https://developers.google.com/search/docs/appearance/structured-data/product-snippet). La presencia de metadatos no garantiza indexación ni resultados enriquecidos.

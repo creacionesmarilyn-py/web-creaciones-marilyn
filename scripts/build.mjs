@@ -5,6 +5,11 @@ import { createHash } from 'node:crypto';
 import sharp from 'sharp';
 import { fetchSources, projectCatalog, publicImageUrl, embeddedImage } from '../server/catalog-source.mjs';
 import { renderCategoriesHTML, renderProductGrid } from '../lib/render.mjs';
+import { renderProductDetail } from '../lib/detail.mjs';
+import { SITE_ORIGIN, categoryKey, categoryPath, productPath, isCatalogProduct, jsonForHtml } from '../lib/links.mjs';
+import { imageForDisplay, escapeHtml } from '../lib/catalog.mjs';
+import { publishedRoutes, registerRoutes } from '../server/routes.mjs';
+import { composePage, stripHomeMetadata, renderCategoryPage, productStructured, categoryStructured } from '../server/pages.mjs';
 
 const root = await fs.realpath(fileURLToPath(new URL('../', import.meta.url)));
 const out = path.resolve(root, 'dist');
@@ -21,11 +26,14 @@ const products = projectCatalog(sources.products, sources.legacyProducts, (key, 
     return url;
 });
 if (!products.length) throw new Error('Refusing to publish an empty catalog');
+const registry = JSON.parse(await fs.readFile(path.join(root, 'content/catalog-routes.json'), 'utf8'));
+registerRoutes([], registry); // Validate all reserved paths, including removed products.
+const routes = publishedRoutes(products, registry);
 
 console.log(`Build output: ${out}`);
 await fs.rm(out, { recursive: true, force: true });
 await fs.mkdir(path.join(out, 'assets'), { recursive: true });
-for (const file of ['index.html', 'app.js', 'style.css', 'robots.txt', 'sitemap.xml']) {
+for (const file of ['index.html', 'app.js', 'style.css', 'robots.txt']) {
     await fs.copyFile(path.join(root, file), path.join(out, file));
 }
 for (const dir of ['lib', 'img']) {
@@ -82,17 +90,64 @@ for (const width of [720, 1440]) {
     await fs.writeFile(path.join(out, 'assets', filename), buffer);
     covers.push({ width, url: `/assets/${filename}`, bytes: buffer.length });
 }
-const seed = { products, images: manifest, updatedAt: new Date().toISOString() };
+const updatedAt = new Date().toISOString();
+const seed = { products, images: manifest, routes, page:{type:'home'}, updatedAt };
 // Escaping '<' prevents names such as </script> from breaking the JSON script container.
-const seedJson = JSON.stringify(seed).replace(/</g, '\\u003c').replace(/\u2028/g, '\\u2028').replace(/\u2029/g, '\\u2029');
+const seedJson = jsonForHtml(seed);
 let html = await fs.readFile(path.join(out, 'index.html'), 'utf8');
 for (const marker of ['<!-- CATALOG_DATA -->', '<!-- CATALOG_CATEGORIES -->', '<!-- CATALOG_PRODUCTS -->']) {
     if (!html.includes(marker)) throw new Error(`Missing build marker: ${marker}`);
 }
 html = html.replace('src="img/imagen_front.jpg"', `src="${covers[1].url}" srcset="${covers[0].url} 720w, ${covers[1].url} 1440w" sizes="100vw"`)
     .replace('<!-- CATALOG_DATA -->', () => seedJson)
-    .replace('<!-- CATALOG_CATEGORIES -->', () => renderCategoriesHTML(products))
-    .replace('<!-- CATALOG_PRODUCTS -->', () => renderProductGrid(products.filter(p => !p.popup && p.status.toLowerCase() !== 'anuncio'), { images: manifest }));
+    .replace('<!-- CATALOG_CATEGORIES -->', () => renderCategoriesHTML(products, 'todas', routes))
+    .replace('<!-- CATALOG_PRODUCTS -->', () => renderProductGrid(products.filter(p => !p.popup && p.status.toLowerCase() !== 'anuncio'), { images: manifest, routes }));
 await fs.writeFile(path.join(out, 'index.html'), html);
 console.log(JSON.stringify({ products: products.length, optimizedSources: processed.size, embeddedPhotoReferences: imageSources.size,
     publicCatalogBytes: Buffer.byteLength(JSON.stringify({ products })), htmlBytes: Buffer.byteLength(html), originalBytes, optimizedBytes, covers }, null, 2));
+
+// Social crawlers receive product-specific HTML and JPEG images without running JavaScript.
+const template = stripHomeMetadata(await fs.readFile(path.join(root,'index.html'),'utf8'));
+const visibleProducts = products.filter(isCatalogProduct);
+const shares = new Map();
+async function shareImage(product) {
+    const optimized = imageForDisplay(product.images[0],manifest,true);
+    const source = /^\/assets\/gallery-[a-f0-9]+\.webp$/.test(optimized) ? path.join(out,optimized.slice(1)) : path.join(root,'img/logo_jpg.jpg');
+    if (shares.has(source)) return shares.get(source);
+    const buffer = await sharp(source).rotate().resize(1200,630,{fit:'contain',background:'#ffffff'}).flatten({background:'#ffffff'}).jpeg({quality:82,mozjpeg:true}).toBuffer();
+    const filename = 'share-'+createHash('sha256').update(buffer).digest('hex').slice(0,16)+'.jpg';
+    await fs.writeFile(path.join(out,'assets',filename),buffer);
+    const url = '/assets/'+filename;
+    shares.set(source,url);
+    return url;
+}
+function pageSeed(items,page) {
+    const wanted = new Set(items.flatMap(p=>p.images.flatMap(image=>[imageForDisplay(image,manifest),imageForDisplay(image,manifest,true)])));
+    const images = Object.fromEntries(Object.entries(manifest).filter(([,url])=>wanted.has(url)));
+    return {products:items,images,routes,page,updatedAt};
+}
+async function writePage(route,html) {
+    if (!/^\/(productos|categorias)\/[a-z0-9]+(?:-[a-z0-9]+)*$/.test(route)) throw new Error('Invalid page output route');
+    const target=path.join(out,route.slice(1)+'.html');
+    await fs.mkdir(path.dirname(target),{recursive:true});
+    await fs.writeFile(target,html);
+}
+const sitemap = ['/'];
+for (const product of visibleProducts) {
+    const route=productPath(product,routes), image=await shareImage(product);
+    const content=`<p id="catalog-status" role="status" class="text-center text-sm text-gray-500 mb-4" hidden></p><div id="product-detail">${renderProductDetail(product,{images:manifest,routes})}</div>`;
+    await writePage(route,composePage(template,{title:product.name,
+        description:`${product.name} · ${product.collection}. Gs. ${product.price.toLocaleString('es-PY')}. Consultá precio y disponibilidad por WhatsApp en Creaciones Marilyn.`,
+        path:route,image,content,structured:productStructured(product,routes,image),seed:pageSeed([product],{type:'product',id:String(product.id),path:route})}));
+    sitemap.push(route);
+}
+for (const key of Object.keys(routes.categories)) {
+    const items=visibleProducts.filter(p=>categoryKey(p.collection)===key), name=items[0].collection;
+    const route=categoryPath(name,routes), image=await shareImage(items[0]);
+    await writePage(route,composePage(template,{title:name,description:`Explorá ${name} en Creaciones Marilyn. Fotos, precios y consultas por WhatsApp. Envíos desde Luque a todo Paraguay.`,
+        path:route,image,imageAlt:items[0].name,content:renderCategoryPage(name,items,products,{images:manifest,routes,category:key}),
+        structured:categoryStructured(name,items,routes),seed:pageSeed(items,{type:'category',category:key,path:route})}));
+    sitemap.push(route);
+}
+await fs.writeFile(path.join(out,'sitemap.xml'),'<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'+sitemap.map(route=>'  <url><loc>'+escapeHtml(SITE_ORIGIN+route)+'</loc></url>').join('\n')+'\n</urlset>\n');
+console.log(JSON.stringify({productPages:visibleProducts.length,categoryPages:Object.keys(routes.categories).length,sitemapUrls:sitemap.length,socialImages:shares.size}));

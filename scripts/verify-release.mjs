@@ -28,7 +28,7 @@ if (siteArg) {
         const response = await request(site);
         const html = await response.text();
         record('Página principal', response.status === 200 && html.includes('Confirmar por WhatsApp'), `HTTP ${response.status}`);
-        record('Productos visibles sin JavaScript', html.includes('data-action="gallery"') && html.includes('id="catalog-data"') && !html.includes('Cargando vitrina'), 'Tarjetas incluidas en el HTML');
+        record('Productos visibles sin JavaScript', html.includes('data-product-card=') && html.includes('id="catalog-data"') && !html.includes('Cargando vitrina'), 'Tarjetas incluidas en el HTML');
         record('CSS compilado', html.includes('/assets/site.css') && !html.includes('cdn.tailwindcss.com'), 'Sin compilador Tailwind remoto');
         record('Portada optimizada', /srcset="\/assets\/cover-/.test(html), 'Variantes WebP');
         for (const [name, expected] of [['x-content-type-options', 'nosniff'], ['x-frame-options', 'DENY'], ['referrer-policy', 'strict-origin-when-cross-origin']]) {
@@ -52,6 +52,31 @@ if (siteArg) {
         record('Catálogo ligero disponible', response.status === 200 && Array.isArray(data.products) && data.products.length > 0, 'HTTP ' + response.status);
         record('Datos públicos sin fotos incrustadas', !body.includes('data:image') && data.products.every(p => Object.keys(p).every(key => allowed.has(key))), 'Lista explícita de campos');
         record('Catálogo menor de 750 KB', Buffer.byteLength(body) < 750000, Buffer.byteLength(body) + ' bytes');
+    });
+    await check('Páginas compartibles', async () => {
+        const home = await (await request(site)).text();
+        const seed = JSON.parse(home.match(/id="catalog-data" type="application\/json">([\s\S]*?)<\/script>/)[1]);
+        const productPath = seed.routes?.products?.['26'] || Object.values(seed.routes?.products || {})[0];
+        const categoryPath = seed.routes?.categories?.['perlas numero 6'] || Object.values(seed.routes?.categories || {})[0];
+        const paths = [productPath, categoryPath];
+        for (const path of paths) {
+            if (!path) throw new Error('Missing shared route');
+            const response = await request(new URL(path, site));
+            const html = await response.text();
+            const product = path.startsWith('/productos/');
+            record(product ? 'Ficha de producto' : 'Página de categoría', response.status === 200 && html.includes(product ? 'Copiar enlace del producto' : 'Copiar enlace de la categoría'), 'HTTP '+response.status);
+            record('URL canónica '+path, html.includes('rel="canonical" href="https://www.creacionesmarilyn.com.py'+path+'"') && (html.match(/<h1[ >]/g)||[]).length === 1, 'Título y dirección propios');
+            const image = html.match(/property="og:image" content="([^"]+)"/)?.[1];
+            record('Metadatos sociales '+path, /^https:\/\/www\.creacionesmarilyn\.com\.py\/assets\/share-[a-f0-9]+\.jpg$/.test(image || '') && html.includes('application/ld+json'), 'Imagen JPEG y datos estructurados');
+            if (product && image) {
+                const photo = await request(new URL(new URL(image).pathname, site), 'HEAD');
+                record('Imagen para compartir disponible', photo.status === 200 && photo.headers.get('content-type')?.includes('image/jpeg'), 'HTTP '+photo.status);
+            }
+        }
+        const xml = await (await request(new URL('/sitemap.xml', site))).text();
+        record('Sitemap con productos y categorías', paths.every(path => xml.includes('https://www.creacionesmarilyn.com.py'+path+'</loc>')), (xml.match(/<loc>/g)||[]).length+' direcciones');
+        const missing = await request(new URL('/productos/producto-inexistente-verificacion',site),'HEAD');
+        record('Producto inexistente devuelve 404',missing.status === 404,'HTTP '+missing.status);
     });
     await check('Recursos optimizados', async () => {
         const response = await request(new URL('/assets/image-manifest.json', site));

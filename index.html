@@ -7,7 +7,7 @@
     <title>Creaciones Marilyn | Accesorios de bijouterie & bordados</title>
     <meta name="description" content="Diseños exclusivos y bordados personalizados hechos con pasión en Luque. Calidad artesanal que realza tu estilo.">
 
-    <link rel="icon" type="image/jpg" href="img/logo_jpg.jpg">
+    <link rel="icon" type="image/jpg" href="/img/logo_jpg.jpg">
 
     <meta property="og:type" content="website">
     <link rel="canonical" href="https://www.creacionesmarilyn.com.py/">
@@ -17,7 +17,7 @@
     <meta property="og:image" content="https://creacionesmarilyn.com.py/img/imagen_front.jpg">
 
     <link rel="stylesheet" href="/assets/site.css">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="/style.css?v=103">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         .no-scrollbar::-webkit-scrollbar { display: none; }
@@ -53,12 +53,13 @@
 
     <header class="bg-white py-6 shadow-sm sticky top-0 z-50">
         <div class="container mx-auto px-4 flex flex-col items-center">
-            <img src="img/logo_jpg.jpg" alt="Creaciones Marilyn" width="80" height="80" class="w-20 h-20 rounded-full mb-2 shadow-md">
+            <a href="/" aria-label="Creaciones Marilyn, inicio"><img src="/img/logo_jpg.jpg" alt="Creaciones Marilyn" width="80" height="80" class="w-20 h-20 rounded-full mb-2 shadow-md"></a>
             <h1 class="text-2xl font-bold tracking-widest uppercase italic text-pink-600">Creaciones Marilyn</h1>
             <p class="text-[10px] tracking-[0.2em] uppercase text-gray-400 font-medium">Accesorios de bijouterie & bordados</p>
         </div>
     </header>
 
+    <!-- HOME_INTRO_START -->
     <section class="relative h-[40vh] flex items-center justify-center overflow-hidden bg-black">
         <img src="img/imagen_front.jpg" alt="Accesorios y materiales de Creaciones Marilyn" fetchpriority="high" decoding="async" class="absolute w-full h-full object-cover opacity-60">
         <div class="relative z-10 text-center px-4">
@@ -93,7 +94,9 @@
         </div>
     </div>
 
-    <main class="container mx-auto px-4 py-12">
+    <!-- HOME_INTRO_END -->
+    <!-- PAGE_MAIN_START -->
+    <main id="catalogo" class="container mx-auto px-4 py-12">
         <div class="flex flex-col md:flex-row justify-between items-center gap-6 mb-10">
             <div class="w-full md:w-1/3 relative">
                 <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
@@ -107,7 +110,9 @@
             <!-- CATALOG_PRODUCTS -->
         </div>
     </main>
+    <!-- PAGE_MAIN_END -->
 
+    <button class="cart-open" onclick="window.toggleCart(true)" aria-label="Abrir mi pedido"><i class="fas fa-shopping-bag" aria-hidden="true"></i> Mi pedido</button>
     <div id="cart-drawer" class="fixed inset-y-0 right-0 w-full md:w-96 bg-white shadow-2xl z-[100] transform translate-x-full transition-transform duration-300 ease-in-out flex flex-col">
         <div class="p-6 border-b flex justify-between items-center bg-gray-900 text-white">
             <h3 class="font-bold uppercase text-xs tracking-widest">Tu Pedido</h3>
@@ -162,6 +167,6 @@
 
     <script id="catalog-data" type="application/json"><!-- CATALOG_DATA --></script>
     <noscript><p class="text-center py-4">Podés consultar estos productos directamente por <a href="https://wa.me/595991391542">WhatsApp</a>.</p></noscript>
-    <script type="module" src="app.js?v=102"></script>
+    <script type="module" src="/app.js?v=103"></script>
 </body>
 </html>

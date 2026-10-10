@@ -1,12 +1,16 @@
 // La vitrina llega preparada; los datos vigentes se revisan sin bloquear la primera vista.
 import { escapeHtml, normalize, imageForDisplay, readCart, FALLBACK_IMAGE } from './lib/catalog.mjs';
 import { renderCategoriesHTML, renderProductGrid } from './lib/render.mjs';
+import { renderProductDetail } from './lib/detail.mjs';
+import { SITE_ORIGIN, isCatalogProduct, categoryKey } from './lib/links.mjs';
 
 let cart = [];
 try { cart = readCart(window.localStorage); } catch { /* Storage can be blocked. */ }
 let allProducts = [];
 let optimizedImages = {};
 let activeCategory = 'todas';
+let routes = {};
+let page = {type:'home'};
 let currentGallery = [];
 let currentIndex = 0;
 let refreshing;
@@ -52,9 +56,12 @@ function initializeCatalog() {
         const seed = JSON.parse(document.getElementById('catalog-data')?.textContent || '{}');
         if (Array.isArray(seed.products)) allProducts = seed.products;
         optimizedImages = seed.images || {};
+        routes = seed.routes || {};
+        page = seed.page || {type:'home'};
+        activeCategory = page.category || 'todas';
     } catch { /* The rendered HTML remains visible while the live endpoint is retried. */ }
     updateCartUI();
-    try { checkAnnouncements(); } catch { /* Announcements must not block shopping. */ }
+    try { if (page.type === 'home') checkAnnouncements(); } catch { /* Announcements must not block shopping. */ }
     void refreshCatalog();
 }
 
@@ -69,6 +76,8 @@ document.addEventListener('click', event => {
     const id = target.dataset.productId;
     const product = allProducts.find(item => String(item.id) === id);
     switch (target.dataset.action) {
+        case 'copy-link': void copyPageLink(target.dataset.copyUrl); break;
+        case 'contact': if (typeof fbq === 'function') fbq('track', 'Contact'); break;
         case 'category': filterByCategory(target.dataset.category); break;
         case 'gallery': if (product) openGallery(product.images); break;
         case 'add': if (product && product.available !== false) addToCart(product.id, product.name, product.price); break;
@@ -97,16 +106,22 @@ window.sendWhatsApp = sendWhatsApp;
 
 function renderCategories() {
     const container = document.getElementById('category-filters');
-    if (container) container.innerHTML = renderCategoriesHTML(allProducts, activeCategory);
+    if (container) container.innerHTML = renderCategoriesHTML(allProducts, activeCategory, routes);
 }
 function filterByCategory(cat) { activeCategory = cat; renderCategories(); applyFilters(); }
 function applyFilters() {
+    if (page.type === 'product') {
+        const detail = document.getElementById('product-detail');
+        const product = allProducts.find(p => String(p.id) === page.id && isCatalogProduct(p));
+        if (detail) detail.innerHTML = renderProductDetail(product, {images:optimizedImages,routes});
+        return;
+    }
     const searchTerm = normalize(document.getElementById('search-input')?.value);
     const filtered = allProducts.filter(p => normalize(p.name).includes(searchTerm)
-        && (activeCategory === 'todas' || p.collection.toLowerCase().trim() === activeCategory)
+        && (activeCategory === 'todas' || categoryKey(p.collection) === activeCategory)
         && p.status.toLowerCase() !== 'anuncio' && !p.popup);
     const grid = document.getElementById('product-grid');
-    if (grid) grid.innerHTML = renderProductGrid(filtered, { activeCategory, searchTerm, images: optimizedImages });
+    if (grid) grid.innerHTML = renderProductGrid(filtered, { activeCategory, searchTerm, images: optimizedImages, routes });
 }
 
 function checkAnnouncements() {
@@ -190,7 +205,7 @@ function updateGalleryModal() {
     const modalImg = document.getElementById('modal-img');
     const counter = document.getElementById('gallery-counter');
     if(modalImg) {
-        modalImg.onerror = function() { this.src = 'img/logo_jpg.jpg'; }; 
+        modalImg.onerror = function() { this.onerror = null; this.src = FALLBACK_IMAGE; };
         modalImg.src = imageForDisplay(currentGallery[currentIndex], optimizedImages, true);
     }
     if(counter) counter.textContent = `${currentIndex + 1} / ${currentGallery.length}`; 
@@ -209,4 +224,20 @@ function sendWhatsApp() {
     cart.forEach(i => msg += `✨ ${i.qty}x ${i.name} - Gs. ${(i.price * i.qty).toLocaleString('es-PY')}\n`);
     msg += `\n*Total estimado: Gs. ${cart.reduce((acc, i) => acc + (i.price * i.qty), 0).toLocaleString('es-PY')}*`;
     window.open(`https://wa.me/595991391542?text=${encodeURIComponent(msg)}`, '_blank', 'noopener,noreferrer');
+}
+
+async function copyPageLink(url) {
+    if (typeof url !== 'string' || !url.startsWith(SITE_ORIGIN + '/')) return;
+    const status = document.getElementById('share-status');
+    const fallback = document.getElementById('share-fallback');
+    try {
+        await navigator.clipboard.writeText(url);
+        if (status) status.textContent = 'Enlace copiado. Ya podés pegarlo en WhatsApp.';
+        if (fallback) fallback.hidden = true;
+    } catch {
+        if (status) status.textContent = 'Mantené presionado el enlace para copiarlo.';
+        if (fallback) fallback.hidden = false;
+        const input = document.getElementById('share-url');
+        if (input) { input.value = url; input.focus(); input.select(); }
+    }
 }

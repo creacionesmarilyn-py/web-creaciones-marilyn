@@ -21,8 +21,10 @@ http.createServer(async (req, res) => {
             await (pathname === '/api/catalog' ? catalogHandler : imageHandler)(req, res);
             return;
         }
-        const file = path.resolve(root, '.' + pathname);
+        if (/^\/(productos|categorias)\/[a-z0-9-]+\/$/.test(pathname)) { res.writeHead(308,{Location:pathname.slice(0,-1)}); res.end(); return; }
+        let file = path.resolve(root, '.' + pathname);
         if ((file !== path.resolve(root) && !file.startsWith(root)) || pathname.includes('\\')) throw new Error('Invalid path');
+        try { await fs.access(file); } catch { if (!path.extname(file)) file += '.html'; }
         const stat = await fs.stat(file);
         const resolved = stat.isDirectory() ? path.join(file, 'index.html') : file;
         const content = await fs.readFile(resolved);

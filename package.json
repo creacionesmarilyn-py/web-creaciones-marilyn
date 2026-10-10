@@ -6,7 +6,8 @@
     "build": "node scripts/build.mjs",
     "test": "node --test tests/*.test.mjs",
     "preview": "node scripts/preview.mjs",
-    "verify:release": "node scripts/verify-release.mjs"
+    "verify:release": "node scripts/verify-release.mjs",
+    "routes:sync": "node scripts/sync-routes.mjs"
   },
   "type": "module",
   "dependencies": {

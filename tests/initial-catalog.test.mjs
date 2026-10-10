@@ -4,6 +4,8 @@ import fs from 'node:fs/promises';
 import vm from 'node:vm';
 import * as catalog from '../lib/catalog.mjs';
 import * as render from '../lib/render.mjs';
+import * as links from '../lib/links.mjs';
+import * as detail from '../lib/detail.mjs';
 import { projectCatalog, embeddedImage } from '../server/catalog-source.mjs';
 import imageHandler from '../api/product-image.js';
 
@@ -39,7 +41,7 @@ test('image endpoint rejects arbitrary paths and unsupported methods before cont
 test('built HTML contains real catalog and safe, light hydration data before any scripts run', async () => {
     const html = await fs.readFile(new URL('../dist/index.html', import.meta.url),'utf8');
     assert.ok(!html.includes('Cargando vitrina'));
-    assert.ok((html.match(/data-action="gallery"/g) || []).length > 0);
+    assert.ok((html.match(/data-product-card=/g) || []).length > 0);
     const seedText = html.match(/<script id="catalog-data" type="application\/json">([\s\S]*?)<\/script>/)?.[1];
     assert.ok(seedText);
     const seed = JSON.parse(seedText);
@@ -64,7 +66,7 @@ test('browser works from seed while refresh is pending, preserves cards on failu
     elements.get('product-grid').innerHTML='PRE_RENDERED_CARDS';
     const callbacks=new Map();let request;let opened;const saved=new Map();
     const storage={getItem:key=>saved.get(key)||null,setItem:(key,value)=>saved.set(key,value)};
-    const context=vm.createContext({...catalog,...render,console,AbortSignal,Date,sessionStorage:storage,localStorage:storage,
+    const context=vm.createContext({...catalog,...render,...links,...detail,console,AbortSignal,Date,sessionStorage:storage,localStorage:storage,
         window:{localStorage:storage,open:url=>{opened=url;}},
         document:{getElementById:id=>elements.get(id),addEventListener:(type,fn)=>callbacks.set(type,fn)},
         fetch:()=>new Promise((resolve,reject)=>{request={resolve,reject};}),setTimeout(){},alert(){},
