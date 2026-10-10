@@ -1,0 +1,49 @@
+# Administrador de catálogo
+
+El código de `/gestion` está preparado, pero **no está activado en producción**. No sustituye aún a Firebase. La compilación normal conserva la tienda pública y omite el panel mientras `MARILYN_ADMIN_ENABLED` no sea `true`.
+
+## Revisar el panel sin cambiar la tienda
+
+1. `npm ci`
+2. `npm run build`
+3. `npm run panel:preview`
+4. Abrir `http://localhost:4174/gestion`.
+
+La demostración usa exclusivamente el catálogo público compilado. Permite probar búsqueda, filtros, formularios y cambios en memoria; al recargar se descartan. Tiene un cartel permanente de demostración y no permite subir archivos. No usa credenciales ni llama a Supabase. El adaptador de demostración no forma parte del bundle de producción.
+
+## Qué incluye
+
+- Búsqueda por nombre/categoría, fotos, precio en guaraníes y estados disponible, agotado u oculto.
+- Agregar productos y categorías; cambiar foto de portada y orden; copiar enlace permanente.
+- Fotos convertidas a WebP de hasta 1200 píxeles de lado mayor; máximo 16 por producto. Entradas JPG/PNG/WebP hasta 12 MB y 24 megapíxeles; almacenamiento máximo 8 MB por archivo.
+- Inicio de sesión Google con PKCE. Sesión en `sessionStorage` por pestaña. La identidad se verifica con `getUser`; los permisos se consultan en el servidor.
+- Permisos de propietario/editor mantenidos en una tabla privada; el correo o los metadatos editables del perfil no conceden acceso.
+- Escritura por funciones controladas, validación de campos, enlaces e IDs inmutables, control de versiones y registro privado de cambios de productos.
+- Filas internas separadas y accesibles solo al propietario. Un editor puede trabajar con fotos y precios sin consultar datos internos.
+- CSP específica para el panel, `no-store`, `noindex`, sin analítica ni píxeles.
+
+## Condiciones para activar
+
+El despliegue debe completarse en este orden. Mantener `writes_enabled=false` hasta verificar toda la transición.
+
+1. **Identificar el proyecto Supabase de Marilyn.** Comprobar organización, plan, región, políticas y respaldos existentes. No aplicar estas migraciones a proyectos de otros negocios ni crear un proyecto de pago sin resolver su costo.
+2. **Aplicar las migraciones** de `supabase/migrations` y verificar RLS/grants en el proyecto real. Las pruebas PGlite verifican PostgreSQL localmente; no sustituyen la integración con Supabase Auth/Storage/PostgREST.
+3. **Configurar Google OAuth.** Client ID y secret solo en el proveedor de Supabase; dominios y redirecciones exactas para producción y una preview controlada. Evitar comodines amplios. La URL autorizada de retorno del panel es `/gestion`.
+4. **Verificar al propietario.** Tras un acceso real con Google, confirmar `auth.users.id`, correo confirmado y la identidad Google de la cuenta autorizada. Incorporar ese UUID a `marilyn_private.staff_members` mediante acceso privilegiado del servidor. Nunca autorizar por un campo editable del navegador. El resto del equipo debe tener cuentas individuales; no compartir contraseña.
+5. **Respaldar e importar el catálogo.** Preservar IDs, precios, disponibilidad, productos ocultos y rutas de `content/catalog-routes.json`. Separar los campos internos. Migrar las imágenes Base64/legacy al bucket público antes de cerrar la fuente anterior. Guardar respaldos únicamente fuera del resultado publicado, por ejemplo en `.private-migration/` (ignorado por Git/Vercel). Verificar recuentos, enlaces, imágenes y una muestra de datos internos con acceso restringido.
+6. **Conectar la lectura y publicación pública.** Esta parte está pendiente de implementación e integración. La web sigue leyendo Firebase. Incorporar lectura pública de Supabase y regeneración autenticada de páginas/productos/categorías, sitemap e imágenes sociales. Un guardado en la base de datos NO regenera por sí solo las páginas estáticas. Probar edición, producto nuevo, categoría nueva, ocultación, errores y cachés antes de habilitar escrituras. El panel actualmente informa que los cambios quedan pendientes de publicación.
+7. **Preview real:** establecer `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY` y `MARILYN_ADMIN_ENABLED=true` solo para el entorno validado. La clave debe ser pública (`sb_publishable_...` o legacy `anon`). El build rechaza claves secretas y `service_role`. Comprobar cuentas autorizadas/no autorizadas, subida de fotos, autorización RLS y encabezados reales.
+8. **Transición:** confirmar que la tienda pública ya funciona con la fuente nueva, cerrar las lecturas anónimas de Firebase y verificar las rutas antiguas. Solo después habilitar `marilyn_private.site_state.writes_enabled` y publicación del panel de producción. Conservar un rollback coherente con el origen de datos; no volver a un despliegue que exponga respaldos o datos internos.
+
+## Límites explícitos
+
+- No están implementados todavía la gestión del equipo desde la interfaz, la publicación automática de la web ni el historial visual de cambios. Las altas/bajas del personal requieren acceso administrativo a Supabase.
+- No hay eliminación permanente desde el panel. Ocultar permite retirar un producto del catálogo, pero **no vuelve privadas sus fotos**: son recursos públicos, que además pueden estar cacheados o compartidos. La limpieza de fotos subidas y luego abandonadas se debe programar después de acordar retención y comprobar referencias.
+- Las políticas de Storage no permiten sobrescribir/eliminar fotos desde el navegador. Comprobar que no existan otras políticas permisivas que permitan el mismo bucket en el proyecto real.
+- La API pública debe servir solo campos públicos. Las fotos de cursos y los videos requieren almacenamiento privado y permisos de matrícula; no usar este bucket para cursos.
+- El modelo incluye la tienda propietaria de cada producto para preparar la futura plataforma de emprendedoras. No concede permisos de vendedor ni implementa todavía perfiles, cobros, matrículas o cursos.
+- La aprobación manual por WhatsApp sigue siendo el flujo previsto para cursos/perfiles. El visitante del catálogo no necesita una cuenta.
+
+## Comprobación
+
+`npm test` incluye PostgreSQL/RLS con PGlite, permisos Storage, rechazo de escalación por metadatos, revocación, conflicto de edición, datos privados, pruebas del adaptador, formulario DOM y claves públicas del build. `npm run build` conserva el catálogo público optimizado. Las pruebas DOM no sustituyen la revisión visual ni una prueba real de Google OAuth.

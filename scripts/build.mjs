@@ -1,3 +1,4 @@
+import {buildAdmin, adminConfig} from './build-admin.mjs';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -17,6 +18,7 @@ if (path.dirname(out) !== root || path.basename(out) !== 'dist') throw new Error
 try { if ((await fs.lstat(out)).isSymbolicLink()) throw new Error('Output must not be a symlink'); }
 catch (error) { if (error.code !== 'ENOENT') throw error; }
 
+adminConfig(process.env); // Reject invalid or secret admin configuration before building.
 // Fail the deployment if sources are unavailable; never replace the live catalog with an empty fallback.
 const sources = await fetchSources();
 const imageSources = new Map();
@@ -151,3 +153,5 @@ for (const key of Object.keys(routes.categories)) {
 }
 await fs.writeFile(path.join(out,'sitemap.xml'),'<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'+sitemap.map(route=>'  <url><loc>'+escapeHtml(SITE_ORIGIN+route)+'</loc></url>').join('\n')+'\n</urlset>\n');
 console.log(JSON.stringify({productPages:visibleProducts.length,categoryPages:Object.keys(routes.categories).length,sitemapUrls:sitemap.length,socialImages:shares.size}));
+
+await buildAdmin(out);

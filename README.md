@@ -49,3 +49,7 @@ El build genera HTML propio para cada producto público y categoría, con URL ca
 El precio y la disponibilidad visibles se actualizan desde el endpoint; las vistas previas sociales y el HTML para buscadores se renuevan al publicar. WhatsApp también puede conservar su propia caché. Los productos retirados dejan de generarse en la siguiente publicación y conservan su ruta reservada. Las fichas solo incluyen en sus datos iniciales el producto y sus imágenes; las categorías incluyen sus propios productos.
 
 Pruebas adicionales: estabilidad de enlaces, variantes con nombres repetidos, escape en HTML/metadatos, las 355 páginas y sus recursos, copia con alternativa si se bloquea el portapapeles, actualización de precio/retiro y búsqueda dentro de una categoría. Referencias: [Open Graph](https://ogp.me/) y [datos estructurados de producto de Google](https://developers.google.com/search/docs/appearance/structured-data/product-snippet). La presencia de metadatos no garantiza indexación ni resultados enriquecidos.
+
+## Administrador en preparación
+
+La nueva gestión de productos se encuentra detrás de una configuración optativa y no está activa en producción. Para revisar la demostración local y las condiciones de activación de Supabase, consultar [la guía del administrador](docs/administrador.md). La tienda pública conserva su funcionamiento actual.

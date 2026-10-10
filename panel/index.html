@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow, noarchive">
+  <title>Administrar productos · Creaciones Marilyn</title>
+  <link rel="stylesheet" href="/gestion/panel.css">
+  <script type="module" src="/gestion/panel.js"></script>
+</head>
+<body>
+  <div id="demo-banner" class="demo-banner" hidden>VISTA PREVIA · Los cambios de esta demostración no se guardan en la tienda.</div>
+  <header class="header"><a class="brand" href="/" aria-label="Creaciones Marilyn, ir a la tienda"><span class="brand-mark" aria-hidden="true">M</span><span>Creaciones Marilyn<small>Espacio del equipo</small></span></a><div id="account" hidden><span id="account-email"></span><button id="logout" class="quiet" type="button">Salir</button></div></header>
+  <main>
+    <section id="login" class="welcome" hidden><span class="eyebrow">TU TIENDA, A MANO</span><h1>Todo listo para trabajar.</h1><p>Entrá con la cuenta de Google que usás en el equipo.</p><button id="login-button" class="primary" type="button">Entrar con Google</button><p class="hint">Solo las cuentas autorizadas pueden administrar productos.</p><a href="/">Volver a la tienda</a></section>
+    <section id="denied" class="welcome" hidden><h1>Esta cuenta no tiene acceso.</h1><p>Pedile a la persona responsable que habilite tu cuenta, o salí y entrá con otra cuenta de Google.</p></section>
+    <p id="global-status" role="status" class="notice">Preparando tu espacio…</p>
+    <section id="catalog" hidden>
+      <div class="page-heading"><div><span class="eyebrow">CATÁLOGO</span><h1>Mis productos</h1><p>Cambiá precios, agregá fotos y elegí qué mostrar.</p></div><button id="new-product" class="primary" type="button">＋ Agregar producto</button></div>
+      <p id="preparation" class="notice" hidden>Estamos conectando el catálogo con la web. Por ahora podés revisar los productos; la edición se habilitará al terminar.</p>
+      <div class="toolbar"><label class="search-label" for="search">Buscar un producto<input type="search" id="search" placeholder="Por ejemplo: perlitas número 6" autocomplete="off"></label><label for="filter">Mostrar<select id="filter"><option value="all">Todos los productos</option><option value="available">Disponibles</option><option value="sold-out">Agotados</option><option value="hidden">Ocultos</option></select></label><button id="refresh" class="quiet" type="button">Actualizar lista</button></div>
+      <p id="result-count" class="hint" role="status"></p>
+      <div id="products" class="product-list"></div><p id="empty" class="empty" hidden>No encontramos productos con esa búsqueda.</p><button id="more" class="quiet more" type="button" hidden>Ver más productos</button>
+    </section>
+  </main>
+  <dialog id="editor" aria-labelledby="editor-title">
+    <div class="dialog-heading"><div><span class="eyebrow">PRODUCTO</span><h2 id="editor-title">Editar producto</h2></div><button id="close-editor" class="quiet" type="button">Cerrar</button></div>
+    <form id="product-form">
+      <fieldset id="edit-fields">
+        <label for="name">Nombre del producto<input id="name" name="name" required maxlength="200" autocomplete="off" placeholder="Por ejemplo: Perlitas número 6"></label>
+        <div class="form-pair"><label for="price">Precio en guaraníes<input id="price" name="price" required inputmode="numeric" pattern="[0-9]{1,10}" maxlength="10" placeholder="5000"><small>Sin puntos ni decimales. Ejemplo: 5000</small></label><label for="category">Categoría<select id="category" name="category_id" required></select></label></div>
+        <div class="category-tools"><button id="add-category" class="quiet" type="button">＋ Crear categoría</button><div id="category-create" hidden><label for="category-name">Nombre de la nueva categoría<input id="category-name" maxlength="120" autocomplete="off"></label><button id="confirm-category" class="quiet" type="button">Guardar categoría</button><button id="cancel-category" class="quiet" type="button">Cancelar</button></div></div>
+        <label for="state">Cómo mostrarlo<select id="state" name="state"><option value="available">Disponible — se puede consultar por WhatsApp</option><option value="sold-out">Agotado — se ve, pero no está disponible</option><option value="hidden">Oculto — no aparece en el catálogo</option></select></label>
+        <label class="checkbox"><input id="featured" name="featured" type="checkbox"> Destacar este producto</label>
+        <section class="photos" aria-labelledby="photos-title"><h3 id="photos-title">Fotos del producto</h3><p class="hint">La primera foto es la portada. JPG, PNG o WebP; hasta 16 fotos.</p><div id="photo-list" class="photo-list"></div><label class="upload" for="photo-input">＋ Agregar fotos<input id="photo-input" type="file" accept="image/jpeg,image/png,image/webp" multiple></label></section>
+      </fieldset>
+      <p id="editor-status" class="notice" role="status" hidden></p>
+      <div class="editor-footer"><button id="save" class="primary" type="submit">Guardar cambios</button><button id="cancel-editor" class="quiet" type="button">Volver sin guardar</button></div>
+    </form>
+    <section id="share" class="share" hidden><h3>Enlace del producto</h3><p class="hint">El enlace se conserva aunque cambies el nombre. Un producto nuevo tendrá su página después de publicar el catálogo.</p><div><input id="share-url" readonly aria-label="Enlace del producto"><button id="copy" class="quiet" type="button">Copiar enlace</button></div></section>
+  </dialog>
+  <noscript>Para administrar productos necesitás activar JavaScript en tu navegador.</noscript>
+</body>
+</html>
