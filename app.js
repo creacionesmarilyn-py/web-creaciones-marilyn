@@ -1,110 +1,66 @@
-// Vitrina: conserva Firebase/WhatsApp y valida los datos antes de renderizarlos.
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
-import { escapeHtml, normalize, safeImageUrl, imageForDisplay, indexLegacyProducts, readCart, FALLBACK_IMAGE } from './lib/catalog.mjs';
+// La vitrina llega preparada; los datos vigentes se revisan sin bloquear la primera vista.
+import { escapeHtml, normalize, imageForDisplay, readCart, FALLBACK_IMAGE } from './lib/catalog.mjs';
+import { renderCategoriesHTML, renderProductGrid } from './lib/render.mjs';
 
-const firebaseConfig = {
-    apiKey: "AIzaSyBmPvAk_lSJ1TlBVtMqKAC1HaPM5eVeZxo",
-    authDomain: "creaciones-marilyn.firebaseapp.com",
-    databaseURL: "https://creaciones-marilyn-default-rtdb.firebaseio.com",
-    projectId: "creaciones-marilyn",
-    storageBucket: "creaciones-marilyn.firebasestorage.app",
-    messagingSenderId: "565099684746",
-    appId: "1:565099684746:web:a99ccfb9796aea22725e73"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
-
-// --- ESTADO GLOBAL ---
 let cart = [];
-try { cart = readCart(window.localStorage); } catch { /* Storage can be blocked by browser settings. */ }
+try { cart = readCart(window.localStorage); } catch { /* Storage can be blocked. */ }
 let allProducts = [];
 let optimizedImages = {};
 let activeCategory = 'todas';
 let currentGallery = [];
 let currentIndex = 0;
+let refreshing;
+let lastRefresh = 0;
 
-const GITHUB_DB_URL = "https://raw.githubusercontent.com/creacionesmarilyn-py/web-creaciones-marilyn/main/database.json";
+function showCatalogStatus(message = '') {
+    const status = document.getElementById('catalog-status');
+    if (status) { status.textContent = message; status.hidden = !message; }
+}
 
-// --- INICIALIZACIÓN EN TIEMPO REAL ---
-document.addEventListener('DOMContentLoaded', () => {
-    console.log("🚀 Iniciando Fusión: Descargando fotos originales...");
-    
-    // Start both sources together; keep the existing catalog and POS as the source of truth.
-    const legacyReady = fetch(GITHUB_DB_URL, { signal: AbortSignal.timeout(10000) })
-        .then(res => { if (!res.ok) throw new Error('Catalog unavailable'); return res.json(); })
-        .then(data => indexLegacyProducts(data.products || data.productos || []))
-        .catch(error => { console.warn('No se pudo cargar el catálogo de fotos.', error); return indexLegacyProducts([]); });
-    const imagesReady = fetch('/assets/image-manifest.json', { signal: AbortSignal.timeout(5000) })
-        .then(res => res.ok ? res.json() : {}).then(data => { optimizedImages = data; })
-        .catch(() => { optimizedImages = {}; });
+function reconcileCart() {
+    const products = new Map(allProducts.map(product => [String(product.id), product]));
+    const before = JSON.stringify(cart);
+    cart = cart.filter(item => products.get(String(item.id))?.available !== false && products.has(String(item.id)))
+        .map(item => { const product = products.get(String(item.id)); return { ...item, name: product.name, price: product.price }; });
+    saveCart();
+    if (JSON.stringify(cart) !== before) showCatalogStatus('Actualizamos tu pedido con los precios y la disponibilidad actuales.');
+}
 
-    console.log("🚀 Conectando a Firebase para precios y stock...");
-    const productosRef = ref(db, 'productos');
-    
-    onValue(productosRef, async (snapshot) => {
-        const [legacy] = await Promise.all([legacyReady, imagesReady]);
-        const data = snapshot.val();
-        if (data) {
-            allProducts = Object.keys(data).map(key => {
-                const pFb = data[key] || {};
-                const nombreNorm = normalize(pFb.nombre);
-
-                const pViejo = legacy.byId.get(String(pFb.id || key)) || legacy.byName.get(nombreNorm);
-
-                // --- Rescatar Foto Original con GPS Absoluto y Compatibilidad Base64 ---
-                let finalImages = ['img/logo_jpg.jpg'];
-                if (pViejo && (pViejo.image || (pViejo.images && pViejo.images.length > 0))) {
-                    let imgs = pViejo.images?.length ? pViejo.images : [pViejo.image];
-                    finalImages = (Array.isArray(imgs) ? imgs : [imgs]).map(safeImageUrl);
-                } else {
-                    let fbImgs = pFb.images || pFb.image || pFb.imagen || pFb.img;
-                    if (fbImgs) {
-                        if (!Array.isArray(fbImgs)) fbImgs = [fbImgs];
-                        let valid = fbImgs.filter(i => typeof i === 'string' && i.trim() !== "" && !i.includes("logo_jpg"));
-                        if (valid.length > 0) {
-                            finalImages = valid.map(safeImageUrl);
-                        }
-                    }
-                }
-
-                // --- Rescatar Lógicas Originales ---
-                const esDestacado = pViejo ? (pViejo.destacado === true) : (pFb.destacado === true || String(pFb.destacado).toLowerCase() === 'true' || String(pFb.destacado) === '1');
-                const esPopup = pViejo ? (pViejo.popup === true) : (pFb.popup === true || String(pFb.popup).toLowerCase() === 'true' || String(pFb.popup) === '1');
-
-                let nombreFinal = String(pFb.nombre || 'Producto');
-                if (nombreFinal.toLowerCase() === 'destacado' && pViejo) {
-                    nombreFinal = pViejo.name || pViejo.nombre || 'Producto';
-                }
-
-                return {
-                    id: pFb.id || key,
-                    name: String(nombreFinal),
-                    price: Math.max(0, Number(pFb.precio_gs ?? pFb.price) || 0),
-                    collection: String(pFb.categoria || pFb.collection || 'General').trim(),
-                    status: String(pFb.estado || pFb.status || 'normal'),
-                    destacado: esDestacado,
-                    popup: esPopup,
-                    stock_actual: pFb.stock_actual !== undefined ? parseFloat(pFb.stock_actual) : 99,
-                    images: finalImages
-                };
-            }).filter(p => p.status.toLowerCase() !== 'inactivo' && p.status.toLowerCase() !== 'oculto'); 
-            // 👆 AQUÍ ESTÁ LA MAGIA: Los productos "ocultos" son ignorados por el Frontend
-            
-            allProducts.reverse();
-            console.log(`✅ Fusión completada: ${allProducts.length} productos listos para mostrar.`);
-        } else {
-            allProducts = [];
+async function refreshCatalog() {
+    if (refreshing) return refreshing;
+    refreshing = (async () => {
+        try {
+            const response = await fetch('/api/catalog', { signal: AbortSignal.timeout(25000) });
+            if (!response.ok) throw new Error('Catalog unavailable');
+            const data = await response.json();
+            if (!Array.isArray(data.products)) throw new Error('Invalid catalog');
+            const changed = JSON.stringify(data.products) !== JSON.stringify(allProducts);
+            allProducts = data.products;
+            if (changed) { renderCategories(); applyFilters(); }
+            showCatalogStatus();
+            reconcileCart();
+            lastRefresh = Date.now();
+        } catch {
+            showCatalogStatus('No pudimos actualizar la vitrina. Confirmamos precios y disponibilidad por WhatsApp.');
         }
+    })().finally(() => { refreshing = null; });
+    return refreshing;
+}
 
-        renderCategories();
-        applyFilters(); 
-        updateCartUI();
-        checkAnnouncements();
-    }, () => {
-        document.getElementById('product-grid').innerHTML = '<p class="text-center py-12">No pudimos cargar los productos. <a class="text-pink-600 underline" href="https://wa.me/595991391542" target="_blank" rel="noopener noreferrer">Consultanos por WhatsApp</a> o recargá la página.</p>';
-    });
+function initializeCatalog() {
+    try {
+        const seed = JSON.parse(document.getElementById('catalog-data')?.textContent || '{}');
+        if (Array.isArray(seed.products)) allProducts = seed.products;
+        optimizedImages = seed.images || {};
+    } catch { /* The rendered HTML remains visible while the live endpoint is retried. */ }
+    updateCartUI();
+    try { checkAnnouncements(); } catch { /* Announcements must not block shopping. */ }
+    void refreshCatalog();
+}
+
+document.addEventListener('DOMContentLoaded', initializeCatalog);
+document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible' && Date.now() - lastRefresh > 60000) void refreshCatalog();
 });
 
 document.addEventListener('click', event => {
@@ -115,7 +71,7 @@ document.addEventListener('click', event => {
     switch (target.dataset.action) {
         case 'category': filterByCategory(target.dataset.category); break;
         case 'gallery': if (product) openGallery(product.images); break;
-        case 'add': if (product) addToCart(product.id, product.name, product.price); break;
+        case 'add': if (product && product.available !== false) addToCart(product.id, product.name, product.price); break;
         case 'announcement': if (product) { addToCart(product.id, product.name, product.price); closeAnnouncement(); } break;
         case 'remove': removeFromCart(id); break;
     }
@@ -141,128 +97,16 @@ window.sendWhatsApp = sendWhatsApp;
 
 function renderCategories() {
     const container = document.getElementById('category-filters');
-    if(!container) return;
-    const categories = ['todas', ...new Set(allProducts
-        .filter(p => p.status.toLowerCase() !== 'anuncio' && !p.popup)
-        .map(p => p.collection.toLowerCase().trim()))].sort();
-        
-    container.innerHTML = categories.map(cat => `
-        <button data-action="category" data-category="${escapeHtml(cat)}"
-            class="whitespace-nowrap px-6 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all duration-300 shadow-sm
-            ${cat === activeCategory ? 'bg-pink-600 text-white' : 'bg-white text-gray-400 hover:bg-gray-100'}">${escapeHtml(cat)}</button>
-    `).join('');
+    if (container) container.innerHTML = renderCategoriesHTML(allProducts, activeCategory);
 }
-
 function filterByCategory(cat) { activeCategory = cat; renderCategories(); applyFilters(); }
-
 function applyFilters() {
     const searchTerm = normalize(document.getElementById('search-input')?.value);
-    const filtered = allProducts.filter(p => {
-        const matchesSearch = normalize(p.name).includes(searchTerm);
-        const matchesCategory = activeCategory === 'todas' || p.collection.toLowerCase().trim() === activeCategory;
-        return matchesSearch && matchesCategory && p.status.toLowerCase() !== 'anuncio' && !p.popup;
-    });
-    renderProducts(filtered);
-}
-
-function renderProducts(products) {
+    const filtered = allProducts.filter(p => normalize(p.name).includes(searchTerm)
+        && (activeCategory === 'todas' || p.collection.toLowerCase().trim() === activeCategory)
+        && p.status.toLowerCase() !== 'anuncio' && !p.popup);
     const grid = document.getElementById('product-grid');
-    if(!grid) return;
-
-    if (products.length === 0) {
-        grid.innerHTML = '<p class="text-center col-span-full py-20 text-gray-400 uppercase text-[10px]">Sin resultados</p>';
-        return;
-    }
-
-    const searchTerm = document.getElementById('search-input')?.value.toLowerCase().trim() || "";
-
-    if (activeCategory === 'todas' && searchTerm === "") {
-        const destacados = products.filter(p => p.destacado).slice(0, 6);
-        const noDestacados = products.filter(p => !p.destacado);
-
-        const grouped = noDestacados.reduce((acc, p) => {
-            const col = p.collection || "Otros";
-            if (!acc[col]) acc[col] = [];
-            acc[col].push(p);
-            return acc;
-        }, Object.create(null));
-
-        let finalHTML = '';
-
-        if (destacados.length > 0) {
-            finalHTML += `
-                <div class="category-section mb-12">
-                    <div class="flex justify-between items-center mb-6 px-2">
-                        <h3 class="text-sm font-black uppercase tracking-[0.2em] text-pink-600">
-                            <i class="fas fa-star mr-2"></i> Destacados de la Semana
-                        </h3>
-                    </div>
-                    <div class="flex overflow-x-auto space-x-6 pb-6 no-scrollbar snap-x snap-mandatory">
-                        ${destacados.map(p => createProductCard(p, true)).join('')}
-                    </div>
-                </div>
-                <div class="h-px bg-gray-100 mb-12"></div>
-            `;
-        }
-
-        finalHTML += Object.keys(grouped).sort().map(category => `
-            <div class="category-section">
-                <div class="flex justify-between items-center mb-6 px-2">
-                    <h3 class="text-sm font-black uppercase tracking-widest text-gray-800 hover:text-pink-600 transition-colors">
-                        <button data-action="category" data-category="${escapeHtml(category.toLowerCase())}">${escapeHtml(category)} <i class="fas fa-chevron-right text-[10px] ml-2 opacity-30"></i></button>
-                    </h3>
-                    <span class="text-[9px] text-gray-400 font-bold uppercase">${grouped[category].length} items</span>
-                </div>
-                <div class="flex overflow-x-auto space-x-6 pb-6 no-scrollbar snap-x snap-mandatory">
-                    ${grouped[category].map(p => createProductCard(p, true)).join('')}
-                </div>
-            </div>
-        `).join('');
-
-        grid.innerHTML = finalHTML;
-    } else {
-        const sorted = [...products].sort((a, b) => (b.destacado === true) - (a.destacado === true));
-        grid.innerHTML = `<div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
-            ${sorted.map(p => createProductCard(p, false)).join('')}
-        </div>`;
-    }
-}
-
-function createProductCard(p, isHorizontal = false) {
-    const statusStr = p.status.toLowerCase();
-    const isAgotado = statusStr.includes("agotado") || statusStr.includes("sin stock") || p.stock_actual <= 0;
-    const isOferta = statusStr.includes("oferta");
-    const isNuevo = statusStr.includes("nuevo");
-
-    let badgeHTML = '';
-    if (isAgotado) {
-        badgeHTML = `<div class="absolute inset-0 bg-white/60 backdrop-blur-[1px] flex items-center justify-center z-10 font-black text-gray-900 text-[12px] uppercase tracking-[0.2em]">Agotado</div>`;
-    } else if (p.destacado) {
-        badgeHTML = `<div class="absolute top-3 left-3 bg-yellow-400 text-white px-3 py-1 rounded-full text-[9px] font-black uppercase z-20 shadow-lg"><i class="fas fa-star"></i> Destacado</div>`;
-    } else if (isOferta) {
-        badgeHTML = `<div class="absolute top-3 left-3 bg-red-600 text-white px-3 py-1 rounded-full text-[9px] font-black uppercase z-20 shadow-lg animate-pulse">Oferta</div>`;
-    } else if (isNuevo) {
-        badgeHTML = `<div class="absolute top-3 left-3 bg-pink-500 text-white px-3 py-1 rounded-full text-[9px] font-black uppercase z-20 shadow-lg">Nuevo</div>`;
-    }
-
-    const mainImage = imageForDisplay(p.images[0], optimizedImages);
-
-    return `
-        <div class="${isHorizontal ? 'min-w-[240px] md:min-w-[300px] snap-start' : ''} bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden group transition-all duration-500 hover:shadow-xl relative">
-            <button type="button" aria-label="Ver fotos de ${escapeHtml(p.name)}" data-action="gallery" data-product-id="${escapeHtml(p.id)}" class="relative w-full h-48 md:h-64 overflow-hidden cursor-pointer bg-gray-50 flex items-center justify-center">
-                ${badgeHTML}
-                <img src="${escapeHtml(mainImage)}" alt="${escapeHtml(p.name)}" loading="lazy" decoding="async" width="600" height="600" class="w-full h-full object-cover transition-transform duration-700 ${!isAgotado ? 'group-hover:scale-110' : 'grayscale opacity-70' }">
-                <span class="absolute top-3 right-3 bg-white/90 px-2 py-1 rounded-full text-[9px] font-bold uppercase text-gray-500 z-10">${escapeHtml(p.collection)}</span>
-            </button>
-            <div class="p-4 md:p-6 text-center">
-                <h4 class="font-bold text-gray-800 uppercase text-[10px] md:text-[11px] mb-1 line-clamp-1" title="${escapeHtml(p.name)}">${escapeHtml(p.name)}</h4>
-                <p class="text-pink-600 font-black mb-4 text-xs md:text-sm">Gs. ${p.price.toLocaleString('es-PY')}</p>
-                <button data-action="add" data-product-id="${escapeHtml(p.id)}" ${isAgotado ? 'disabled' : ''}
-                    class="w-full ${isAgotado ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-gray-900 text-white hover:bg-pink-600 cursor-pointer'} py-3 rounded-xl text-[9px] font-bold uppercase transition-all">
-                    ${isAgotado ? 'Agotado' : 'Agregar al carrito'}
-                </button>
-            </div>
-        </div>`;
+    if (grid) grid.innerHTML = renderProductGrid(filtered, { activeCategory, searchTerm, images: optimizedImages });
 }
 
 function checkAnnouncements() {
@@ -289,7 +133,7 @@ function checkAnnouncements() {
         
         setTimeout(() => {
             modal.classList.remove('hidden'); modal.classList.add('flex');
-            sessionStorage.setItem('popup_visto_' + announcement.id, 'true');
+            try { sessionStorage.setItem('popup_visto_' + announcement.id, 'true'); } catch { /* Optional persistence. */ }
         }, 2000);
     }
 }
@@ -347,7 +191,7 @@ function updateGalleryModal() {
     const counter = document.getElementById('gallery-counter');
     if(modalImg) {
         modalImg.onerror = function() { this.src = 'img/logo_jpg.jpg'; }; 
-        modalImg.src = currentGallery[currentIndex]; 
+        modalImg.src = imageForDisplay(currentGallery[currentIndex], optimizedImages, true);
     }
     if(counter) counter.textContent = `${currentIndex + 1} / ${currentGallery.length}`; 
 }

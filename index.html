@@ -17,8 +17,6 @@
     <meta property="og:image" content="https://creacionesmarilyn.com.py/img/imagen_front.jpg">
 
     <link rel="stylesheet" href="/assets/site.css">
-    <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
-    <link rel="preconnect" href="https://raw.githubusercontent.com" crossorigin>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
@@ -101,11 +99,12 @@
                 <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
                 <input type="text" id="search-input" oninput="window.applyFilters()" placeholder="¿Qué buscas hoy?" class="w-full pl-12 pr-4 py-3 rounded-2xl border-none bg-white shadow-sm focus:ring-2 focus:ring-pink-500 outline-none text-sm transition-all">
             </div>
-            <div id="category-filters" class="flex gap-2 overflow-x-auto pb-2 w-full md:w-auto no-scrollbar scroll-smooth"></div>
+            <div id="category-filters" class="flex gap-2 overflow-x-auto pb-2 w-full md:w-auto no-scrollbar scroll-smooth"><!-- CATALOG_CATEGORIES --></div>
         </div>
 
+        <p id="catalog-status" role="status" class="text-center text-sm text-gray-500 mb-4" hidden></p>
         <div id="product-grid" class="space-y-12">
-            <p class="text-center py-20 text-gray-400 animate-pulse">Cargando vitrina...</p>
+            <!-- CATALOG_PRODUCTS -->
         </div>
     </main>
 
@@ -161,6 +160,8 @@
         </div>
     </footer>
 
-    <script type="module" src="app.js?v=101"></script>
+    <script id="catalog-data" type="application/json"><!-- CATALOG_DATA --></script>
+    <noscript><p class="text-center py-4">Podés consultar estos productos directamente por <a href="https://wa.me/595991391542">WhatsApp</a>.</p></noscript>
+    <script type="module" src="app.js?v=102"></script>
 </body>
 </html>

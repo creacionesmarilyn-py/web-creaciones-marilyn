@@ -13,7 +13,17 @@ npm run preview
 
 Abrir `http://localhost:4173`. Publicar únicamente `dist`, tal como indica `vercel.json`. La carpeta se regenera en cada compilación. El build optimiza imágenes con Sharp y copia una lista explícita de recursos públicos. `styles/utilities.css` contiene los estilos estáticos del diseño actual; añadir ahí las reglas que necesiten nuevos componentes, sin restaurar el compilador CDN en el navegador.
 
-## Seguridad pendiente de aplicar en las cuentas
+## Carga inicial y actualización
+
+El build lee las fuentes públicas actuales, selecciona campos de catálogo y convierte las imágenes Base64 en archivos WebP deduplicados. Genera tarjetas y categorías en el HTML y datos JSON sin fotos incrustadas. Una fuente caída hace fallar el build; no se publica silenciosamente una vitrina vacía.
+
+El navegador usa esos datos inmediatamente y consulta `/api/catalog` en segundo plano. La función hace la proyección desde el servidor, con caché en memoria de 30 segundos y CDN de 60 segundos. Si la actualización falla, conserva lo visible y avisa que se confirman precios/disponibilidad por WhatsApp. Las fotos nuevas aún no compiladas se sirven desde una ruta restringida, que comprueba producto público y versión de imagen. No admite URLs arbitrarias ni escrituras.
+
+Esta transición elimina la descarga de la base completa en cada teléfono, pero el servidor todavía consulta Firebase. La futura fuente liviana mantenida por el administrador eliminará también esa transferencia en el servidor. Actualizar las fuentes sigue funcionando; volver a publicar actualiza el HTML inicial y genera nuevas variantes de fotos. Los precios del pedido son estimados y se confirman por WhatsApp.
+
+Las pruebas cubren la proyección de campos, exclusión de productos ocultos, imágenes, HTML inicial y recuperación ante fallos de red. El preview local incluye las rutas de lectura necesarias, sin escrituras en la base.
+
+## Seguridad y archivos internos
 
 Admin, POS y respaldos se conservan localmente pero quedan fuera de nuevos despliegues. Esto no cambia las reglas de Firebase ni elimina versiones anteriores publicadas.
 

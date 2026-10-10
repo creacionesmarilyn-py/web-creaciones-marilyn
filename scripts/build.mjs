@@ -3,22 +3,31 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createHash } from 'node:crypto';
 import sharp from 'sharp';
+import { fetchSources, projectCatalog, publicImageUrl, embeddedImage } from '../server/catalog-source.mjs';
+import { renderCategoriesHTML, renderProductGrid } from '../lib/render.mjs';
 
 const root = await fs.realpath(fileURLToPath(new URL('../', import.meta.url)));
 const out = path.resolve(root, 'dist');
-// Never recursively remove a symlink or a path outside this project's build directory.
 if (path.dirname(out) !== root || path.basename(out) !== 'dist') throw new Error('Unsafe output path');
 try { if ((await fs.lstat(out)).isSymbolicLink()) throw new Error('Output must not be a symlink'); }
 catch (error) { if (error.code !== 'ENOENT') throw error; }
+
+// Fail the deployment if sources are unavailable; never replace the live catalog with an empty fallback.
+const sources = await fetchSources();
+const imageSources = new Map();
+const products = projectCatalog(sources.products, sources.legacyProducts, (key, index, value) => {
+    const url = publicImageUrl(key, index, value);
+    if (url.startsWith('/api/product-image?')) imageSources.set(url, embeddedImage(value).bytes);
+    return url;
+});
+if (!products.length) throw new Error('Refusing to publish an empty catalog');
+
 console.log(`Build output: ${out}`);
 await fs.rm(out, { recursive: true, force: true });
 await fs.mkdir(path.join(out, 'assets'), { recursive: true });
-
-// Explicit public files only: backups, credentials, docs and tooling cannot be deployed.
 for (const file of ['index.html', 'app.js', 'style.css', 'robots.txt', 'sitemap.xml']) {
     await fs.copyFile(path.join(root, file), path.join(out, file));
 }
-// Admin/POS are unused and intentionally not published until real authorization is configured.
 for (const dir of ['lib', 'img']) {
     await fs.cp(path.join(root, dir), path.join(out, dir), {
         recursive: true,
@@ -29,28 +38,39 @@ for (const dir of ['lib', 'img']) {
         }
     });
 }
-
-// The existing design is checked in as static CSS; no CSS compiler runs in visitors' browsers.
 await fs.copyFile(path.join(root, 'styles/utilities.css'), path.join(out, 'assets/site.css'));
 
 const manifest = {};
+const processed = new Map();
 let originalBytes = 0, optimizedBytes = 0;
+async function optimize(bytes) {
+    const sourceHash = createHash('sha256').update(bytes).digest('hex');
+    if (processed.has(sourceHash)) return processed.get(sourceHash);
+    const urls = {};
+    for (const [kind, width, quality] of [['product', 600, 78], ['gallery', 1200, 80]]) {
+        const buffer = await sharp(bytes, { limitInputPixels: 24000000, animated: false }).rotate()
+            .resize({ width, withoutEnlargement: true }).webp({ quality }).toBuffer();
+        const hash = createHash('sha256').update(buffer).digest('hex').slice(0, 16);
+        const filename = `${kind}-${hash}.webp`;
+        await fs.writeFile(path.join(out, 'assets', filename), buffer);
+        urls[kind] = `/assets/${filename}`;
+        if (kind === 'product') optimizedBytes += buffer.length;
+    }
+    originalBytes += bytes.length;
+    processed.set(sourceHash, urls);
+    return urls;
+}
+function mapImage(key, urls) { manifest[key] = urls.product; manifest['gallery:' + key] = urls.gallery; }
 async function walkImages(dir) {
     for (const entry of await fs.readdir(dir, { withFileTypes: true })) {
         const source = path.join(dir, entry.name);
         if (entry.isDirectory()) { await walkImages(source); continue; }
         if (!entry.isFile() || !/\.(png|jpe?g|webp)$/i.test(entry.name)) continue;
-        const original = await fs.readFile(source);
-        const optimized = await sharp(original).rotate().resize({ width: 600, withoutEnlargement: true })
-            .webp({ quality: 78 }).toBuffer();
-        const hash = createHash('sha256').update(optimized).digest('hex').slice(0, 16);
-        const filename = `product-${hash}.webp`;
-        await fs.writeFile(path.join(out, 'assets', filename), optimized);
-        manifest[path.relative(root, source).split(path.sep).join('/')] = `/assets/${filename}`;
-        originalBytes += original.length; optimizedBytes += optimized.length;
+        mapImage(path.relative(root, source).split(path.sep).join('/'), await optimize(await fs.readFile(source)));
     }
 }
 await walkImages(path.join(root, 'img'));
+for (const [url, bytes] of imageSources) mapImage(url, await optimize(bytes));
 await fs.writeFile(path.join(out, 'assets/image-manifest.json'), JSON.stringify(manifest));
 
 const covers = [];
@@ -62,8 +82,17 @@ for (const width of [720, 1440]) {
     await fs.writeFile(path.join(out, 'assets', filename), buffer);
     covers.push({ width, url: `/assets/${filename}`, bytes: buffer.length });
 }
+const seed = { products, images: manifest, updatedAt: new Date().toISOString() };
+// Escaping '<' prevents names such as </script> from breaking the JSON script container.
+const seedJson = JSON.stringify(seed).replace(/</g, '\\u003c').replace(/\u2028/g, '\\u2028').replace(/\u2029/g, '\\u2029');
 let html = await fs.readFile(path.join(out, 'index.html'), 'utf8');
-html = html.replace('src="img/imagen_front.jpg"',
-    `src="${covers[1].url}" srcset="${covers[0].url} 720w, ${covers[1].url} 1440w" sizes="100vw"`);
+for (const marker of ['<!-- CATALOG_DATA -->', '<!-- CATALOG_CATEGORIES -->', '<!-- CATALOG_PRODUCTS -->']) {
+    if (!html.includes(marker)) throw new Error(`Missing build marker: ${marker}`);
+}
+html = html.replace('src="img/imagen_front.jpg"', `src="${covers[1].url}" srcset="${covers[0].url} 720w, ${covers[1].url} 1440w" sizes="100vw"`)
+    .replace('<!-- CATALOG_DATA -->', () => seedJson)
+    .replace('<!-- CATALOG_CATEGORIES -->', () => renderCategoriesHTML(products))
+    .replace('<!-- CATALOG_PRODUCTS -->', () => renderProductGrid(products.filter(p => !p.popup && p.status.toLowerCase() !== 'anuncio'), { images: manifest }));
 await fs.writeFile(path.join(out, 'index.html'), html);
-console.log(JSON.stringify({ images: Object.keys(manifest).length, originalBytes, optimizedBytes, covers }, null, 2));
+console.log(JSON.stringify({ products: products.length, optimizedSources: processed.size, embeddedPhotoReferences: imageSources.size,
+    publicCatalogBytes: Buffer.byteLength(JSON.stringify({ products })), htmlBytes: Buffer.byteLength(html), originalBytes, optimizedBytes, covers }, null, 2));

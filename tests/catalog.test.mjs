@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
-import vm from 'node:vm';
+import { createProductCard } from '../lib/render.mjs';
 import * as catalog from '../lib/catalog.mjs';
 
 test('unsafe image protocols and SVG data are rejected; legacy photos still work', () => {
@@ -33,16 +33,10 @@ test('matching by SKU and accent-normalized name preserves existing catalog phot
 });
 
 test('product fields are escaped in actual card HTML; handlers carry IDs instead of code', async () => {
-    const source = (await fs.readFile(new URL('../app.js', import.meta.url), 'utf8'))
-        .replace(/^import .*;\r?\n/gm, '');
-    const context = vm.createContext({ ...catalog, initializeApp: () => ({}), getDatabase: () => ({}),
-        window: { localStorage: { getItem: () => '[]' } }, document: { addEventListener() {} }, console });
-    vm.runInContext(source, context);
     const product = { id: '\" onclick=\"alert(1)', name: '<img src=x onerror=alert(1)>',
         collection: '\"><script>alert(2)</script>', status: 'normal', price: 5000,
         stock_actual: 1, images: ['javascript:alert(3)'] };
-    context.product = product;
-    const html = vm.runInContext('createProductCard(product)', context);
+    const html = createProductCard(product);
     assert.ok(html.includes('&lt;img src=x onerror=alert(1)&gt;'));
     assert.ok(!html.includes('<script>'));
     assert.ok(!html.includes(' onclick="'));

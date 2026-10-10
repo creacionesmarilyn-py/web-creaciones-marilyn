@@ -28,6 +28,7 @@ if (siteArg) {
         const response = await request(site);
         const html = await response.text();
         record('Página principal', response.status === 200 && html.includes('Confirmar por WhatsApp'), `HTTP ${response.status}`);
+        record('Productos visibles sin JavaScript', html.includes('data-action="gallery"') && html.includes('id="catalog-data"') && !html.includes('Cargando vitrina'), 'Tarjetas incluidas en el HTML');
         record('CSS compilado', html.includes('/assets/site.css') && !html.includes('cdn.tailwindcss.com'), 'Sin compilador Tailwind remoto');
         record('Portada optimizada', /srcset="\/assets\/cover-/.test(html), 'Variantes WebP');
         for (const [name, expected] of [['x-content-type-options', 'nosniff'], ['x-frame-options', 'DENY'], ['referrer-policy', 'strict-origin-when-cross-origin']]) {
@@ -43,6 +44,15 @@ if (siteArg) {
             record(`Archivo privado ${pathname}`, [401, 403, 404, 410].includes(response.status), `HTTP ${response.status}`);
         });
     }
+    await check('Catálogo ligero del mismo dominio', async () => {
+        const response = await request(new URL('/api/catalog', site));
+        const body = await response.text();
+        const data = JSON.parse(body);
+        const allowed = new Set(['id', 'name', 'price', 'collection', 'status', 'destacado', 'popup', 'available', 'images']);
+        record('Catálogo ligero disponible', response.status === 200 && Array.isArray(data.products) && data.products.length > 0, 'HTTP ' + response.status);
+        record('Datos públicos sin fotos incrustadas', !body.includes('data:image') && data.products.every(p => Object.keys(p).every(key => allowed.has(key))), 'Lista explícita de campos');
+        record('Catálogo menor de 750 KB', Buffer.byteLength(body) < 750000, Buffer.byteLength(body) + ' bytes');
+    });
     await check('Recursos optimizados', async () => {
         const response = await request(new URL('/assets/image-manifest.json', site));
         if (!response.ok) { record('Manifiesto de imágenes', false, `HTTP ${response.status}`); return; }
