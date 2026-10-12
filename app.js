@@ -38,8 +38,9 @@ async function refreshCatalog() {
             if (!response.ok) throw new Error('Catalog unavailable');
             const data = await response.json();
             if (!Array.isArray(data.products)) throw new Error('Invalid catalog');
-            const changed = JSON.stringify(data.products) !== JSON.stringify(allProducts);
+            const changed = JSON.stringify(data.products) !== JSON.stringify(allProducts) || (data.routes && JSON.stringify(data.routes)!==JSON.stringify(routes));
             allProducts = data.products;
+            if(data.routes)routes=data.routes;
             if (changed) { renderCategories(); applyFilters(); }
             showCatalogStatus();
             reconcileCart();

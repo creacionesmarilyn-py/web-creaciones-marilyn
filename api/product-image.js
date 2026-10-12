@@ -1,9 +1,11 @@
 import sharp from 'sharp';
 import { DATABASE, LEGACY, KEY_PATTERN, readJson, selectedImages, embeddedImage, isVisible } from '../server/catalog-source.mjs';
 import { indexLegacyProducts, normalize } from '../lib/catalog.mjs';
+import {usesSupabase} from '../server/public-catalog.mjs';
 export default async function handler(req, res) {
     if (!['GET', 'HEAD'].includes(req.method)) return res.status(405).setHeader('Allow', 'GET, HEAD').end();
     res.setHeader('Cache-Control', 'no-store');
+    if(usesSupabase())return res.status(410).end();
     const url = new URL(req.url, 'https://www.creacionesmarilyn.com.py');
     const key = url.searchParams.get('key') || '';
     const slot = url.searchParams.get('slot') || '';

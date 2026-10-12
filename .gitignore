@@ -17,5 +17,6 @@ docs/preview-publicacion.html
 docs/verificar-preview-publicacion.mjs
 docs/publicacion-2026-10-09*
 .preview-panel/
+.runtime-public/
 .private-migration/
 supabase/.temp/

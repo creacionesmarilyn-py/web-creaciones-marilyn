@@ -11,6 +11,10 @@ import { SITE_ORIGIN, categoryKey, categoryPath, productPath, isCatalogProduct, 
 import { imageForDisplay, escapeHtml } from '../lib/catalog.mjs';
 import { publishedRoutes, registerRoutes } from '../server/routes.mjs';
 import { composePage, stripHomeMetadata, renderCategoryPage, productStructured, categoryStructured } from '../server/pages.mjs';
+import {usesSupabase} from '../server/public-catalog.mjs';
+import {fetchSupabaseCatalog} from '../server/supabase-catalog.mjs';
+import {downloadCatalogPhoto} from '../server/catalog-photo.mjs';
+import {CATALOG_IMAGE_BASE,STORAGE_OBJECT} from '../lib/storage-images.mjs';
 
 const root = await fs.realpath(fileURLToPath(new URL('../', import.meta.url)));
 const out = path.resolve(root, 'dist');
@@ -20,9 +24,11 @@ catch (error) { if (error.code !== 'ENOENT') throw error; }
 
 adminConfig(process.env); // Reject invalid or secret admin configuration before building.
 // Fail the deployment if sources are unavailable; never replace the live catalog with an empty fallback.
-const sources = await fetchSources();
+const supabaseMode=usesSupabase();
+const live=supabaseMode?await fetchSupabaseCatalog():null;
+const sources = supabaseMode?null:await fetchSources();
 const imageSources = new Map();
-const products = projectCatalog(sources.products, sources.legacyProducts, (key, index, value) => {
+const products = live?.products ?? projectCatalog(sources.products, sources.legacyProducts, (key, index, value) => {
     const url = publicImageUrl(key, index, value);
     if (url.startsWith('/api/product-image?')) imageSources.set(url, embeddedImage(value).bytes);
     return url;
@@ -30,7 +36,17 @@ const products = projectCatalog(sources.products, sources.legacyProducts, (key, 
 if (!products.length) throw new Error('Refusing to publish an empty catalog');
 const registry = JSON.parse(await fs.readFile(path.join(root, 'content/catalog-routes.json'), 'utf8'));
 registerRoutes([], registry); // Validate all reserved paths, including removed products.
-const routes = publishedRoutes(products, registry);
+const routes = live?.routes ?? publishedRoutes(products, registry);
+if(supabaseMode){
+    for(const kind of ['products','categories'])for(const [key,route] of Object.entries(routes[kind])){
+        if(Object.hasOwn(registry[kind],key) && registry[kind][key]!==route)throw new Error('Supabase changed a reserved public route');
+    }
+    const photos=[...new Set(products.flatMap(p=>p.images))];
+    for(let from=0;from<photos.length;from+=8)await Promise.all(photos.slice(from,from+8).map(async url=>{
+        const key=url.startsWith(CATALOG_IMAGE_BASE)?url.slice(CATALOG_IMAGE_BASE.length):'';
+        if(STORAGE_OBJECT.test(key))imageSources.set(url,await downloadCatalogPhoto(key));
+    }));
+}
 
 console.log(`Build output: ${out}`);
 await fs.rm(out, { recursive: true, force: true });
@@ -100,7 +116,8 @@ let html = await fs.readFile(path.join(out, 'index.html'), 'utf8');
 for (const marker of ['<!-- CATALOG_DATA -->', '<!-- CATALOG_CATEGORIES -->', '<!-- CATALOG_PRODUCTS -->']) {
     if (!html.includes(marker)) throw new Error(`Missing build marker: ${marker}`);
 }
-html = html.replace('src="img/imagen_front.jpg"', `src="${covers[1].url}" srcset="${covers[0].url} 720w, ${covers[1].url} 1440w" sizes="100vw"`)
+const liveTemplate=html.replace('src="img/imagen_front.jpg"', `src="${covers[1].url}" srcset="${covers[0].url} 720w, ${covers[1].url} 1440w" sizes="100vw"`);
+html = liveTemplate
     .replace('<!-- CATALOG_DATA -->', () => seedJson)
     .replace('<!-- CATALOG_CATEGORIES -->', () => renderCategoriesHTML(products, 'todas', routes))
     .replace('<!-- CATALOG_PRODUCTS -->', () => renderProductGrid(products.filter(p => !p.popup && p.status.toLowerCase() !== 'anuncio'), { images: manifest, routes }));
@@ -155,3 +172,9 @@ await fs.writeFile(path.join(out,'sitemap.xml'),'<?xml version="1.0" encoding="U
 console.log(JSON.stringify({productPages:visibleProducts.length,categoryPages:Object.keys(routes.categories).length,sitemapUrls:sitemap.length,socialImages:shares.size}));
 
 await buildAdmin(out);
+if(supabaseMode){
+    const runtime=path.join(root,'.runtime-public');await fs.mkdir(runtime,{recursive:true});
+    const social=Object.fromEntries(await Promise.all(visibleProducts.map(async product=>[product.images[0],await shareImage(product)])));
+    const fallbackShare=await shareImage({images:['/img/logo_jpg.jpg']});
+    await fs.writeFile(path.join(runtime,'runtime.json'),JSON.stringify({template:liveTemplate,images:manifest,shares:social,fallbackShare}));
+}

@@ -99,8 +99,18 @@ async function browser(seed) {
         navigator:{clipboard:{writeText:async value=>{copied=value;}}},window:{localStorage:storage},
         document:{getElementById:id=>elements.get(id),addEventListener:(type,fn)=>callbacks.set(type,fn)},fetch:()=>new Promise(resolve=>{pending=resolve;}),setTimeout(){}});
     vm.runInContext(source,context);callbacks.get('DOMContentLoaded')();
-    return {elements,context,refresh:async products=>{pending({ok:true,json:async()=>({products})});await vm.runInContext('refreshing',context);},copied:()=>copied};
+    return {elements,context,refresh:async (products,nextRoutes)=>{pending({ok:true,json:async()=>({products,routes:nextRoutes})});await vm.runInContext('refreshing',context);},copied:()=>copied};
 }
+
+test('live refresh adopts permanent links for products and categories created after the build',async()=>{
+    const first=registerRoutes([product]);
+    const added={...product,id:'new',name:'Producto nuevo',collection:'Nueva categoría'};
+    const next=registerRoutes([product,added],first);
+    const instance=await browser({products:[product],routes:first,images:{},page:{type:'home'}});
+    await instance.refresh([product,added],next);
+    assert.ok(instance.elements.get('product-grid').innerHTML.includes(next.products.new));
+    assert.ok(instance.elements.get('category-filters').innerHTML.includes(next.categories['nueva categoría']));
+});
 
 test('direct product page refresh stays on its product, updates price, removes withdrawn product, and copy has a permission-free fallback', async () => {
     const routes=registerRoutes([product]);

@@ -103,13 +103,13 @@ export async function mountPanel(adapter,{demo=false}={}) {
     let changes;
     try{changes=validateChanges({name:$('name').value,price:$('price').value,category_id:$('category').value,state:$('state').value,featured:$('featured').checked},photos,editing ?? {});}
     catch(error){notice('editor-status',error.message,'error');return;}
-    if(changes.visibility==='hidden' && editing?.visibility==='published' && !window.confirm('Al publicar, este producto dejará de aparecer en la tienda. ¿Guardar como oculto?'))return;
+    if(changes.visibility==='hidden' && editing?.visibility==='published' && !window.confirm('Este producto dejará de aparecer en la tienda. ¿Guardar como oculto?'))return;
     setBusy(true);notice('editor-status','Guardando…');
     try{
       const saved=await adapter.save(editing,changes);saved.category_name=categories.find(c=>c.id===saved.category_id)?.name ?? '';
       products=products.filter(p=>p.id!==saved.id);products.unshift(saved);editing=saved;dirty=false;renderList();renderShare();
       $('editor-title').textContent='Editar producto';
-      notice('editor-status',demo?'Cambios guardados solo en esta demostración.':'Cambios guardados en el catálogo. La actualización de la web queda pendiente de publicación.','success');
+      notice('editor-status',demo?'Cambios guardados solo en esta demostración.':'Cambios guardados. La tienda se actualizará en menos de un minuto.','success');
     }catch(error){notice('editor-status',friendlyError(error),'error');}
     finally{setBusy(false);}
   });

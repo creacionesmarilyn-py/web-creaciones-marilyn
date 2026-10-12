@@ -78,7 +78,7 @@ test('panel form preserves unsaved edits on conflict and renders catalog text sa
       document.querySelector('.product-row').click();$('name').value='Nuevo nombre';$('price').value='6100';
       $('product-form').dispatchEvent(new dom.window.Event('submit',{cancelable:true,bubbles:true}));await new Promise(resolve=>setImmediate(resolve));
       assert.equal(call.p.version,1);assert.equal(call.changes.price,6100);assert.equal(call.changes.path,undefined);
-      assert.equal($('share-url').value,'https://www.creacionesmarilyn.com.py'+product.path);assert.match($('editor-status').textContent,/pendiente de publicación/);
+      assert.equal($('share-url').value,'https://www.creacionesmarilyn.com.py'+product.path);assert.match($('editor-status').textContent,/tienda se actualizará/);
       assert.match(document.querySelector('.product-row').textContent,/Nuevo nombre/);
     });
   }finally{dom?.window.close();for(const [key,value] of Object.entries(previous)){if(value===undefined)delete globalThis[key];else globalThis[key]=value;}}
