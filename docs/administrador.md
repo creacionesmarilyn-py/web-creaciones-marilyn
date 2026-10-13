@@ -4,7 +4,7 @@ El administrador vive en `/gestion`. La compilación omite el panel mientras `MA
 
 ## Publicación — 12 de octubre de 2026
 
-La tienda y `/gestion` están publicados en `https://www.creacionesmarilyn.com.py`, con lectura desde Supabase. Se verificó el acceso Google de la propietaria en el dominio real, 43 pruebas de código y 33 comprobaciones de publicación/seguridad. La base Firebase anterior conserva los datos como respaldo pero rechaza lecturas y escrituras de clientes. Las escrituras del administrador permanecen bloqueadas hasta la aprobación final de activación.
+La tienda y `/gestion` están publicados en `https://www.creacionesmarilyn.com.py`, con lectura desde Supabase. Se verificó el acceso Google de la propietaria en el dominio real, 43 pruebas de código y 33 comprobaciones de publicación/seguridad. La base Firebase anterior conserva los datos como respaldo pero rechaza lecturas y escrituras de clientes. El 13 de octubre se habilitaron las escrituras con autorización explícita del usuario, comprobando que la única cuenta activa era la propietaria verificada. El administrador confirmó un guardado real del producto 26 conservando sus datos.
 
 La rama de código es `codex/administrador-seguro`. El estado operativo y las evidencias privadas se conservan en `.private-migration/CONTINUAR-SUPABASE.md`, excluido de Git y Vercel. No recuperar una versión antigua que dependa de Firebase: volvería a dejar la tienda sin catálogo actualizado.
 
