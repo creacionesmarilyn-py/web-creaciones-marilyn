@@ -14,7 +14,8 @@ export async function mountPanel(adapter,{demo=false}={}) {
     $('photo-input').disabled=value || !session?.writable || demo;
   }
   function renderList() {
-    const found=filterProducts(products,$('search').value,$('filter').value);
+    const selected=$('category-filter').value;
+    const found=filterProducts(selected?products.filter(p=>p.category_id===selected):products,'',$('filter').value);
     $('result-count').textContent=found.length+' '+(found.length===1?'producto':'productos');
     $('empty').hidden=found.length>0;$('more').hidden=found.length<=limit;
     const fragment=document.createDocumentFragment();
@@ -29,6 +30,12 @@ export async function mountPanel(adapter,{demo=false}={}) {
       row.addEventListener('click',()=>openEditor(p));fragment.append(row);
     }
     $('products').replaceChildren(fragment);
+  }
+  function renderCategoryFilter() {
+    const selected=$('category-filter').value;
+    const all=el('option','Todas las categorías');all.value='';
+    $('category-filter').replaceChildren(all,...[...categories].sort((a,b)=>a.name.localeCompare(b.name,'es')).map(c=>{const option=el('option',c.name);option.value=c.id;return option;}));
+    $('category-filter').value=categories.some(c=>c.id===selected)?selected:'';
   }
   function renderCategories(selected='') {
     const placeholder=el('option','Elegí una categoría');placeholder.value='';
@@ -54,7 +61,7 @@ export async function mountPanel(adapter,{demo=false}={}) {
     $('product-form').reset();$('editor-title').textContent=product?'Editar producto':'Agregar producto';
     $('name').value=product?.name ?? '';$('price').value=product?.price ?? '';
     $('state').value=product?productState(product):'hidden';$('featured').checked=Boolean(product?.featured);
-    $('category-create').hidden=true;renderCategories(product?.category_id);renderPhotos();renderShare();setBusy(false);
+    $('category-create').hidden=true;renderCategories(product?.category_id ?? $('category-filter').value);renderPhotos();renderShare();setBusy(false);
     notice('editor-status',session?.writable?'':'Este catálogo está en preparación. Todavía no se pueden guardar cambios.');
     $('editor').showModal();$('name').focus();
   }
@@ -65,7 +72,7 @@ export async function mountPanel(adapter,{demo=false}={}) {
   }
   async function loadCatalog() {
     notice('global-status','Buscando tus productos…');
-    try {const data=await adapter.catalog();products=data.products;categories=data.categories;renderList();notice('global-status','');}
+    try {const data=await adapter.catalog();products=data.products;categories=data.categories;renderCategoryFilter();renderList();notice('global-status','');}
     catch(error){notice('global-status',friendlyError(error),'error');}
   }
   async function start() {
@@ -88,7 +95,7 @@ export async function mountPanel(adapter,{demo=false}={}) {
   });
   $('new-product').addEventListener('click',()=>openEditor());
   $('refresh').addEventListener('click',async()=>{setBusy(true);try{await start();}finally{setBusy(false);}});
-  for(const id of ['search','filter']) $(id).addEventListener(id==='search'?'input':'change',()=>{limit=80;renderList();});
+  for(const id of ['category-filter','filter']) $(id).addEventListener('change',()=>{limit=80;renderList();});
   $('more').addEventListener('click',()=>{limit+=80;renderList();});
   for(const id of ['close-editor','cancel-editor']) $(id).addEventListener('click',closeEditor);
   $('editor').addEventListener('cancel',event=>{event.preventDefault();closeEditor();});
@@ -119,7 +126,7 @@ export async function mountPanel(adapter,{demo=false}={}) {
   $('confirm-category').addEventListener('click',async()=>{
     const name=$('category-name').value.trim();if(!name){$('category-name').focus();return;}if(busy || !session?.writable)return;
     setBusy(true);
-    try{const category=await adapter.createCategory(name);if(!categories.some(c=>c.id===category.id))categories.push(category);categories.sort((a,b)=>a.name.localeCompare(b.name,'es'));renderCategories(category.id);$('category-create').hidden=true;dirty=true;notice('editor-status','Categoría lista. Guardá el producto para asignarla.');}
+    try{const category=await adapter.createCategory(name);if(!categories.some(c=>c.id===category.id))categories.push(category);categories.sort((a,b)=>a.name.localeCompare(b.name,'es'));renderCategories(category.id);renderCategoryFilter();$('category-create').hidden=true;dirty=true;notice('editor-status','Categoría lista. Guardá el producto para asignarla.');}
     catch(error){notice('editor-status',friendlyError(error),'error');}finally{setBusy(false);}
   });
   $('photo-input').addEventListener('change',async()=>{

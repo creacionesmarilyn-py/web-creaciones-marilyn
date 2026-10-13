@@ -17,9 +17,9 @@
     <section id="catalog" hidden>
       <div class="page-heading"><div><span class="eyebrow">CATÁLOGO</span><h1>Mis productos</h1><p>Cambiá precios, agregá fotos y elegí qué mostrar.</p></div><button id="new-product" class="primary" type="button">＋ Agregar producto</button></div>
       <p id="preparation" class="notice" hidden>Estamos conectando el catálogo con la web. Por ahora podés revisar los productos; la edición se habilitará al terminar.</p>
-      <div class="toolbar"><label class="search-label" for="search">Buscar un producto<input type="search" id="search" placeholder="Por ejemplo: perlitas número 6" autocomplete="off"></label><label for="filter">Mostrar<select id="filter"><option value="all">Todos los productos</option><option value="available">Disponibles</option><option value="sold-out">Agotados</option><option value="hidden">Ocultos</option></select></label><button id="refresh" class="quiet" type="button">Actualizar lista</button></div>
+      <div class="toolbar"><label class="search-label" for="category-filter">Elegir producto<select id="category-filter"><option value="">Todas las categorías</option></select></label><label for="filter">Mostrar<select id="filter"><option value="all">Todos los productos</option><option value="available">Disponibles</option><option value="sold-out">Agotados</option><option value="hidden">Ocultos</option></select></label><button id="refresh" class="quiet" type="button">Actualizar lista</button></div>
       <p id="result-count" class="hint" role="status"></p>
-      <div id="products" class="product-list"></div><p id="empty" class="empty" hidden>No encontramos productos con esa búsqueda.</p><button id="more" class="quiet more" type="button" hidden>Ver más productos</button>
+      <div id="products" class="product-list"></div><p id="empty" class="empty" hidden>No hay productos con esta categoría y estado.</p><button id="more" class="quiet more" type="button" hidden>Ver más productos</button>
     </section>
   </main>
   <dialog id="editor" aria-labelledby="editor-title">
