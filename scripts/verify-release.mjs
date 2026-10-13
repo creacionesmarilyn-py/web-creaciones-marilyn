@@ -98,11 +98,7 @@ if (firebase) {
         await check(`Firebase ${branch}`, async () => {
             const response = await request(`${database}/${branch}.json?shallow=true`);
             const data = await response.json();
-            if (branch === 'productos') {
-                record('Catálogo público disponible', response.status === 200 && data && typeof data === 'object' && !data.error && Object.keys(data).length > 0, `HTTP ${response.status}`);
-            } else {
-                record('Lectura anónima de ventas denegada', [401, 403].includes(response.status) && /permission denied/i.test(String(data?.error)), `HTTP ${response.status}`);
-            }
+            record(`Lectura anónima de ${branch} denegada`, [401, 403].includes(response.status) && /permission denied/i.test(String(data?.error)), `HTTP ${response.status}`);
         });
     }
     console.log('Este control no intenta escrituras ni certifica reglas completas: revisar también la consola de Firebase.');

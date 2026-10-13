@@ -2,6 +2,12 @@
 
 El administrador vive en `/gestion`. La compilación omite el panel mientras `MARILYN_ADMIN_ENABLED` no sea `true`. `MARILYN_CATALOG_SOURCE=supabase` conecta la tienda pública al catálogo nuevo; la activación de escrituras se controla por separado en la base.
 
+## Publicación — 12 de octubre de 2026
+
+La tienda y `/gestion` están publicados en `https://www.creacionesmarilyn.com.py`, con lectura desde Supabase. Se verificó el acceso Google de la propietaria en el dominio real, 43 pruebas de código y 33 comprobaciones de publicación/seguridad. La base Firebase anterior conserva los datos como respaldo pero rechaza lecturas y escrituras de clientes. Las escrituras del administrador permanecen bloqueadas hasta la aprobación final de activación.
+
+La rama de código es `codex/administrador-seguro`. El estado operativo y las evidencias privadas se conservan en `.private-migration/CONTINUAR-SUPABASE.md`, excluido de Git y Vercel. No recuperar una versión antigua que dependa de Firebase: volvería a dejar la tienda sin catálogo actualizado.
+
 ## Conexión real verificada — 10 de octubre de 2026
 
 Se aplicaron las migraciones exclusivamente a `mskmfxkhfqimsmicuowv`: catálogo, Storage, permisos del event trigger y políticas/índices. Los nombres de archivo locales coinciden con el historial remoto. Las siete tablas tienen RLS.
@@ -14,10 +20,10 @@ La preview con autenticación real se inicia mediante `npm run panel:live:previe
 
 ## Revisar el panel sin cambiar la tienda
 
-1. `npm ci`
-2. `npm run build`
-3. `npm run panel:preview`
-4. Abrir `http://localhost:4174/gestion`.
+1. `npm ci`.
+2. Copiar `.env.example` a `.env.local` y completar únicamente la clave publicable del proyecto Marilyn. Conservar `MARILYN_CATALOG_SOURCE=supabase`; Firebase ya está cerrado.
+3. `node --env-file=.env.local scripts/build.mjs`.
+4. `npm run panel:preview` y abrir `http://localhost:4174/gestion`.
 
 La demostración usa exclusivamente el catálogo público compilado. Permite probar búsqueda, filtros, formularios y cambios en memoria; al recargar se descartan. Tiene un cartel permanente de demostración y no permite subir archivos. No usa credenciales ni llama a Supabase. El adaptador de demostración no forma parte del bundle de producción.
 
