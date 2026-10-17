@@ -1,4 +1,5 @@
 import {STORE_ID} from './model.mjs';
+import {photoExtension} from './photos.mjs';
 const PRODUCT_FIELDS = 'id,name,price,category_id,available,visibility,featured,popup,images,path,version,updated_at';
 function unwrap(result) { if (result.error) throw result.error; return result.data; }
 export function createCatalogAdapter(client) {
@@ -38,8 +39,9 @@ export function createCatalogAdapter(client) {
       await user();const data=unwrap(await client.rpc('marilyn_create_category',{p_name:name}));return Array.isArray(data)?data[0]:data;
     },
     async upload(blob) {
-      const current=await user();const object=current.id+'/'+crypto.randomUUID()+'.webp';
-      unwrap(await client.storage.from('marilyn-catalog-images').upload(object,blob,{contentType:'image/webp',cacheControl:'31536000',upsert:false}));
+      const extension=photoExtension(blob.type);
+      const current=await user();const object=current.id+'/'+crypto.randomUUID()+'.'+extension;
+      unwrap(await client.storage.from('marilyn-catalog-images').upload(object,blob,{contentType:blob.type,cacheControl:'31536000',upsert:false}));
       return client.storage.from('marilyn-catalog-images').getPublicUrl(object).data.publicUrl;
     }
   };
